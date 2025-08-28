@@ -10,10 +10,135 @@
     <!-- Icon Library for buttons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --card-border: rgba(15,23,36,0.06);
+            --text: #1f2937;
+            --muted: #6b7280;
+            --accent: #3b82f6;
+        }
+
+        .dark {
+            --bg: #0b1220;
+            --card: #0f1724;
+            --card-border: rgba(255,255,255,0.06);
+            --text: #e6eef8;
+            --muted: #9ca3af;
+            --accent: #60a5fa;
+        }
+
+        /* Card borders for task cards and notes */
+        .task-card, .note-item {
+            border: 1px solid var(--card-border);
+        }
+
+        /* Ensure card borders are visible in dark mode (stronger contrast) */
+        .dark .task-card, .dark .note-item {
+            border: 1px solid rgba(255,255,255,0.22) !important; /* brighter border */
+            box-shadow: 0 1px 4px rgba(0,0,0,0.45); /* subtle outer shadow for separation */
+        }
+
+        /* Kanban column borders (structure of board) */
+        .kanban-column {
+            border: 1px solid rgba(0,0,0,0.06);
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        /* Stronger column borders in dark mode so structure is visible */
+        .dark .kanban-column {
+            border: 1px solid rgba(255,255,255,0.12) !important;
+            background-color: rgba(255,255,255,0.02) !important;
+        }
+
+        .kanban-column .kanban-column-header {
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .dark .kanban-column .kanban-column-header {
+            border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Lighter gray background */
+            background-color: var(--bg);
+            color: var(--text);
         }
+
+        /* Theme-aware overrides for commonly used utility classes */
+        .dark .bg-white, .dark .bg-gray-50, .dark .bg-gray-100, .dark .bg-yellow-50 {
+            background-color: var(--card) !important;
+        }
+        .dark .text-gray-800, .dark .text-gray-700 {
+            color: var(--text) !important;
+        }
+        .dark .text-gray-500, .dark .text-gray-600 {
+            color: var(--muted) !important;
+        }
+        /* Soften primary/secondary button colors in dark mode to avoid harsh contrast */
+        .dark .bg-blue-600 {
+            background-color: rgba(96,165,250,0.16) !important; /* subtle blue */
+            color: var(--text) !important;
+            border: 1px solid rgba(96,165,250,0.22);
+        }
+        .dark .bg-indigo-600 {
+            background-color: rgba(99,102,241,0.14) !important;
+            color: var(--text) !important;
+            border: 1px solid rgba(99,102,241,0.18);
+        }
+        .dark .bg-indigo-500 {
+            background-color: rgba(79,70,229,0.12) !important;
+            color: var(--text) !important;
+            border: 1px solid rgba(79,70,229,0.16);
+        }
+        .dark .bg-yellow-500 {
+            background-color: rgba(245,158,11,0.10) !important; /* muted yellow */
+            color: var(--text) !important;
+            border: 1px solid rgba(245,158,11,0.12);
+        }
+        .dark .bg-gray-200 {
+            background-color: rgba(148,163,184,0.08) !important;
+            color: var(--text) !important;
+        }
+
+        /* Calendar: slightly darker than page background but still readable */
+        .dark .calendar-day {
+            background-color: #0f1724 !important; /* slightly lighter than page bg */
+            color: var(--text) !important;
+            border-color: rgba(255,255,255,0.04) !important;
+        }
+        .dark .day-header {
+            border-bottom-color: rgba(255,255,255,0.06) !important;
+        }
+        .dark .day-routine-list {
+            background-color: rgba(255,255,255,0.02) !important; /* subtle light area */
+            color: var(--text) !important;
+        }
+        .dark .today .day-number {
+            background-color: var(--accent) !important;
+            color: white !important;
+        }
+
+        /* Notes textarea in dark mode: slightly dark input with clear text */
+        .dark #note-input {
+            background-color: #0b1220 !important;
+            color: var(--text) !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
+        }
+
+        /* Form controls on modals / add-edit follow dark mode */
+        .dark input[type="text"], .dark input[type="password"], .dark input[type="time"], .dark textarea, .dark select, .dark input {
+            background-color: #0b1220 !important;
+            color: var(--text) !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
+        }
+        .dark .bg-white, .dark .rounded-xl, .dark .rounded-lg {
+            background-color: var(--card) !important;
+        }
+    /* Desktop nav color adjustments in dark mode */
+    .dark header a { color: var(--muted) !important; }
+    .dark header a:hover { color: var(--accent) !important; }
+    .dark header { background-color: var(--card) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
         .dragging {
             opacity: 0.5;
             transform: rotate(2deg);
@@ -107,7 +232,12 @@
             justify-content: center;
         }
         .weekend-day {
-            background-color: rgba(254, 226, 226, 0.7); /* red-100 with opacity */
+            background-color: rgba(254, 226, 226, 0.7); /* light red for default (light) mode */
+        }
+
+        /* In dark mode, make weekend cells semi-red with 50% opacity */
+        .dark .weekend-day {
+            background-color: rgba(220, 38, 38, 0.2) !important; /* red with 20% opacity */
         }
         .other-month {
             color: #d1d5db;
@@ -151,6 +281,12 @@
             background-color: #4f46e5;
             color: white;
         }
+        /* Icon-only mode buttons active state */
+        .mode-toggle button.p-2.active {
+            background-color: var(--accent) !important;
+            color: white !important;
+        }
+        .mode-toggle button.p-2 i { color: inherit; }
         /* Universal Board Scroll */
         #board {
             display: flex;
@@ -213,17 +349,27 @@
                 <span class="font-bold text-xl text-gray-800 hidden sm:block">Project Board AT</span>
             </a>
 
-            <!-- Mode Toggle -->
-            <div class="mode-toggle flex items-center p-1 bg-gray-200 rounded-full">
-                <button id="personal-mode-btn" class="px-4 py-1 text-sm font-semibold rounded-full transition-colors">Personal</button>
-                <button id="working-mode-btn" class="px-4 py-1 text-sm font-semibold rounded-full transition-colors">Working</button>
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center gap-6 ml-4">
+                <a href="#project-board-section" class="text-sm text-gray-600 hover:text-indigo-500">Project Board</a>
+                <a href="#daily-routine-section" class="text-sm text-gray-600 hover:text-indigo-500">Daily Routine</a>
+                <a href="#important-notes-section" class="text-sm text-gray-600 hover:text-indigo-500">Notes</a>
             </div>
 
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-gray-600 hover:text-indigo-600 focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
+            <!-- Right controls: desktop theme toggle, personal/working icon toggles, mobile menu button -->
+            <div class="flex items-center gap-3 ml-auto">
+                <button id="theme-toggle" title="Toggle theme" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 hidden md:inline-flex">
+                    <i class="fas fa-moon"></i>
                 </button>
+                <div class="mode-toggle flex items-center gap-2">
+                    <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Personal"><i class="fas fa-user"></i></button>
+                    <button id="working-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Working"><i class="fas fa-briefcase"></i></button>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-indigo-600 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
             </div>
         </nav>
         <!-- Mobile Menu -->
@@ -237,14 +383,14 @@
     <main class="container mx-auto p-4 md:px-8">
         <!-- Project Board Section -->
         <div id="project-board-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Project Board</h2>
-            <div class="mb-8 max-w-lg mx-auto">
-                <form id="task-form" class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="task-input" placeholder="Write a new project task..." class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <button type="submit" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-transform hover:scale-105">
-                        Add Task
-                    </button>
-                </form>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">Project Board</h2>
+            <p id="board-mode-label" class="text-sm text-gray-600 mb-6 text-center">Mode: </p>
+            <div class="mb-8 w-full">
+                <div class="max-w-full mx-auto flex justify-center md:justify-end">
+                 <button id="add-task-btn" class="ml-auto md:ml-0 md:mr-0 w-full md:w-auto bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-transform hover:scale-105">
+                    Add New Task
+                </button>
+                </div>
             </div>
 
             <div id="board">
@@ -258,31 +404,11 @@
         <div id="daily-routine-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-center items-center mb-6 relative">
                  <h2 class="text-3xl font-bold text-gray-800">Daily Routine Calendar</h2>
-                 <button id="mobile-recurring-btn" class="sm:hidden absolute right-0 bg-indigo-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-indigo-600">
+                 <button id="recurring-btn" class="absolute right-0 bg-indigo-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-indigo-600">
                     <i class="fas fa-plus"></i>
                  </button>
             </div>
             <div id="calendar-container" class="max-w-full mx-auto">
-                <div class="mb-6 p-4 border rounded-lg bg-gray-50 hidden sm:block">
-                    <h4 class="font-semibold text-gray-700 mb-2">Add Recurring Routine for this Month</h4>
-                    <form id="recurring-routine-form" class="flex flex-col sm:flex-row items-center gap-3">
-                        <input type="time" id="recurring-routine-time" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <input type="text" id="recurring-routine-input" placeholder="E.g., Badminton" class="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        <select id="recurring-day-select" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                            <option value="1">Monday</option>
-                            <option value="2">Tuesday</option>
-                            <option value="3">Wednesday</option>
-                            <option value="4">Thursday</option>
-                            <option value="5">Friday</option>
-                            <option value="6">Saturday</option>
-                            <option value="0">Sunday</option>
-                        </select>
-                        <button type="submit" class="bg-indigo-500 text-white font-semibold py-2 px-3 md:px-4 rounded-lg hover:bg-indigo-600 transition-transform hover:scale-105">
-                            <span class="hidden sm:inline">Add to All</span>
-                            <i class="fas fa-plus sm:hidden"></i>
-                        </button>
-                    </form>
-                </div>
                 <div id="calendar-header" class="flex items-center justify-between mb-4">
                     <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-200"><i class="fas fa-chevron-left"></i></button>
                     <h3 id="month-year-header" class="text-xl font-semibold"></h3>
@@ -312,7 +438,7 @@
             <div class="max-w-4xl mx-auto">
                 <div class="mb-8 max-w-lg mx-auto">
                     <form id="note-form" class="flex flex-col sm:flex-row gap-3 items-center">
-                        <input type="text" id="note-input" placeholder="Add a new secret note..." class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" required>
+                        <textarea id="note-input" placeholder="Add a new secret note..." rows="4" class="w-full h-32 sm:h-auto md:flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
                         <button type="submit" class="bg-yellow-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-transform hover:scale-105">
                             Add Note
                         </button>
@@ -324,7 +450,7 @@
     </main>
     
     <!-- Modals -->
-    <div id="notification-area" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+    <div id="notification-area" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
         <!-- Notification will be injected here -->
     </div>
     <div id="custom-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
@@ -422,6 +548,21 @@
                 <div class="flex justify-end gap-4 mt-6">
                     <button type="button" id="cancel-password-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Unlock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+     <div id="add-task-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto p-6">
+            <h3 class="text-2xl font-bold mb-4">Add New Task</h3>
+            <form id="add-task-form-modal">
+                <div>
+                    <label for="task-input-modal" class="block text-sm font-medium text-gray-700">Task Name</label>
+                    <input type="text" id="task-input-modal" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" id="cancel-add-task-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Task</button>
                 </div>
             </form>
         </div>
@@ -627,7 +768,7 @@
         };
 
         const closeColumnModal = () => {
-            document.getElementById('column-modal').classList.add('hidden');
+            const m = document.getElementById('column-modal'); m.classList.add('hidden'); m.classList.remove('flex');
         };
 
         const saveColumn = async (id, name) => {
@@ -828,7 +969,7 @@
         };
 
         const closeRoutineModal = () => {
-            document.getElementById('routine-modal').classList.add('hidden');
+            const m = document.getElementById('routine-modal'); m.classList.add('hidden'); m.classList.remove('flex');
             if (routineListenerUnsubscribe) { routineListenerUnsubscribe(); routineListenerUnsubscribe = null; }
             selectedDateStr = null;
         };
@@ -843,7 +984,7 @@
         };
 
         const closeEditRoutineModal = () => {
-            document.getElementById('edit-routine-modal').classList.add('hidden');
+            const m = document.getElementById('edit-routine-modal'); m.classList.add('hidden'); m.classList.remove('flex');
         };
 
         const renderModalRoutines = (routines) => {
@@ -1132,7 +1273,7 @@
         };
 
         const closePasswordModal = () => {
-            document.getElementById('password-modal').classList.add('hidden');
+            const m = document.getElementById('password-modal'); m.classList.add('hidden'); m.classList.remove('flex');
             document.getElementById('password-form').reset();
         };
 
@@ -1154,12 +1295,15 @@
         const updateModeUI = () => {
             const personalBtn = document.getElementById('personal-mode-btn');
             const workingBtn = document.getElementById('working-mode-btn');
+            const modeLabel = document.getElementById('board-mode-label');
             if (currentMode === 'personal') {
                 personalBtn.classList.add('active');
                 workingBtn.classList.remove('active');
+                if(modeLabel) modeLabel.textContent = 'Mode: Personal';
             } else {
                 workingBtn.classList.add('active');
                 personalBtn.classList.remove('active');
+                if(modeLabel) modeLabel.textContent = 'Mode: Working';
             }
         };
 
@@ -1175,11 +1319,13 @@
         document.getElementById('personal-mode-btn').addEventListener('click', () => switchMode('personal'));
         document.getElementById('working-mode-btn').addEventListener('click', () => switchMode('working'));
 
-        document.getElementById('task-form').addEventListener('submit', (e) => { e.preventDefault(); const input = document.getElementById('task-input'); if (input.value.trim() !== '') { addTask(input.value.trim()); input.value = ''; } });
+    document.getElementById('add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.remove('hidden'); m.classList.add('flex'); });
+    document.getElementById('cancel-add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
+    document.getElementById('add-task-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const input = document.getElementById('task-input-modal'); if (input.value.trim() !== '') { addTask(input.value.trim()); input.value = ''; const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } });
+
         document.getElementById('note-form').addEventListener('submit', (e) => { e.preventDefault(); const input = document.getElementById('note-input'); if (input.value.trim() !== '') { addNote(input.value.trim()); input.value = ''; } });
         document.getElementById('routine-form').addEventListener('submit', (e) => { e.preventDefault(); const textInput = document.getElementById('routine-input'); const timeInput = document.getElementById('routine-time-input'); const text = textInput.value.trim(); const time = timeInput.value; if (text !== '' && selectedDateStr) { addRoutine(text, time, selectedDateStr); textInput.value = ''; timeInput.value = ''; } });
-        document.getElementById('recurring-routine-form').addEventListener('submit', (e) => { e.preventDefault(); const textInput = document.getElementById('recurring-routine-input'); const timeInput = document.getElementById('recurring-routine-time'); const daySelect = document.getElementById('recurring-day-select'); const text = textInput.value.trim(); const time = timeInput.value; if (text !== '') { addRecurringRoutine(text, time, daySelect.value); textInput.value = ''; timeInput.value = ''; } });
-        document.getElementById('recurring-routine-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const textInput = document.getElementById('recurring-routine-input-modal'); const timeInput = document.getElementById('recurring-routine-time-modal'); const daySelect = document.getElementById('recurring-day-select-modal'); const text = textInput.value.trim(); const time = timeInput.value; if (text !== '') { addRecurringRoutine(text, time, daySelect.value); textInput.value = ''; timeInput.value = ''; document.getElementById('recurring-routine-modal').classList.add('hidden'); } });
+    document.getElementById('recurring-routine-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const textInput = document.getElementById('recurring-routine-input-modal'); const timeInput = document.getElementById('recurring-routine-time-modal'); const daySelect = document.getElementById('recurring-day-select-modal'); const text = textInput.value.trim(); const time = timeInput.value; if (text !== '') { addRecurringRoutine(text, time, daySelect.value); textInput.value = ''; timeInput.value = ''; const m = document.getElementById('recurring-routine-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } });
         document.getElementById('edit-routine-form').addEventListener('submit', (e) => { e.preventDefault(); const id = document.getElementById('edit-routine-id').value; const text = document.getElementById('edit-routine-input').value.trim(); const time = document.getElementById('edit-routine-time-input').value; if (text) { updateRoutine(id, text, time); } closeEditRoutineModal(); });
         document.getElementById('column-form').addEventListener('submit', (e) => { e.preventDefault(); const id = document.getElementById('column-id-input').value; const name = document.getElementById('column-name-input').value; saveColumn(id, name); });
         document.getElementById('password-form').addEventListener('submit', async (e) => {
@@ -1218,8 +1364,8 @@
         document.getElementById('next-month-btn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
         document.getElementById('close-routine-modal-btn').addEventListener('click', closeRoutineModal);
         document.getElementById('cancel-edit-routine-btn').addEventListener('click', closeEditRoutineModal);
-        document.getElementById('mobile-recurring-btn').addEventListener('click', () => document.getElementById('recurring-routine-modal').classList.remove('hidden'));
-        document.getElementById('close-recurring-modal-btn').addEventListener('click', () => document.getElementById('recurring-routine-modal').classList.add('hidden'));
+    document.getElementById('recurring-btn').addEventListener('click', () => { const m = document.getElementById('recurring-routine-modal'); m.classList.remove('hidden'); m.classList.add('flex'); });
+    document.getElementById('close-recurring-modal-btn').addEventListener('click', () => { const m = document.getElementById('recurring-routine-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
         document.getElementById('cancel-column-btn').addEventListener('click', closeColumnModal);
         document.getElementById('cancel-password-btn').addEventListener('click', closePasswordModal);
         window.addEventListener('resize', renderCalendar);
@@ -1230,6 +1376,36 @@
             mobileMenu.classList.toggle('hidden');
         });
         
+        // Theme handling: default to dark but persist user choice
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const THEME_KEY = 'preferredTheme'; // 'dark' or 'light'
+
+        const applyTheme = (theme) => {
+            const root = document.documentElement; // <html>
+            if (theme === 'dark') {
+                root.classList.add('dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                root.classList.remove('dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        };
+
+        // Initialize theme on load (default dark)
+        let storedTheme = localStorage.getItem(THEME_KEY);
+        if (!storedTheme) {
+            storedTheme = 'dark';
+            localStorage.setItem(THEME_KEY, storedTheme);
+        }
+        applyTheme(storedTheme);
+
+        themeToggleBtn.addEventListener('click', () => {
+            const current = localStorage.getItem(THEME_KEY) || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem(THEME_KEY, next);
+            applyTheme(next);
+        });
+
         // Initial setup
         updateModeUI();
         initializeListeners(currentMode);
