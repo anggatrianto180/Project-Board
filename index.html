@@ -33,13 +33,24 @@
             --accent: #60a5fa;
         }
 
-        /* Card borders for task cards and notes */
-        .task-card, .note-item {
-                border: 1px solid var(--card-border);
-                padding: 1.25rem; /* larger padding */
-                min-height: 160px; /* larger cards */
-                border-radius: 12px;
-        }
+    /* Card borders for task cards */
+    .task-card {
+        border: 1px solid var(--card-border);
+        padding: 0.9rem; /* snugger padding for tasks */
+        border-radius: 12px;
+        min-height: initial;
+        height: auto;
+        align-items: flex-start;
+        display: flex;
+        gap: 0.5rem;
+    }
+    /* Note cards keep a larger min height */
+    .note-item {
+        border: 1px solid var(--card-border);
+        padding: 1.25rem; /* larger padding */
+        min-height: 160px; /* larger cards */
+        border-radius: 12px;
+    }
 
         /* Ensure card borders are visible in dark mode (stronger contrast) */
         .dark .task-card, .dark .note-item {
@@ -276,6 +287,40 @@
             cursor: pointer;
             margin-left: 8px;
         }
+
+        /* Task text: wrap and let card height adjust to content */
+        .task-text {
+            display: inline-block;
+            white-space: normal;
+            word-break: break-word;
+            color: var(--text);
+        }
+
+        /* Task actions positioned on the right, do not push card height */
+        .task-actions { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; }
+
+        /* Clamp long task text to 3 lines and provide a toggle */
+        .task-text.clamped {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .note-body {
+            white-space: pre-wrap; /* preserve newlines */
+        }
+        .clamped-note {
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .task-content { display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; min-width: 0; }
+
+        /* Preserve newlines in notes display */
+        .note-content p { white-space: pre-wrap; }
         .task-card:hover .task-actions i, .routine-item:hover .task-actions i, .note-item:hover .task-actions i, .kanban-column-header:hover .column-actions i {
             visibility: visible;
             opacity: 1;
@@ -305,18 +350,18 @@
             align-items: flex-start;
         }
 
-        /* Actions inside the note card (top-right) */
+        /* Actions inside the note card: inline in header beside the title */
         .note-actions {
-            position: absolute;
-            top: 12px;
-            right: 12px;
+            position: static; /* flow with header */
             display: flex;
             gap: 8px;
-            z-index: 5;
+            align-items: center;
+            margin-left: auto;
+            z-index: 2;
         }
 
-        .note-actions i { color: #9ca3af; opacity: 0; transform: translateY(-4px); transition: opacity 0.18s ease, transform 0.18s ease; cursor: pointer; }
-        .note-item:hover .note-actions i { opacity: 1; transform: translateY(0); }
+    .note-actions i { color: #6b7280; opacity: 1; transform: translateY(0); transition: color 0.18s ease; cursor: pointer; }
+    .note-item:hover .note-actions i { color: #3b82f6; }
         .section-divider {
             border: 0;
             height: 1px;
@@ -631,6 +676,10 @@
         <div class="modal-panel bg-white rounded-xl shadow-xl w-full max-w-md mx-auto p-6">
             <h3 id="note-modal-title" class="text-2xl font-bold mb-4">Add Note</h3>
             <form id="note-modal-form">
+                <div class="mb-3">
+                    <label for="note-modal-title-input" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input id="note-modal-title-input" type="text" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Title (optional)">
+                </div>
                 <div class="mb-4">
                     <label for="note-modal-input" class="block text-sm font-medium text-gray-700">Note</label>
                     <textarea id="note-modal-input" rows="6" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
@@ -941,6 +990,7 @@
             document.getElementById('folders-bar').classList.add('hidden');
             document.getElementById('current-folder-name').textContent = folderName || 'All';
             editingNoteId = null;
+            document.getElementById('note-modal-title-input').value = '';
             document.getElementById('note-modal-input').value = '';
             document.getElementById('note-modal-title').textContent = 'Add Note';
             populateFolderSelect();
@@ -1032,9 +1082,11 @@
             taskCard.className = 'task-card bg-white p-3 rounded-lg shadow-sm cursor-grab active:cursor-grabbing border-l-4 border-gray-300 hover:border-blue-500';
             taskCard.draggable = true;
             taskCard.dataset.id = id;
+            const taskContent = document.createElement('div');
+            taskContent.className = 'task-content';
             const taskTextSpan = document.createElement('span');
             taskTextSpan.textContent = text;
-            taskTextSpan.className = 'flex-grow';
+            taskTextSpan.className = 'task-text clamped';
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'task-actions';
             const editButton = document.createElement('i');
@@ -1045,9 +1097,23 @@
             deleteButton.onclick = () => deleteTask(id);
             actionsDiv.appendChild(editButton);
             actionsDiv.appendChild(deleteButton);
-            taskCard.appendChild(taskTextSpan);
+            const toggle = document.createElement('button'); toggle.className = 'text-sm text-blue-600 hidden'; toggle.textContent = 'Show more';
+            toggle.onclick = () => {
+                const nowClamped = taskTextSpan.classList.toggle('clamped');
+                toggle.textContent = nowClamped ? 'Show more' : 'Show less';
+            };
+
+            taskContent.appendChild(taskTextSpan);
+            taskContent.appendChild(toggle);
+            taskCard.appendChild(taskContent);
             taskCard.appendChild(actionsDiv);
             addDragEventsToTask(taskCard);
+            // after layout, if content overflows, show toggle
+            setTimeout(() => {
+                if (taskTextSpan.scrollHeight > (taskTextSpan.clientHeight + 4)) {
+                    toggle.classList.remove('hidden');
+                }
+            }, 10);
             return taskCard;
         };
         const editTask = (id, taskCard, taskTextSpan) => {
@@ -1056,14 +1122,15 @@
             input.type = 'text';
             input.value = currentText;
             input.className = 'flex-grow p-1 border rounded';
-            taskCard.replaceChild(input, taskTextSpan);
+            const parent = taskTextSpan.parentElement || taskCard;
+            parent.replaceChild(input, taskTextSpan);
             input.focus();
             const saveChanges = async () => {
                 const newText = input.value.trim();
                 if (newText && newText !== currentText) {
                     await updateDoc(doc(db, "hubs", currentMode, "tasks", id), { text: newText });
                 }
-                taskCard.replaceChild(taskTextSpan, input);
+                parent.replaceChild(taskTextSpan, input);
             };
             input.addEventListener('blur', saveChanges);
             input.addEventListener('keydown', (e) => {
@@ -1463,22 +1530,24 @@
         };
         const createNoteElement = (note) => {
             const item = document.createElement('div');
-            item.className = 'note-item p-4 rounded-lg bg-yellow-50 hover:bg-yellow-100 shadow-sm min-h-[120px]';
+            item.className = 'note-item p-4 rounded-lg bg-yellow-50 hover:bg-yellow-100 shadow-sm min-h-[120px] flex flex-col';
             item.dataset.id = note.id;
 
-            const content = document.createElement('div');
-            content.className = 'note-content';
-            const textSpan = document.createElement('p');
-            textSpan.textContent = note.text || '';
-            textSpan.className = 'text-gray-800 break-words text-lg leading-relaxed max-h-40 overflow-hidden';
-            content.appendChild(textSpan);
+            // Header row: title (left) and actions (right)
+            const header = document.createElement('div');
+            header.className = 'flex items-start gap-3 mb-2';
+
+            const titleEl = document.createElement('h4');
+            titleEl.className = 'text-lg font-bold text-gray-800 flex-1 min-w-0';
+            titleEl.textContent = note.title || '';
+            if (!note.title) titleEl.style.display = 'none';
 
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'note-actions';
             const editButton = document.createElement('i');
             editButton.className = 'fas fa-edit';
             editButton.title = 'Edit';
-            editButton.onclick = () => editNote(note.id, item, textSpan);
+            editButton.onclick = () => editNote(note.id, item);
             const deleteButton = document.createElement('i');
             deleteButton.className = 'fas fa-trash-alt delete-btn';
             deleteButton.title = 'Delete';
@@ -1486,8 +1555,37 @@
             actionsDiv.appendChild(editButton);
             actionsDiv.appendChild(deleteButton);
 
-            item.appendChild(actionsDiv);
-            item.appendChild(content);
+            header.appendChild(titleEl);
+            header.appendChild(actionsDiv);
+
+            // Body: the note text
+            const bodyWrap = document.createElement('div');
+            bodyWrap.className = 'note-content mb-2';
+            const textSpan = document.createElement('p');
+            textSpan.textContent = note.text || '';
+            textSpan.className = 'note-body text-gray-800 break-words text-base leading-relaxed clamped-note';
+            bodyWrap.appendChild(textSpan);
+
+            // Show more / Show less toggle placed under the body
+            const toggleWrap = document.createElement('div');
+            toggleWrap.className = 'toggle-wrap';
+            const toggle = document.createElement('button');
+            toggle.className = 'text-sm text-blue-600 hidden mt-2';
+            toggle.textContent = 'Show more';
+            toggle.onclick = () => {
+                const nowClamped = textSpan.classList.toggle('clamped-note');
+                toggle.textContent = nowClamped ? 'Show more' : 'Show less';
+            };
+            toggleWrap.appendChild(toggle);
+
+            item.appendChild(header);
+            item.appendChild(bodyWrap);
+            item.appendChild(toggleWrap);
+
+            // show toggle if overflow
+            setTimeout(() => {
+                if (textSpan.scrollHeight > (textSpan.clientHeight + 6)) toggle.classList.remove('hidden');
+            }, 10);
             return item;
         };
         const editNote = (id, item, textSpan) => {
@@ -1495,15 +1593,16 @@
             const noteObj = allNotes.find(n => n.id === id) || null;
             if (!noteObj) return;
             editingNoteId = id;
+            document.getElementById('note-modal-title-input').value = noteObj.title || '';
             document.getElementById('note-modal-input').value = noteObj.text || '';
             document.getElementById('note-modal-title').textContent = 'Edit Note';
             populateFolderSelect();
             document.getElementById('note-modal-folder-select').value = noteObj.folderId || '';
             const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
         };
-        const addNote = async (text) => {
+        const addNote = async (title, text) => {
             try {
-                await addDoc(collection(db, "hubs", currentMode, "notes"), { text, folderId: selectedFolderId || null, createdAt: Date.now() });
+                await addDoc(collection(db, "hubs", currentMode, "notes"), { title: title || null, text, folderId: selectedFolderId || null, createdAt: Date.now() });
             } catch (e) {
                 console.error("Error adding note: ", e);
                 showNotification('Failed to add note.', true);
@@ -1574,15 +1673,16 @@
 
         document.getElementById('note-modal-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const title = document.getElementById('note-modal-title-input').value.trim();
             const txt = document.getElementById('note-modal-input').value.trim();
             const folderSel = document.getElementById('note-modal-folder-select').value || null;
             if (!txt) return;
             try {
                 if (editingNoteId) {
-                    await updateDoc(doc(db, 'hubs', currentMode, 'notes', editingNoteId), { text: txt, folderId: folderSel });
+                    await updateDoc(doc(db, 'hubs', currentMode, 'notes', editingNoteId), { title: title || null, text: txt, folderId: folderSel });
                     showNotification('Note updated.');
                 } else {
-                    await addDoc(collection(db, 'hubs', currentMode, 'notes'), { text: txt, folderId: folderSel, createdAt: Date.now() });
+                    await addNote(title || null, txt);
                     showNotification('Note added.');
                 }
                 document.getElementById('note-modal').classList.add('hidden');
