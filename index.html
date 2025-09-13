@@ -743,16 +743,25 @@
                     <input type="text" id="recurring-routine-input-modal" placeholder="E.g., Badminton" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                 </div>
                 <div>
-                    <label for="recurring-day-select-modal" class="block text-sm font-medium text-gray-700">Day of Week</label>
-                    <select id="recurring-day-select-modal" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        <option value="1">Monday</option>
-                        <option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option>
-                        <option value="4">Thursday</option>
-                        <option value="5">Friday</option>
-                        <option value="6">Saturday</option>
-                        <option value="0">Sunday</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700">Recurrence Mode</label>
+                    <div class="mt-2 space-y-2">
+                        <label class="flex items-center gap-2"><input type="radio" name="recurring-mode" value="specific" checked /> Specific weekdays</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="recurring-mode" value="weekdays" /> Weekdays (Mon-Fri)</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="recurring-mode" value="weekends" /> Weekends (Sat-Sun)</label>
+                        <label class="flex items-center gap-2"><input type="radio" name="recurring-mode" value="month" /> Whole Month (every day)</label>
+                    </div>
+                </div>
+                <div id="weekday-multi-select" class="mt-3">
+                    <label class="block text-sm font-medium text-gray-700">Choose Weekdays</label>
+                    <div class="mt-2 grid grid-cols-7 gap-2 text-center">
+                        <label class="p-2 border rounded"><input type="checkbox" value="1" />Mon</label>
+                        <label class="p-2 border rounded"><input type="checkbox" value="2" />Tue</label>
+                        <label class="p-2 border rounded"><input type="checkbox" value="3" />Wed</label>
+                        <label class="p-2 border rounded"><input type="checkbox" value="4" />Thu</label>
+                        <label class="p-2 border rounded"><input type="checkbox" value="5" />Fri</label>
+                        <label class="p-2 border rounded"><input type="checkbox" value="6" />Sat</label>
+                        <label class="p-2 border rounded"><input type="checkbox" value="0" />Sun</label>
+                    </div>
                 </div>
                 <div class="flex justify-end pt-2">
                     <button type="submit" class="bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-600 transition-transform hover:scale-105">
@@ -1497,22 +1506,38 @@
             }
         };
 
-        const addRecurringRoutine = async (text, time, dayOfWeek) => {
+        // Helper: compute date strings for given selection
+        const getDatesForSelection = (mode, selectedWeekdays = []) => {
             const month = currentDate.getMonth();
             const year = currentDate.getFullYear();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const promises = [];
+            const dates = [];
+            if (mode === 'month') {
+                for (let day = 1; day <= daysInMonth; day++) {
+                    dates.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
+                }
+                return dates;
+            }
+            if (mode === 'weekdays') {
+                selectedWeekdays = [1,2,3,4,5];
+            } else if (mode === 'weekends') {
+                selectedWeekdays = [6,0];
+            }
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const loopDate = new Date(year, month, day);
-                if (loopDate.getDay() == dayOfWeek) {
-                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    promises.push(addRoutine(text, time, dateStr));
+                if (selectedWeekdays.includes(loopDate.getDay())) {
+                    dates.push(`${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
                 }
             }
+            return dates;
+        };
+
+        const addRoutinesForDates = async (text, time, dateArray) => {
+            const promises = dateArray.map(d => addRoutine(text, time, d));
             try {
                 await Promise.all(promises);
-                showNotification(`Successfully added "${text}" to all selected days this month.`);
+                showNotification(`Successfully added "${text}" to ${dateArray.length} date(s) this month.`);
             } catch (e) {
                 showNotification('An error occurred while adding recurring routines.', true);
             }
@@ -1734,7 +1759,37 @@
         document.getElementById('folders-bar').classList.remove('hidden');
         renderFolders();
         document.getElementById('routine-form').addEventListener('submit', (e) => { e.preventDefault(); const textInput = document.getElementById('routine-input'); const timeInput = document.getElementById('routine-time-input'); const text = textInput.value.trim(); const time = timeInput.value; if (text !== '' && selectedDateStr) { addRoutine(text, time, selectedDateStr); textInput.value = ''; timeInput.value = ''; } });
-    document.getElementById('recurring-routine-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const textInput = document.getElementById('recurring-routine-input-modal'); const timeInput = document.getElementById('recurring-routine-time-modal'); const daySelect = document.getElementById('recurring-day-select-modal'); const text = textInput.value.trim(); const time = timeInput.value; if (text !== '') { addRecurringRoutine(text, time, daySelect.value); textInput.value = ''; timeInput.value = ''; const m = document.getElementById('recurring-routine-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } });
+    document.getElementById('recurring-routine-form-modal').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const textInput = document.getElementById('recurring-routine-input-modal');
+        const timeInput = document.getElementById('recurring-routine-time-modal');
+        const text = textInput.value.trim();
+        const time = timeInput.value;
+        if (text === '') return;
+
+        // Determine mode and selected weekdays
+        const modeEl = document.querySelector('input[name="recurring-mode"]:checked');
+        const mode = modeEl ? modeEl.value : 'specific';
+        const weekdayChecks = Array.from(document.querySelectorAll('#weekday-multi-select input[type="checkbox"]'));
+        const selectedWeekdays = weekdayChecks.filter(ch => ch.checked).map(ch => Number(ch.value));
+
+        let dates = [];
+        if (mode === 'specific') {
+            if (selectedWeekdays.length === 0) { showNotification('Please select at least one weekday.', true); return; }
+            dates = getDatesForSelection('specific', selectedWeekdays);
+        } else {
+            dates = getDatesForSelection(mode);
+        }
+
+        // Confirm with user how many dates will be affected
+        const confirmed = await showConfirmModal(`Will add "${text}" to ${dates.length} date(s). Proceed?`);
+        if (!confirmed) return;
+
+        // Close modal and perform additions
+        const m = document.getElementById('recurring-routine-modal'); m.classList.add('hidden'); m.classList.remove('flex');
+        textInput.value = ''; timeInput.value = '';
+        addRoutinesForDates(text, time, dates);
+    });
         document.getElementById('edit-routine-form').addEventListener('submit', (e) => { e.preventDefault(); const id = document.getElementById('edit-routine-id').value; const text = document.getElementById('edit-routine-input').value.trim(); const time = document.getElementById('edit-routine-time-input').value; if (text) { updateRoutine(id, text, time); } closeEditRoutineModal(); });
         document.getElementById('column-form').addEventListener('submit', (e) => { e.preventDefault(); const id = document.getElementById('column-id-input').value; const name = document.getElementById('column-name-input').value; saveColumn(id, name); });
     // password unlock removed; notes are plain text
@@ -1762,6 +1817,19 @@
         // Theme handling: default to dark but persist user choice
         const themeToggleBtn = document.getElementById('theme-toggle');
         const THEME_KEY = 'preferredTheme'; // 'dark' or 'light'
+
+        // Recurring modal: toggle weekday multi-select visibility
+        const setupRecurringModeToggle = () => {
+            const modeRadios = document.querySelectorAll('input[name="recurring-mode"]');
+            const weekdayWrap = document.getElementById('weekday-multi-select');
+            const updateVisibility = () => {
+                const sel = document.querySelector('input[name="recurring-mode"]:checked');
+                if (!sel) return;
+                if (sel.value === 'specific') weekdayWrap.style.display = 'block'; else weekdayWrap.style.display = 'none';
+            };
+            modeRadios.forEach(r => r.addEventListener('change', updateVisibility));
+            updateVisibility();
+        };
 
         const applyTheme = (theme) => {
             const root = document.documentElement; // <html>
@@ -1793,6 +1861,7 @@
         updateModeUI();
         initializeListeners(currentMode);
         renderCalendar();
+    setupRecurringModeToggle();
 
     </script>
 </body>
