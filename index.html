@@ -467,6 +467,20 @@
             background-color: var(--accent) !important;
             color: white !important;
         }
+        /* Trade button active state (match mode toggle) */
+        #trade-btn.active {
+            background-color: #4f46e5;
+            color: white;
+        }
+        /* Focus and animation for header buttons */
+        .mode-toggle button, #trade-btn {
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+        }
+        .mode-toggle button:focus, #trade-btn:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79,70,229,0.18);
+            outline: 2px solid rgba(79,70,229,0.18);
+        }
         .mode-toggle button.p-2 i { color: inherit; }
         /* Universal Board Scroll */
         #board {
@@ -542,13 +556,14 @@
                 <button id="theme-toggle" title="Toggle theme" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 hidden md:inline-flex">
                     <i class="fas fa-moon"></i>
                 </button>
-                <div class="mode-toggle flex items-center gap-2">
-                    <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Personal"><i class="fas fa-user"></i></button>
-                    <button id="working-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Working"><i class="fas fa-briefcase"></i></button>
-                </div>
-                <button id="install-btn" title="Install app" class="p-2 rounded-full bg-green-600 text-white hidden md:inline-flex ml-2">
-                    <i class="fas fa-download"></i>
+                <button id="trade-btn" title="Trade Journal" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex" aria-pressed="false" aria-label="Open Trade Journal">
+                    <i class="fas fa-chart-line"></i>
                 </button>
+                <div class="mode-toggle flex items-center gap-2" role="tablist" aria-label="Workspace modes">
+                    <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Personal" aria-pressed="false" aria-label="Switch to personal workspace" role="tab"> <i class="fas fa-user" aria-hidden="true"></i></button>
+                    <button id="working-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Working" aria-pressed="false" aria-label="Switch to working workspace" role="tab"> <i class="fas fa-briefcase" aria-hidden="true"></i></button>
+                </div>
+                <!-- install button removed per request (download icon) -->
                 <div class="md:hidden">
                     <button id="mobile-menu-button" class="text-gray-600 hover:text-indigo-600 focus:outline-none">
                         <i class="fas fa-bars text-2xl"></i>
@@ -579,6 +594,127 @@
 
             <div id="board">
                 <!-- Board columns will be rendered here by JS -->
+            </div>
+        </div>
+        
+        <!-- Trade Journal Section (polished) -->
+        <div id="trade-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8 hidden">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-800">Trade Journal</h2>
+                        <p class="text-sm text-gray-500">Record trades, attach screenshots, and review performance.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="trade-new-btn" class="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">New Trade</button>
+                        <button id="trade-refresh" class="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200">Refresh</button>
+                    </div>
+                </div>
+
+                <div id="trade-form-panel" class="bg-gray-50 p-4 rounded-lg mb-6 hidden">
+                    <form id="trade-form" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Asset</label>
+                            <input id="trade-asset" type="text" class="mt-1 w-full p-2 border rounded-md bg-white" placeholder="Bitcoin (BTC)" required />
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Pair</label>
+                            <input id="trade-pair" type="text" class="mt-1 w-full p-2 border rounded-md bg-white" placeholder="BTC/USDT" required />
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Type</label>
+                            <select id="trade-type" class="mt-1 w-full p-2 border rounded-md bg-white">
+                                <option value="buy">Buy</option>
+                                <option value="sell">Sell</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Date & Time</label>
+                            <input id="trade-datetime" type="datetime-local" class="mt-1 w-full p-2 border rounded-md bg-white" />
+                        </div>
+
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Entry</label>
+                            <input id="trade-entry" type="number" step="any" class="mt-1 w-full p-2 border rounded-md bg-white" />
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Exit</label>
+                            <input id="trade-exit" type="number" step="any" class="mt-1 w-full p-2 border rounded-md bg-white" />
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Qty</label>
+                            <input id="trade-qty" type="number" step="any" class="mt-1 w-full p-2 border rounded-md bg-white" />
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Currency</label>
+                            <select id="trade-currency" class="mt-1 w-full p-2 border rounded-md bg-white">
+                                <option value="USD">USD</option>
+                                <option value="IDR">IDR</option>
+                                <option value="USDT">USDT</option>
+                                <option value="BTC">BTC</option>
+                            </select>
+                        </div>
+                        <!-- Fees and Total removed per user request -->
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-medium text-gray-600">Reason to Open</label>
+                            <textarea id="trade-open-reason" rows="2" class="mt-1 w-full p-2 border rounded-md bg-white text-sm"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-medium text-gray-600">Reason to Close</label>
+                            <textarea id="trade-close-reason" rows="2" class="mt-1 w-full p-2 border rounded-md bg-white text-sm"></textarea>
+                        </div>
+
+                        <div class="md:col-span-4">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Screenshots (entry / exit)</label>
+                            <div class="flex items-center gap-3">
+                                <label for="trade-screenshots" class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-white border rounded-md hover:bg-gray-50">
+                                    <i class="fas fa-upload text-gray-600"></i>
+                                    <span class="text-sm text-gray-700">Choose images</span>
+                                </label>
+                                <div id="trade-screenshot-preview" class="text-sm text-gray-500">No files chosen</div>
+                            </div>
+                            <input id="trade-screenshots" type="file" accept="image/*" multiple class="hidden" />
+                        </div>
+
+                        <div class="md:col-span-4 flex justify-end gap-3 mt-2">
+                            <button type="button" id="trade-cancel" class="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
+                            <button type="submit" id="trade-save" class="px-4 py-2 bg-indigo-600 text-white rounded-md">Save Trade</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="mb-4 flex items-center gap-3">
+                    <input id="trade-filter-asset" placeholder="Asset" class="p-2 border rounded-md" />
+                    <input id="trade-filter-pair" placeholder="Pair" class="p-2 border rounded-md" />
+                    <select id="trade-filter-status" class="p-2 border rounded-md">
+                        <option value="">All</option>
+                        <option value="profit">Profit</option>
+                        <option value="loss">Loss</option>
+                    </select>
+                    <button id="trade-filter-apply" class="px-3 py-2 bg-gray-100 rounded-md">Apply</button>
+                </div>
+
+                <div class="overflow-x-auto bg-white border rounded-md">
+                    <table id="trade-table" class="w-full text-left table-auto">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="p-3 text-sm font-medium text-white border">No</th>
+                                <th class="p-3 text-sm font-medium text-white border">Asset</th>
+                                <th class="p-3 text-sm font-medium text-white border">Pair</th>
+                                <th class="p-3 text-sm font-medium text-white border">Type</th>
+                                <th class="p-3 text-sm font-medium text-white border">Date</th>
+                                <th class="p-3 text-sm font-medium text-white border" title="USD">Entry</th>
+                                <th class="p-3 text-sm font-medium text-white border" title="USD">Exit</th>
+                                <th class="p-3 text-sm font-medium text-white border" title="USD">Qty</th>
+                                <th class="p-3 text-sm font-medium text-white border">P/L</th>
+                                <th class="p-3 text-sm font-medium text-white border">Screenshots</th>
+                                <th class="p-3 text-sm font-medium text-white border">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trade-table-body" class="bg-white"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
@@ -867,32 +1003,53 @@
                 <button id="image-preview-close" class="absolute right-0 top-0 mt-2 mr-2 px-3 py-2 bg-gray-800 text-white rounded">Close</button>
                 <img id="image-preview-img" src="" alt="Preview" class="w-full h-auto rounded" />
             </div>
+
+    <!-- Trade Detail Modal -->
+    <div id="trade-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-70">
+        <div class="bg-white rounded-lg max-w-3xl w-full p-6">
+            <div class="flex items-start justify-between">
+                <h3 class="text-xl font-semibold">Trade Details</h3>
+                <button id="trade-detail-close" class="text-gray-500 hover:text-gray-800">Close</button>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-600"><strong>Asset:</strong> <span id="detail-asset"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Pair:</strong> <span id="detail-pair"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Type:</strong> <span id="detail-type"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Date:</strong> <span id="detail-datetime"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Entry:</strong> <span id="detail-entry"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Exit:</strong> <span id="detail-exit"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Qty:</strong> <span id="detail-qty"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Fees:</strong> <span id="detail-fees"></span></p>
+                    <p class="text-sm text-gray-600"><strong>Total:</strong> <span id="detail-total"></span></p>
+                    <p class="text-sm text-gray-600"><strong>P/L:</strong> <span id="detail-pl"></span></p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-700">Reason to Open</p>
+                    <div id="detail-open-reason" class="p-2 bg-gray-50 rounded text-sm text-gray-700"></div>
+                    <p class="text-sm font-medium text-gray-700 mt-3">Reason to Close</p>
+                    <div id="detail-close-reason" class="p-2 bg-gray-50 rounded text-sm text-gray-700"></div>
+                    <div class="mt-3">
+                        <p class="text-sm font-medium text-gray-700">Screenshots</p>
+                        <div id="detail-screenshots" class="mt-2 flex gap-2 flex-wrap"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 
     <script type="module">
         // PWA: service worker registration and beforeinstallprompt handling
-        let deferredPrompt = null;
-        const installBtn = document.getElementById('install-btn');
+    let deferredPrompt = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             deferredPrompt = e;
-            // Show the install button when eligible
-            if (installBtn) installBtn.classList.remove('hidden');
+            // (install button removed) service worker logic retained below
         });
-
-        if (installBtn) {
-            installBtn.addEventListener('click', async () => {
-                if (!deferredPrompt) return;
-                deferredPrompt.prompt();
-                const choiceResult = await deferredPrompt.userChoice;
-                // Hide the button after prompt
-                installBtn.classList.add('hidden');
-                deferredPrompt = null;
-            });
-        }
 
         // Register service worker if available
         if ('serviceWorker' in navigator) {
@@ -935,6 +1092,7 @@
     let allNotes = [];
     let listeners = [];
     let editingNoteId = null; // if set, note-modal is editing this note
+    let editingTradeId = null; // id of trade being edited (if any)
     // notes are plain text now (no secret unlocking)
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const dayNamesShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -1079,22 +1237,16 @@
         // Populate the select in the note modal with current folders
         const populateFolderSelect = () => {
             const sel = document.getElementById('note-modal-folder-select');
-            sel.innerHTML = '';
-            const optAll = document.createElement('option'); optAll.value = ''; optAll.textContent = 'All'; sel.appendChild(optAll);
-            noteFolders.forEach(f => { const o = document.createElement('option'); o.value = f.id; o.textContent = f.name; sel.appendChild(o); });
+            if (!sel) return;
+            sel.innerHTML = '<option value="">(None)</option>' + noteFolders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
         };
 
-        const addFolder = async (name) => {
-            if (!name || !name.trim()) return;
-            try { const d = await addDoc(collection(db, 'hubs', currentMode, 'note_folders'), { name: name.trim(), createdAt: Date.now() }); selectedFolderId = d.id; } catch (e) { showNotification('Failed to add folder', true); }
-        };
-
-
-        // --- Project Task Functions ---
+        // Render the project board columns and tasks
         const renderBoard = () => {
             const boardContainer = document.getElementById('board');
+            if (!boardContainer) return;
             boardContainer.innerHTML = ''; // Clear existing columns
-            
+
             boardColumns.forEach(column => {
                 const columnEl = document.createElement('div');
                 columnEl.className = 'kanban-column bg-gray-50 rounded-lg p-4';
@@ -2057,6 +2209,10 @@
 
         // --- Mode Switching ---
         const switchMode = (newMode) => {
+            // hide trade section and clear trade active state when switching modes
+            const tradeSection = document.getElementById('trade-section'); if (tradeSection) { tradeSection.classList.add('hidden'); tradeSection.classList.remove('flex'); }
+            document.getElementById('trade-btn')?.classList.remove('active');
+
             if (currentMode === newMode) return;
             currentMode = newMode;
             localStorage.setItem('currentMode', newMode);
@@ -2084,6 +2240,351 @@
                 if(modeLabel) modeLabel.textContent = 'Mode: Working';
             }
         };
+
+        // Wire up the mode buttons so they switch modes when clicked
+        // Navigation helpers: update UI, ARIA, and history
+        const sections = {
+            board: 'project-board-section',
+            daily: 'daily-routine-section',
+            notes: 'important-notes-section',
+            trade: 'trade-section'
+        };
+
+        const applyNavigationState = (target) => {
+            // target: one of 'board'|'daily'|'notes'|'trade' or section id
+            // hide all primary sections first
+            Object.values(sections).forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('hidden'); el.classList.remove('flex'); } });
+
+            // clear active states
+            document.getElementById('trade-btn')?.classList.remove('active');
+            document.getElementById('personal-mode-btn')?.classList.remove('active');
+            document.getElementById('working-mode-btn')?.classList.remove('active');
+            // reset aria
+            document.getElementById('trade-btn')?.setAttribute('aria-pressed','false');
+            document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed','false');
+            document.getElementById('working-mode-btn')?.setAttribute('aria-pressed','false');
+
+            // show requested
+            if (target === 'trade' || target === sections.trade) {
+                const el = document.getElementById(sections.trade); if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+                document.getElementById('trade-btn')?.classList.add('active');
+                document.getElementById('trade-btn')?.setAttribute('aria-pressed','true');
+            } else if (target === 'board' || target === sections.board) {
+                const el = document.getElementById(sections.board); if (el) el.classList.remove('hidden');
+            } else if (target === 'daily' || target === sections.daily) {
+                const el = document.getElementById(sections.daily); if (el) el.classList.remove('hidden');
+            } else if (target === 'notes' || target === sections.notes) {
+                const el = document.getElementById(sections.notes); if (el) el.classList.remove('hidden');
+            }
+
+            // update mode buttons if target is board and a mode is active
+            if (target === 'board') updateModeUI();
+        };
+
+        const navigateTo = (target, opts = { replace: false }) => {
+            // push history (use path like #/board, #/trade)
+            const hash = typeof target === 'string' && Object.keys(sections).includes(target) ? `#/${target}` : `#/${target}`;
+            if (opts.replace) history.replaceState({ target }, '', hash); else history.pushState({ target }, '', hash);
+            applyNavigationState(target);
+        };
+
+        const parseHash = () => {
+            const h = location.hash || '';
+            if (!h) return 'board';
+            const parts = h.replace(/^#\/?/, '').split('/');
+            return parts[0] || 'board';
+        };
+
+        window.addEventListener('popstate', (e) => { const t = (e.state && e.state.target) || parseHash(); applyNavigationState(t); });
+
+    // On initial load, apply navigation based on hash (or default to board)
+    const initial = parseHash() || 'board';
+    // ensure URL shows a hash for shareability
+    if (!location.hash) history.replaceState({ target: initial }, '', `#/${initial}`);
+    applyNavigationState(initial);
+
+        // keyboard support: allow Enter/Space on buttons
+        const makeKeyboardClickable = (el) => { if (!el) return; el.tabIndex = 0; el.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); el.click(); } }); };
+
+        // wire mode buttons to navigation
+        document.getElementById('personal-mode-btn')?.addEventListener('click', () => { switchMode('personal'); navigateTo('board'); document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed','true'); });
+        document.getElementById('working-mode-btn')?.addEventListener('click', () => { switchMode('working'); navigateTo('board'); document.getElementById('working-mode-btn')?.setAttribute('aria-pressed','true'); });
+        makeKeyboardClickable(document.getElementById('personal-mode-btn'));
+        makeKeyboardClickable(document.getElementById('working-mode-btn'));
+
+        // Helper to restore main sections and clear trade active state
+        const showMainSections = () => {
+            const tradeSection = document.getElementById('trade-section'); if (tradeSection) { tradeSection.classList.add('hidden'); tradeSection.classList.remove('flex'); }
+            document.getElementById('trade-btn')?.classList.remove('active');
+            // ensure main sections visible
+            const project = document.getElementById('project-board-section'); if (project) project.classList.remove('hidden');
+            const daily = document.getElementById('daily-routine-section'); if (daily) daily.classList.remove('hidden');
+            const notes = document.getElementById('important-notes-section'); if (notes) notes.classList.remove('hidden');
+        };
+
+        // Wire top nav links to navigate (and sync URL)
+        document.querySelectorAll('a[href="#project-board-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('board'); }); });
+        document.querySelectorAll('a[href="#daily-routine-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('daily'); }); });
+        document.querySelectorAll('a[href="#important-notes-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('notes'); }); });
+
+        // --- Trade Journal JS ---
+        const tradeBtn = document.getElementById('trade-btn');
+        const tradeSection = document.getElementById('trade-section');
+        if (tradeBtn && tradeSection) {
+            tradeBtn.addEventListener('click', () => {
+                const cur = parseHash();
+                if (cur === 'trade') {
+                    // go back to board
+                    navigateTo('board');
+                } else {
+                    navigateTo('trade');
+                    // move focus into trade section for accessibility
+                    setTimeout(()=>{ document.getElementById('trade-asset')?.focus(); }, 120);
+                }
+            });
+            makeKeyboardClickable(tradeBtn);
+        }
+
+        // Trade helpers
+        const tradeCollectionPath = (mode) => collection(db, 'hubs', mode, 'trades');
+
+        const uploadTradeScreenshots = async (tradeId, files) => {
+            const results = [];
+            for (const f of files) {
+                try {
+                    const blob = await resizeImageFile(f, 1600, 1600, 0.8);
+                    const path = `trades/${tradeId}/${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+                    const ref = storageRef(storage, path);
+                    await uploadBytes(ref, blob);
+                    const url = await getDownloadURL(ref);
+                    results.push({ path, url });
+                } catch (err) { console.warn('uploadTradeScreenshots failed', err); results.push(null); }
+            }
+            return results;
+        };
+
+        // Save trade form
+        const tradeForm = document.getElementById('trade-form');
+        if (tradeForm) {
+            tradeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const asset = document.getElementById('trade-asset').value.trim();
+                const pair = document.getElementById('trade-pair').value.trim();
+                const type = document.getElementById('trade-type').value;
+                const datetime = document.getElementById('trade-datetime').value || new Date().toISOString();
+                const entry = parseFloat(document.getElementById('trade-entry').value) || 0;
+                const exit = parseFloat(document.getElementById('trade-exit').value) || 0;
+                const qty = parseFloat(document.getElementById('trade-qty').value) || 0;
+                // fees and total removed; only keep currency
+                const currency = document.getElementById('trade-currency') ? document.getElementById('trade-currency').value : 'USD';
+                const openReason = document.getElementById('trade-open-reason').value.trim();
+                const closeReason = document.getElementById('trade-close-reason').value.trim();
+                const filesInput = document.getElementById('trade-screenshots');
+                const files = filesInput && filesInput.files && filesInput.files.length ? Array.from(filesInput.files) : [];
+                try {
+                        if (editingTradeId) {
+                        // update existing trade (fees/total removed)
+                        await updateDoc(doc(db, 'hubs', currentMode, 'trades', editingTradeId), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, updatedAt: Date.now() });
+                        if (files.length) {
+                            const uploads = await uploadTradeScreenshots(editingTradeId, files);
+                            const paths = uploads.filter(r=>r).map(r=>r.path);
+                            const urls = uploads.filter(r=>r).map(r=>r.url);
+                            await updateDoc(doc(db, 'hubs', currentMode, 'trades', editingTradeId), { screenshotPaths: paths, screenshotUrls: urls });
+                        }
+                        showNotification('Trade updated.');
+                        } else {
+                        const docRef = await addDoc(tradeCollectionPath(currentMode), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, createdAt: Date.now(), updatedAt: Date.now() });
+                        if (files.length) {
+                            const uploads = await uploadTradeScreenshots(docRef.id, files);
+                            const paths = uploads.filter(r=>r).map(r=>r.path);
+                            const urls = uploads.filter(r=>r).map(r=>r.url);
+                            await updateDoc(doc(db, 'hubs', currentMode, 'trades', docRef.id), { screenshotPaths: paths, screenshotUrls: urls });
+                        }
+                        showNotification('Trade saved.');
+                    }
+                    tradeForm.reset();
+                    editingTradeId = null;
+                    // refresh listeners will pick up new trade
+                } catch (err) { console.error('save trade failed', err); showNotification('Failed to save trade.', true); }
+            });
+        }
+
+    document.getElementById('trade-cancel')?.addEventListener('click', () => { editingTradeId = null; document.getElementById('trade-form').reset(); const dt = document.getElementById('trade-datetime'); if (dt) dt.value = new Date().toISOString().slice(0,16); const panel = document.getElementById('trade-form-panel'); if (panel) { panel.classList.add('hidden'); } });
+
+        // Render trade table and listen for updates
+        let tradeUnsub = null;
+        const listenTrades = (mode) => {
+            if (tradeUnsub) tradeUnsub();
+            const q = query(collection(db, 'hubs', mode, 'trades'), orderBy('createdAt', 'desc'));
+            tradeUnsub = onSnapshot(q, snapshot => {
+                const rows = document.getElementById('trade-table-body');
+                rows.innerHTML = '';
+                    // gather filter values
+                    const fAsset = (document.getElementById('trade-filter-asset')?.value || '').toLowerCase();
+                    const fPair = (document.getElementById('trade-filter-pair')?.value || '').toLowerCase();
+                    const fStatus = (document.getElementById('trade-filter-status')?.value || '');
+                    let visibleIndex = 0;
+                    snapshot.docs.forEach((docSnap, i) => {
+                        const t = { id: docSnap.id, ...docSnap.data() };
+                        // apply client-side filters
+                        if (fAsset && !(t.asset || '').toLowerCase().includes(fAsset)) return;
+                        if (fPair && !(t.pair || '').toLowerCase().includes(fPair)) return;
+                        if (fStatus) {
+                            const pl = (((t.exit || 0) - (t.entry || 0)) * (t.qty || 0));
+                            if (fStatus === 'profit' && pl <= 0) return;
+                            if (fStatus === 'loss' && pl >= 0) return;
+                        }
+                        visibleIndex += 1;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="p-2 border text-sm">${visibleIndex}</td>
+                            <td class="p-2 border text-sm">${t.asset || ''}</td>
+                            <td class="p-2 border text-sm">${t.pair || ''}</td>
+                            <td class="p-2 border text-sm">${t.type || ''}</td>
+                            <td class="p-2 border text-sm">${new Date(t.datetime || t.createdAt).toLocaleString()}</td>
+                            <td class="p-2 border text-sm">${t.entry || ''}</td>
+                            <td class="p-2 border text-sm">${t.exit || ''}</td>
+                            <td class="p-2 border text-sm">${t.qty || ''}</td>
+                            <td class="p-2 border text-sm">${(((t.exit || 0) - (t.entry || 0)) * (t.qty || 0)).toFixed(4)} ${(t.currency || '')}</td>
+                            <td class="p-2 border text-sm">${(t.screenshotUrls && t.screenshotUrls.length) ? `<button data-id="${t.id}" class="view-screenshots px-2 py-1 bg-gray-100 rounded"><i class="fas fa-image"></i></button>` : ''}</td>
+                            <td class="p-2 border text-sm flex gap-2 items-center">
+                                <button data-id="${t.id}" class="edit-trade px-2 py-1 bg-yellow-400 text-white rounded" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button data-id="${t.id}" class="delete-trade px-2 py-1 bg-red-500 text-white rounded" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        `;
+                        rows.appendChild(tr);
+                    });
+                // attach handlers
+                document.querySelectorAll('.delete-trade').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const id = btn.dataset.id;
+                        const confirmed = await showConfirmModal('Delete this trade and its screenshots?');
+                        if (!confirmed) return;
+                        try {
+                            const snap = await getDoc(doc(db, 'hubs', currentMode, 'trades', id));
+                            if (snap && snap.exists()) {
+                                const data = snap.data();
+                                const paths = Array.isArray(data.screenshotPaths) ? data.screenshotPaths : (data.screenshotPaths ? [data.screenshotPaths] : []);
+                                for (const p of paths) { await deleteTaskImage(p).catch(()=>{}); }
+                                await deleteDoc(doc(db, 'hubs', currentMode, 'trades', id));
+                                showNotification('Trade deleted.');
+                            }
+                        } catch (err) { console.error(err); showNotification('Failed to delete trade.', true); }
+                    };
+                });
+
+                document.querySelectorAll('.view-screenshots').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const id = btn.dataset.id;
+                        const snap = await getDoc(doc(db, 'hubs', currentMode, 'trades', id));
+                        if (!snap || !snap.exists()) return;
+                        const data = snap.data();
+                        const urls = data.screenshotUrls || [];
+                        if (!urls.length) return;
+                        // show first screenshot in preview modal
+                        const pm = document.getElementById('image-preview-modal');
+                        const pmImg = document.getElementById('image-preview-img');
+                        if (pm && pmImg) { pmImg.src = urls[0]; pm.classList.remove('hidden'); pm.classList.add('flex'); bringPreviewToFront(); }
+                    };
+                });
+
+                document.querySelectorAll('.edit-trade').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const id = btn.dataset.id;
+                        const snap = await getDoc(doc(db, 'hubs', currentMode, 'trades', id));
+                        if (!snap || !snap.exists()) return;
+                        const data = snap.data();
+                        // populate form
+                        document.getElementById('trade-asset').value = data.asset || '';
+                        document.getElementById('trade-pair').value = data.pair || '';
+                        document.getElementById('trade-type').value = data.type || 'buy';
+                        const dtEl = document.getElementById('trade-datetime'); if (dtEl) dtEl.value = data.datetime ? new Date(data.datetime).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
+                        document.getElementById('trade-entry').value = data.entry || '';
+                        document.getElementById('trade-exit').value = data.exit || '';
+                        document.getElementById('trade-qty').value = data.qty || '';
+                        if (document.getElementById('trade-currency')) document.getElementById('trade-currency').value = data.currency || 'USD';
+                        // fees/total fields removed
+                        document.getElementById('trade-open-reason').value = data.openReason || '';
+                        document.getElementById('trade-close-reason').value = data.closeReason || '';
+                        // set editing id and open panel
+                        editingTradeId = id;
+                        const panel = document.getElementById('trade-form-panel'); if (panel) { panel.classList.remove('hidden'); panel.classList.add('block'); }
+                        document.getElementById('trade-asset')?.focus();
+                    };
+                });
+
+                // Details button opens a modal with all trade fields
+                document.querySelectorAll('.view-details').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        const id = btn.dataset.id;
+                        const snap = await getDoc(doc(db, 'hubs', currentMode, 'trades', id));
+                        if (!snap || !snap.exists()) return;
+                        const data = snap.data();
+                        document.getElementById('detail-asset').textContent = data.asset || '';
+                        document.getElementById('detail-pair').textContent = data.pair || '';
+                        document.getElementById('detail-type').textContent = data.type || '';
+                        document.getElementById('detail-datetime').textContent = new Date(data.datetime || data.createdAt).toLocaleString();
+                        document.getElementById('detail-entry').textContent = data.entry || '';
+                        document.getElementById('detail-exit').textContent = data.exit || '';
+                        document.getElementById('detail-qty').textContent = data.qty || '';
+                        document.getElementById('detail-fees').textContent = data.fees || '';
+                        document.getElementById('detail-total').textContent = data.total || '';
+                        document.getElementById('detail-pl').textContent = (((data.exit || 0) - (data.entry || 0)) * (data.qty || 0)).toFixed(4);
+                        document.getElementById('detail-open-reason').textContent = data.openReason || '';
+                        document.getElementById('detail-close-reason').textContent = data.closeReason || '';
+                        const ds = document.getElementById('detail-screenshots'); ds.innerHTML = '';
+                        const urls = data.screenshotUrls || [];
+                        urls.forEach(u => {
+                            const img = document.createElement('img');
+                            img.src = u;
+                            img.className = 'h-20 w-32 object-cover rounded cursor-pointer border';
+                            img.addEventListener('click', ()=>{ const pm = document.getElementById('image-preview-modal'); const pmImg = document.getElementById('image-preview-img'); if (pm && pmImg) { pmImg.src = u; pm.classList.remove('hidden'); pm.classList.add('flex'); bringPreviewToFront(); } });
+                            ds.appendChild(img);
+                        });
+                        const modal = document.getElementById('trade-detail-modal'); if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+                    };
+                });
+
+                document.getElementById('trade-detail-close')?.addEventListener('click', ()=>{ const modal = document.getElementById('trade-detail-modal'); if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); } });
+            });
+        };
+
+        // start listening for current mode
+        listenTrades(currentMode);
+
+        // Wire up Trade UI controls (new/panel toggle, screenshots preview, refresh)
+        document.getElementById('trade-new-btn')?.addEventListener('click', () => {
+            const panel = document.getElementById('trade-form-panel');
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+            // when opening for a new trade, clear edit state and set default datetime to now
+            if (!panel.classList.contains('hidden')) {
+                editingTradeId = null;
+                setTimeout(()=>{
+                    const dt = document.getElementById('trade-datetime');
+                    if (dt) dt.value = new Date().toISOString().slice(0,16);
+                    document.getElementById('trade-asset')?.focus();
+                }, 80);
+            }
+        });
+
+        document.getElementById('trade-screenshots')?.addEventListener('change', (e) => {
+            const preview = document.getElementById('trade-screenshot-preview');
+            const files = e.target.files;
+            if (!preview) return;
+            if (files && files.length) {
+                const names = Array.from(files).slice(0,3).map(f=>f.name.length>20?(f.name.slice(0,17)+'...'):f.name);
+                preview.textContent = names.join(', ') + (files.length>3?` (+${files.length-3} more)`: '');
+            } else { preview.textContent = 'No files chosen'; }
+        });
+
+        // Filters: re-run render on Apply (onSnapshot will pick up filters during render)
+        document.getElementById('trade-filter-apply')?.addEventListener('click', () => {
+            // calling listenTrades will remove previous listener and set a new onSnapshot
+            listenTrades(currentMode);
+        });
+
+        document.getElementById('trade-refresh')?.addEventListener('click', () => { try { if (tradeUnsub) tradeUnsub(); listenTrades(currentMode); showNotification('Trade list refreshed.'); } catch(e){ console.warn(e); } });
 
         // --- Event Listeners & Initializers ---
         const initializeListeners = (mode) => {
