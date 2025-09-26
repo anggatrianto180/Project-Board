@@ -2264,21 +2264,23 @@
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed','false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed','false');
 
-            // show requested
+            // show requested: if target is trade => single trade view; otherwise show all main sections together
             if (target === 'trade' || target === sections.trade) {
                 const el = document.getElementById(sections.trade); if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
                 document.getElementById('trade-btn')?.classList.add('active');
                 document.getElementById('trade-btn')?.setAttribute('aria-pressed','true');
-            } else if (target === 'board' || target === sections.board) {
-                const el = document.getElementById(sections.board); if (el) el.classList.remove('hidden');
-            } else if (target === 'daily' || target === sections.daily) {
-                const el = document.getElementById(sections.daily); if (el) el.classList.remove('hidden');
-            } else if (target === 'notes' || target === sections.notes) {
-                const el = document.getElementById(sections.notes); if (el) el.classList.remove('hidden');
+            } else {
+                // show all main sections (Project Board + Daily + Notes)
+                const boardEl = document.getElementById(sections.board); if (boardEl) { boardEl.classList.remove('hidden'); }
+                const dailyEl = document.getElementById(sections.daily); if (dailyEl) { dailyEl.classList.remove('hidden'); }
+                const notesEl = document.getElementById(sections.notes); if (notesEl) { notesEl.classList.remove('hidden'); }
+                // set appropriate focus/scroll if user navigated to a specific sub-section
+                if (target === 'daily' || target === sections.daily) { document.getElementById(sections.daily)?.scrollIntoView({ behavior: 'smooth' }); }
+                else if (target === 'notes' || target === sections.notes) { document.getElementById(sections.notes)?.scrollIntoView({ behavior: 'smooth' }); }
+                else { document.getElementById(sections.board)?.scrollIntoView({ behavior: 'smooth' }); }
+                // update mode buttons UI for board view
+                updateModeUI();
             }
-
-            // update mode buttons if target is board and a mode is active
-            if (target === 'board') updateModeUI();
         };
 
         const navigateTo = (target, opts = { replace: false }) => {
@@ -2312,15 +2314,7 @@
         makeKeyboardClickable(document.getElementById('personal-mode-btn'));
         makeKeyboardClickable(document.getElementById('working-mode-btn'));
 
-        // Helper to restore main sections and clear trade active state
-        const showMainSections = () => {
-            const tradeSection = document.getElementById('trade-section'); if (tradeSection) { tradeSection.classList.add('hidden'); tradeSection.classList.remove('flex'); }
-            document.getElementById('trade-btn')?.classList.remove('active');
-            // ensure main sections visible
-            const project = document.getElementById('project-board-section'); if (project) project.classList.remove('hidden');
-            const daily = document.getElementById('daily-routine-section'); if (daily) daily.classList.remove('hidden');
-            const notes = document.getElementById('important-notes-section'); if (notes) notes.classList.remove('hidden');
-        };
+        // (previous helper removed) top nav links use navigateTo to restore main sections
 
         // Wire top nav links to navigate (and sync URL)
         document.querySelectorAll('a[href="#project-board-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('board'); }); });
