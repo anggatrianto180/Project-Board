@@ -665,6 +665,12 @@
                             <textarea id="trade-close-reason" rows="2" class="mt-1 w-full p-2 border rounded-md bg-white text-sm"></textarea>
                         </div>
 
+                        <!-- Rules checklist inside the New Trade form (must confirm all before saving) -->
+                        <div id="trade-form-rules" class="md:col-span-4 mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
+                            <p class="font-medium mb-1">Confirm Trading Rules</p>
+                            <div id="trade-form-rules-list" class="grid gap-2"></div>
+                        </div>
+
                         <div class="md:col-span-4">
                             <label class="block text-xs font-medium text-gray-600 mb-1">Screenshots (entry / exit)</label>
                             <div class="flex items-center gap-3">
@@ -714,6 +720,15 @@
                         </thead>
                         <tbody id="trade-table-body" class="bg-white"></tbody>
                     </table>
+                </div>
+                <!-- Trading Rules checklist shown under the journal table -->
+                <div id="trade-rules-panel" class="mt-4 bg-white border rounded-md p-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold">Trading Rules (Checklist)</h3>
+                        <button id="manage-rules-btn" class="px-3 py-1 bg-gray-100 rounded-md hover:bg-gray-200">Manage Rules</button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">You must confirm all active rules before saving a trade.</p>
+                    <div id="trade-rules-checklist" class="mt-3 grid gap-2"></div>
                 </div>
             </div>
         </div>
@@ -954,6 +969,23 @@
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Task</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Rules Management Section (hidden panel/modal) -->
+    <div id="rules-section" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-40">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-11/12 max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Manage Trading Rules</h3>
+                <button id="rules-close-btn" class="text-gray-600 hover:text-gray-800">Close</button>
+            </div>
+            <div class="mb-3 flex gap-2">
+                <input id="new-rule-input" type="text" class="flex-1 p-2 border rounded" placeholder="Write a trading rule..." />
+                <button id="add-rule-btn" class="px-3 py-2 bg-indigo-600 text-white rounded">Add Rule</button>
+            </div>
+            <div id="rules-list" class="space-y-2 max-h-64 overflow-auto">
+                <!-- rules will be rendered here -->
+            </div>
         </div>
     </div>
 
@@ -1996,6 +2028,7 @@
         const renderMobileRoutines = (dateStr) => {
             const container = document.getElementById('mobile-routine-list');
             container.innerHTML = '';
+            const formList = document.getElementById('trade-form-rules-list'); if (formList) formList.innerHTML = '';
             
             const routines = monthRoutines[dateStr] || [];
             
@@ -2221,6 +2254,7 @@
             
             listeners.forEach(unsubscribe => unsubscribe());
             listeners = [];
+            if (typeof rulesUnsub === 'function') { try { rulesUnsub(); } catch(e){} rulesUnsub = null; }
 
             initializeListeners(newMode);
             renderCalendar();
@@ -2342,6 +2376,127 @@
         // Trade helpers
         const tradeCollectionPath = (mode) => collection(db, 'hubs', mode, 'trades');
 
+        // Rules helpers (CRUD) - stored at hubs/{mode}/rules
+        let rulesUnsub = null;
+        const rulesCollectionPath = (mode) => collection(db, 'hubs', mode, 'rules');
+
+        const listenRules = (mode) => {
+            if (rulesUnsub) rulesUnsub();
+            const q = query(rulesCollectionPath(mode), orderBy('createdAt','asc'));
+            rulesUnsub = onSnapshot(q, snapshot => {
+                const rules = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderRulesChecklist(rules);
+                renderRulesListModal(rules);
+            });
+        };
+
+        const addRule = async (text) => {
+            if (!text || !text.trim()) return;
+            try { await addDoc(rulesCollectionPath(currentMode), { text: text.trim(), createdAt: Date.now() }); } catch (err) { console.error('addRule failed', err); }
+        };
+
+        const updateRule = async (id, text) => { if (!id) return; try { await updateDoc(doc(db, 'hubs', currentMode, 'rules', id), { text, updatedAt: Date.now() }); } catch (err) { console.error('updateRule failed', err); } };
+
+        const deleteRule = async (id) => {
+            if (!id) return;
+            try {
+                // check if any trade references this ruleId
+                const tradesRef = collection(db, 'hubs', currentMode, 'trades');
+                const qUsed = query(tradesRef, where('confirmedRuleIds', 'array-contains', id));
+                const snap = await getDocs(qUsed);
+                if (!snap.empty) {
+                    showNotification('Rule ini sedang dipakai oleh trade yang sudah disimpan. Tidak bisa dihapus.', true);
+                    return;
+                }
+                await deleteDoc(doc(db, 'hubs', currentMode, 'rules', id));
+                showNotification('Rule deleted.');
+            } catch (err) {
+                console.error('deleteRule failed', err);
+                showNotification('Gagal menghapus rule.', true);
+            }
+        };
+
+        // Render checklist under trade table
+        const renderRulesChecklist = (rules) => {
+            const container = document.getElementById('trade-rules-checklist');
+            const formList = document.getElementById('trade-form-rules-list');
+            if (container) container.innerHTML = '';
+            if (formList) formList.innerHTML = '';
+            if (!container) return;
+            if (!rules || !rules.length) {
+                container.innerHTML = '<p class="text-sm text-gray-500">No active trading rules. Click Manage Rules to add.</p>';
+                document.getElementById('trade-save')?.setAttribute('disabled','true');
+                return;
+            }
+            rules.forEach(r => {
+                const id = r.id;
+                const row = document.createElement('label');
+                row.className = 'flex items-start gap-3';
+                row.innerHTML = `<input type="checkbox" data-rule-id="${id}" class="trade-rule-checkbox mt-1" /> <span class="text-sm text-gray-800">${escapeHtml(r.text || '')}</span>`;
+                container.appendChild(row);
+                // also render into the trade form rules area
+                if (formList) {
+                    const fRow = document.createElement('label'); fRow.className = 'flex items-start gap-3';
+                    fRow.innerHTML = `<input type="checkbox" data-rule-id="${id}" class="trade-form-rule-checkbox mt-1" /> <span class="text-sm text-gray-800">${escapeHtml(r.text || '')}</span>`;
+                    formList.appendChild(fRow);
+                }
+            });
+
+            // attach change listeners for table checklist
+            const checkboxes = container.querySelectorAll('.trade-rule-checkbox');
+            checkboxes.forEach(cb => cb.addEventListener('change', ()=>{ validateRulesChecklist(); }));
+            // attach change listeners for form checklist that control Save button
+            const formCheckboxes = document.querySelectorAll('.trade-form-rule-checkbox');
+            formCheckboxes.forEach(cb => cb.addEventListener('change', ()=>{ validateRulesChecklist(); }));
+            // initial validate
+            validateRulesChecklist();
+        };
+
+        const validateRulesChecklist = () => {
+            const container = document.getElementById('trade-rules-checklist');
+            const saveBtn = document.getElementById('trade-save');
+            if (!container || !saveBtn) return;
+            // For enabling the Save button, require the checkboxes inside the trade form to be all checked
+            const formCheckboxes = document.querySelectorAll('.trade-form-rule-checkbox');
+            if (!formCheckboxes.length) { saveBtn.setAttribute('disabled','true'); return; }
+            const allChecked = Array.from(formCheckboxes).every(cb => cb.checked);
+            if (allChecked) saveBtn.removeAttribute('disabled'); else saveBtn.setAttribute('disabled','true');
+        };
+
+        // Render rules management modal list
+        const renderRulesListModal = (rules) => {
+            const list = document.getElementById('rules-list'); if (!list) return; list.innerHTML = '';
+            rules.forEach(r => {
+                const div = document.createElement('div'); div.className = 'flex items-center justify-between gap-2 p-2 border rounded';
+                div.innerHTML = `
+                    <div class="flex-1">
+                        <input data-rule-id="${r.id}" class="rule-edit-input w-full p-1 border rounded" value="${escapeHtml(r.text||'')}" />
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button data-id="${r.id}" class="save-rule-btn px-2 py-1 bg-green-500 text-white rounded">Save</button>
+                        <button data-id="${r.id}" class="del-rule-btn px-2 py-1 bg-red-500 text-white rounded">Delete</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+            // attach handlers
+            list.querySelectorAll('.save-rule-btn').forEach(btn => btn.addEventListener('click', (e)=>{ const id = btn.dataset.id; const input = list.querySelector(`input[data-rule-id="${id}"]`); if (input) updateRule(id, input.value); }));
+            list.querySelectorAll('.del-rule-btn').forEach(btn => btn.addEventListener('click', async (e)=>{ const id = btn.dataset.id; // attempt delete with check
+                // confirm first
+                const confirmed = await showConfirmModal('Delete this rule?'); if (!confirmed) return; deleteRule(id); }));
+        };
+
+        // simple HTML escape
+        const escapeHtml = (s='') => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+        // Manage Rules UI wiring
+        document.getElementById('manage-rules-btn')?.addEventListener('click', ()=>{ document.getElementById('rules-section')?.classList.remove('hidden'); document.getElementById('rules-section')?.classList.add('flex'); document.getElementById('new-rule-input')?.focus(); });
+        document.getElementById('rules-close-btn')?.addEventListener('click', ()=>{ document.getElementById('rules-section')?.classList.add('hidden'); document.getElementById('rules-section')?.classList.remove('flex'); });
+        document.getElementById('add-rule-btn')?.addEventListener('click', ()=>{ const v = document.getElementById('new-rule-input')?.value || ''; if (v.trim()) { addRule(v); document.getElementById('new-rule-input').value = ''; document.getElementById('new-rule-input')?.focus(); } });
+
+        // Start listening rules for current mode
+        listenRules(currentMode);
+
         const uploadTradeScreenshots = async (tradeId, files) => {
             const results = [];
             for (const f of files) {
@@ -2375,10 +2530,12 @@
                 const closeReason = document.getElementById('trade-close-reason').value.trim();
                 const filesInput = document.getElementById('trade-screenshots');
                 const files = filesInput && filesInput.files && filesInput.files.length ? Array.from(filesInput.files) : [];
+                // gather confirmed rule ids from the form (if any)
+                const confirmedRuleIds = Array.from(document.querySelectorAll('.trade-form-rule-checkbox:checked')).map(cb => cb.dataset.ruleId).filter(Boolean);
                 try {
                         if (editingTradeId) {
-                        // update existing trade (fees/total removed)
-                        await updateDoc(doc(db, 'hubs', currentMode, 'trades', editingTradeId), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, updatedAt: Date.now() });
+                        // update existing trade (fees/total removed) and save confirmed rules
+                        await updateDoc(doc(db, 'hubs', currentMode, 'trades', editingTradeId), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, confirmedRuleIds, updatedAt: Date.now() });
                         if (files.length) {
                             const uploads = await uploadTradeScreenshots(editingTradeId, files);
                             const paths = uploads.filter(r=>r).map(r=>r.path);
@@ -2387,7 +2544,7 @@
                         }
                         showNotification('Trade updated.');
                         } else {
-                        const docRef = await addDoc(tradeCollectionPath(currentMode), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, createdAt: Date.now(), updatedAt: Date.now() });
+                        const docRef = await addDoc(tradeCollectionPath(currentMode), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, confirmedRuleIds, createdAt: Date.now(), updatedAt: Date.now() });
                         if (files.length) {
                             const uploads = await uploadTradeScreenshots(docRef.id, files);
                             const paths = uploads.filter(r=>r).map(r=>r.path);
@@ -2440,7 +2597,14 @@
                             <td class="p-2 border text-sm">${t.exit || ''}</td>
                             <td class="p-2 border text-sm">${t.qty || ''}</td>
                             <td class="p-2 border text-sm">${(((t.exit || 0) - (t.entry || 0)) * (t.qty || 0)).toFixed(4)} ${(t.currency || '')}</td>
-                            <td class="p-2 border text-sm">${(t.screenshotUrls && t.screenshotUrls.length) ? `<button data-id="${t.id}" class="view-screenshots px-2 py-1 bg-gray-100 rounded"><i class="fas fa-image"></i></button>` : ''}</td>
+                            <td class="p-2 border text-sm">
+                                ${(() => {
+                                    if (!t.screenshotUrls || !t.screenshotUrls.length) return '';
+                                    // render up to 3 thumbnails as buttons
+                                    const urls = t.screenshotUrls.slice(0,3);
+                                    return urls.map((u, idx) => `<button data-id="${t.id}" data-idx="${idx}" data-url="${u}" class="view-screenshot-thumb inline-block mr-1 rounded border p-0.5" title="Screenshot ${idx+1}"><img src="${u}" style="width:44px;height:32px;object-fit:cover;display:block;border-radius:4px;"/></button>`).join('') + (t.screenshotUrls.length > 3 ? `<span class="text-xs text-gray-500"> (+${t.screenshotUrls.length-3})</span>` : '');
+                                })()}
+                            </td>
                             <td class="p-2 border text-sm flex gap-2 items-center">
                                 <button data-id="${t.id}" class="edit-trade px-2 py-1 bg-yellow-400 text-white rounded" title="Edit"><i class="fas fa-edit"></i></button>
                                 <button data-id="${t.id}" class="delete-trade px-2 py-1 bg-red-500 text-white rounded" title="Delete"><i class="fas fa-trash-alt"></i></button>
@@ -2482,6 +2646,18 @@
                     };
                 });
 
+                // thumbnail buttons: click any thumbnail to preview that image
+                document.querySelectorAll('.view-screenshot-thumb').forEach(btn => {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        const url = btn.dataset.url || btn.getAttribute('data-url');
+                        if (!url) return;
+                        const pm = document.getElementById('image-preview-modal');
+                        const pmImg = document.getElementById('image-preview-img');
+                        if (pm && pmImg) { pmImg.src = url; pm.classList.remove('hidden'); pm.classList.add('flex'); bringPreviewToFront(); }
+                    };
+                });
+
                 document.querySelectorAll('.edit-trade').forEach(btn => {
                     btn.onclick = async (e) => {
                         const id = btn.dataset.id;
@@ -2504,6 +2680,15 @@
                         editingTradeId = id;
                         const panel = document.getElementById('trade-form-panel'); if (panel) { panel.classList.remove('hidden'); panel.classList.add('block'); }
                         document.getElementById('trade-asset')?.focus();
+                        // pre-check rules in the form based on trade.confirmedRuleIds
+                        const confirmed = Array.isArray(data.confirmedRuleIds) ? data.confirmedRuleIds : [];
+                        // uncheck all first
+                        document.querySelectorAll('.trade-form-rule-checkbox').forEach(cb => { cb.checked = false; });
+                        confirmed.forEach(rid => {
+                            const cb = document.querySelector(`.trade-form-rule-checkbox[data-rule-id="${rid}"]`);
+                            if (cb) cb.checked = true;
+                        });
+                        validateRulesChecklist();
                     };
                 });
 
@@ -2588,6 +2773,8 @@
             const foldersListener = onSnapshot(query(collection(db, 'hubs', mode, 'note_folders'), orderBy('createdAt')), (snapshot) => { noteFolders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); if (!selectedFolderId && noteFolders.length) { /* keep null by default */ } renderFolders(); });
             
             listeners.push(tasksListener, columnsListener, notesListener);
+            // start rules listener and keep a handle to unsubscribe via rulesUnsub
+            listenRules(mode);
         };
 
         document.getElementById('personal-mode-btn').addEventListener('click', () => switchMode('personal'));
