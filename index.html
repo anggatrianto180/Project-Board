@@ -457,9 +457,6 @@
             visibility: visible;
             opacity: 1;
         }
-        .add-routine-btn:hover {
-            color: #4f46e5; /* indigo-600 */
-        }
         /* Mode Toggle Styles */
         .mode-toggle button.active {
             background-color: #4f46e5;
@@ -705,7 +702,7 @@
         </div>
     </div>
     <div id="routine-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto p-6">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-auto p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="routine-modal-date" class="text-2xl font-bold"></h3>
                 <button id="close-routine-modal-btn" class="p-2 rounded-full hover:bg-gray-200"><i class="fas fa-times"></i></button>
@@ -808,8 +805,12 @@
                     <textarea id="add-task-desc-input" rows="3" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div class="mt-3">
-                    <label for="add-task-image-input" class="block text-sm font-medium text-gray-700">Image (optional)</label>
-                    <input id="add-task-image-input" type="file" accept="image/*" class="mt-1 w-full" />
+                    <label class="block text-sm font-medium text-gray-700">Images (optional)</label>
+                    <div class="mt-2 flex items-center gap-3">
+                        <label for="add-task-image-input" class="inline-flex items-center px-3 py-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200 border">Choose images</label>
+                        <span id="add-task-image-filename" class="text-sm text-gray-600"></span>
+                    </div>
+                    <input id="add-task-image-input" type="file" accept="image/*" multiple class="hidden" />
                     <img id="add-task-image-preview" src="" alt="Preview" class="mt-2 rounded max-h-40 object-contain hidden" />
                 </div>
                 <div class="flex justify-end gap-4 mt-6">
@@ -822,7 +823,7 @@
 
     <!-- Task Detail Modal -->
     <div id="task-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-auto p-6">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl mx-auto p-6">
             <h3 id="task-detail-title" class="text-2xl font-bold mb-1">Task</h3>
             <form id="task-detail-form">
                 <input type="hidden" id="task-detail-id">
@@ -835,12 +836,16 @@
                     <textarea id="task-detail-desc-input" rows="6" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700">Image</label>
-                    <div class="flex items-center gap-3">
-                        <input id="task-detail-image-input" type="file" accept="image/*" class="w-full" />
+                    <label class="block text-sm font-medium text-gray-700">Images</label>
+                    <div class="mt-2 flex items-center gap-3">
+                        <label for="task-detail-image-input" class="inline-flex items-center px-3 py-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200 border">Choose images</label>
+                        <span id="task-detail-image-filename" class="text-sm text-gray-600"></span>
                         <button id="task-detail-remove-image-btn" type="button" class="px-3 py-1 bg-red-500 text-white rounded hidden">Remove</button>
                     </div>
+                    <input id="task-detail-image-input" type="file" accept="image/*" multiple class="hidden" />
                     <img id="task-detail-image-preview" src="" alt="Image" class="mt-2 rounded max-h-40 object-contain hidden" />
+                    <!-- Container for saved thumbnails -->
+                    <div id="task-detail-thumbs" class="mt-2 flex gap-2 flex-wrap"></div>
                 </div>
                 <!-- Meta (created/updated) moved below description to match user request -->
                 <div id="task-meta" class="text-xs text-gray-500 mb-3"></div>
@@ -852,6 +857,16 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Image preview modal (full screen) -->
+    <div id="image-preview-modal" class="fixed inset-0 bg-black bg-opacity-80 z-60 hidden items-center justify-center">
+        <div class="max-w-4xl w-full mx-4">
+            <div class="relative">
+                <button id="image-preview-close" class="absolute right-0 top-0 mt-2 mr-2 px-3 py-2 bg-gray-800 text-white rounded">Close</button>
+                <img id="image-preview-img" src="" alt="Preview" class="w-full h-auto rounded" />
+            </div>
         </div>
     </div>
 
@@ -891,7 +906,7 @@
         }
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, getDoc, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -1118,7 +1133,7 @@
                 // sort tasks by explicit order (if present) so reorder persists
                 const tasksForColumn = allTasks.filter(task => task.columnId === column.id).sort((a,b) => (a.order || 0) - (b.order || 0));
                 tasksForColumn.forEach(task => {
-                    const taskCard = createTaskElement(task.id, task.text);
+                    const taskCard = createTaskElement(task);
                     taskList.appendChild(taskCard);
                 });
 
@@ -1193,15 +1208,17 @@
             boardContainer.appendChild(addColumnButton);
         };
 
-        const createTaskElement = (id, text) => {
+        const createTaskElement = (task) => {
             const taskCard = document.createElement('div');
             taskCard.className = 'task-card bg-white p-3 rounded-lg shadow-sm cursor-grab active:cursor-grabbing border-l-4 border-gray-300 hover:border-blue-500';
             taskCard.draggable = true;
-            taskCard.dataset.id = id;
+            taskCard.dataset.id = task.id;
             const taskContent = document.createElement('div');
             taskContent.className = 'task-content';
+            // Note: thumbnails are intentionally not shown in the task list; images are visible only in the task detail modal
+
             const titleSpan = document.createElement('span');
-            titleSpan.textContent = text || '';
+            titleSpan.textContent = task.text || '';
             // show full title on card and allow wrapping
             titleSpan.className = 'task-text';
             titleSpan.style.display = 'block';
@@ -1212,7 +1229,7 @@
             // open detail modal on click (ignore if currently dragging)
             taskCard.addEventListener('click', (e) => {
                 if (document.querySelector('.dragging')) return;
-                openTaskDetailModal(id);
+                openTaskDetailModal(task.id);
             });
             addDragEventsToTask(taskCard);
             // after layout, if content overflows, show toggle
@@ -1283,16 +1300,86 @@
             if (created) parts.push(`Created: ${created}`);
             if (updated) parts.push(`Updated: ${updated}`);
             metaEl.innerHTML = parts.map(p => `<div>${p}</div>`).join('');
+            // render saved thumbnails
+            renderTaskThumbnails(taskObj);
+            // set filename display and remove button based on existing images
+            const detailFn = document.getElementById('task-detail-image-filename');
+            const removeBtn = document.getElementById('task-detail-remove-image-btn');
+            const paths = taskObj.imagePath ? (Array.isArray(taskObj.imagePath) ? taskObj.imagePath : [taskObj.imagePath]) : [];
+            if (paths.length) {
+                const firstName = (paths[0].split('/').pop() || 'image');
+                const display = firstName.length > 24 ? firstName.slice(0,20) + '…' : firstName;
+                if (detailFn) detailFn.textContent = paths.length > 1 ? `${display} (+${paths.length-1})` : display;
+                if (removeBtn) { removeBtn.classList.remove('hidden'); removeBtn.dataset.remove = 'false'; }
+            } else {
+                if (detailFn) detailFn.textContent = '';
+                if (removeBtn) { removeBtn.classList.add('hidden'); removeBtn.dataset.remove = 'false'; }
+            }
             modal.classList.remove('hidden'); modal.classList.add('flex');
         };
 
-        document.getElementById('task-cancel-btn').addEventListener('click', () => { const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
+        // Render thumbnails for saved images in task detail modal (supports multiple images)
+        const renderTaskThumbnails = (task) => {
+            const thumbsContainer = document.getElementById('task-detail-thumbs');
+            if (!thumbsContainer) return;
+            thumbsContainer.innerHTML = '';
+            const urls = task && task.imageUrl ? (Array.isArray(task.imageUrl) ? task.imageUrl : [task.imageUrl]) : [];
+            const paths = task && task.imagePath ? (Array.isArray(task.imagePath) ? task.imagePath : [task.imagePath]) : [];
+            urls.forEach((url, idx) => {
+                const wrap = document.createElement('div'); wrap.className = 'relative';
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'thumb';
+                img.className = 'rounded cursor-pointer border p-0.5';
+                img.style.width = '72px';
+                img.style.height = '72px';
+                img.style.objectFit = 'cover';
+                img.addEventListener('click', () => {
+                    const pm = document.getElementById('image-preview-modal');
+                    const pmImg = document.getElementById('image-preview-img');
+                    if (pm && pmImg) {
+                        pmImg.src = url;
+                        pm.classList.remove('hidden'); pm.classList.add('flex');
+                        try { bringPreviewToFront(); } catch (err) { pm.style.zIndex = '99999'; }
+                    }
+                });
+                // delete icon
+                const delBtn = document.createElement('button');
+                delBtn.className = 'absolute -top-2 -right-2 bg-white rounded-full p-1 shadow text-red-600';
+                delBtn.title = 'Delete image';
+                delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                delBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const confirmed = await showConfirmModal('Delete this image?');
+                    if (!confirmed) return;
+                    const tId = task && task.id ? task.id : document.getElementById('task-detail-id').value;
+                    const pathToDelete = paths[idx] || null;
+                    if (pathToDelete) {
+                        await deleteTaskImage(pathToDelete).catch(() => {});
+                        // update firestore: remove the path and url from arrays
+                        const newPaths = paths.filter((p, i) => i !== idx);
+                        const newUrls = urls.filter((u, i) => i !== idx);
+                        await updateDoc(doc(db, 'hubs', currentMode, 'tasks', tId), { imagePath: newPaths.length ? newPaths : null, imageUrl: newUrls.length ? newUrls : null });
+                        // refresh local and UI
+                        const t = allTasks.find(x=>x.id===tId) || {};
+                        t.imagePath = newPaths.length ? newPaths : null; t.imageUrl = newUrls.length ? newUrls : null;
+                        renderTaskThumbnails(t);
+                        showNotification('Image deleted.');
+                    }
+                });
+                wrap.appendChild(img);
+                wrap.appendChild(delBtn);
+                thumbsContainer.appendChild(wrap);
+            });
+        };
+
+    document.getElementById('task-cancel-btn').addEventListener('click', () => { const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); const fn = document.getElementById('task-detail-image-filename'); if (fn) fn.textContent = ''; const preview = document.getElementById('task-detail-image-preview'); const input = document.getElementById('task-detail-image-input'); const removeBtn = document.getElementById('task-detail-remove-image-btn'); if (preview) { preview.src = ''; preview.classList.add('hidden'); } if (input) input.value = ''; if (removeBtn) removeBtn.classList.add('hidden'); });
 
         document.getElementById('task-delete-btn').addEventListener('click', async () => {
             const id = document.getElementById('task-detail-id').value;
-            const confirmed = await showConfirmModal('Delete this task? This cannot be undone.');
-            if (!confirmed) return;
-            try { await deleteDoc(doc(db, 'hubs', currentMode, 'tasks', id)); showNotification('Task deleted.'); const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } catch (e) { showNotification('Failed to delete task.', true); }
+            // use centralized deleteTask so images are removed too
+            await deleteTask(id);
+            const m = document.getElementById('task-detail-modal'); if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
         });
 
         document.getElementById('task-detail-form').addEventListener('submit', async (e) => {
@@ -1301,9 +1388,36 @@
             const title = document.getElementById('task-detail-title-input').value.trim();
             const desc = document.getElementById('task-detail-desc-input').value.trim();
             if (!title) { showNotification('Title cannot be empty.', true); return; }
-            try { await updateDoc(doc(db, 'hubs', currentMode, 'tasks', id), { text: title, description: desc }); showNotification('Task updated.'); const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } catch (e) { showNotification('Failed to update task.', true); }
+            try {
+                const taskRef = doc(db, 'hubs', currentMode, 'tasks', id);
+                const updates = { text: title, description: desc, updatedAt: Date.now() };
+                const existing = allTasks.find(t => t.id === id) || {};
+                const fileInput = document.getElementById('task-detail-image-input');
+                const removeBtn = document.getElementById('task-detail-remove-image-btn');
+                const files = fileInput && fileInput.files && fileInput.files.length ? Array.from(fileInput.files) : [];
+                // existing arrays
+                const existingPaths = existing.imagePath ? (Array.isArray(existing.imagePath) ? existing.imagePath.slice() : [existing.imagePath]) : [];
+                const existingUrls = existing.imageUrl ? (Array.isArray(existing.imageUrl) ? existing.imageUrl.slice() : [existing.imageUrl]) : [];
+                if (files.length > 0) {
+                    // upload new files and append to arrays
+                    const uploadResults = await uploadTaskImages(id, files);
+                    const newPaths = uploadResults.filter(r=>r).map(r=>r.path);
+                    const newUrls = uploadResults.filter(r=>r).map(r=>r.url);
+                    const mergedPaths = existingPaths.concat(newPaths);
+                    const mergedUrls = existingUrls.concat(newUrls);
+                    updates.imagePath = mergedPaths.length ? mergedPaths : null;
+                    updates.imageUrl = mergedUrls.length ? mergedUrls : null;
+                } else if (removeBtn && removeBtn.dataset.remove === 'true') {
+                    // remove all existing images
+                    for (const p of existingPaths) { await deleteTaskImage(p).catch(()=>{}); }
+                    updates.imagePath = null; updates.imageUrl = null;
+                }
+                await updateDoc(taskRef, updates);
+                showNotification('Task updated.');
+                const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex');
+            } catch (e) { console.error(e); showNotification('Failed to update task.', true); }
         });
-    const addTask = async (text, description = '') => {
+    const addTask = async (text, description = '', file = null) => {
             if (boardColumns.length === 0) {
                 showNotification("Please add a column first before adding tasks.", true);
                 return;
@@ -1313,7 +1427,7 @@
                 const colId = boardColumns[0].id;
                 // prepare a batch to bump existing tasks' order by +1
                 const batch = writeBatch(db);
-                const tasksForColumn = allTasks.filter(t => t.columnId === colId).sort((a,b) => (a.order || 0) - (b.order || 0));
+                               const tasksForColumn = allTasks.filter(t => t.columnId === colId).sort((a,b) => (a.order || 0) - (b.order || 0));
                 tasksForColumn.forEach(t => {
                     const ref = doc(db, 'hubs', currentMode, 'tasks', t.id);
                     batch.update(ref, { order: (t.order || 0) + 1 });
@@ -1323,10 +1437,124 @@
                 await batch.commit();
 
                 // add the new task with order 1
-                await addDoc(collection(db, "hubs", currentMode, "tasks"), { text, description: description || null, columnId: colId, order: 1, createdAt: Date.now(), updatedAt: Date.now() });
+                const docRef = await addDoc(collection(db, "hubs", currentMode, "tasks"), { text, description: description || null, columnId: colId, order: 1, createdAt: Date.now(), updatedAt: Date.now() });
+                // if files provided, upload each and attach arrays of paths/urls
+                if (file && file.length && file.length > 0) {
+                    try {
+                        const uploadResults = await uploadTaskImages(docRef.id, Array.from(file));
+                        const paths = uploadResults.filter(r=>r).map(r=>r.path);
+                        const urls = uploadResults.filter(r=>r).map(r=>r.url);
+                        await updateDoc(doc(db, 'hubs', currentMode, 'tasks', docRef.id), { imagePath: paths, imageUrl: urls });
+                    } catch (err) { console.warn('Image upload for new task failed', err); }
+                }
             } catch (e) { console.error(e); showNotification('Failed to add task.', true); }
         };
-        const deleteTask = async (taskId) => { const confirmed = await showConfirmModal('Are you sure you want to delete this task?'); if (confirmed) { try { await deleteDoc(doc(db, "hubs", currentMode, "tasks", taskId)); showNotification('Task deleted successfully.'); } catch (e) { showNotification('Failed to delete task.', true); } } };
+        const deleteTask = async (taskId) => {
+            const confirmed = await showConfirmModal('Are you sure you want to delete this task?');
+            if (confirmed) {
+                try {
+                    const taskDocSnap = await getDoc(doc(db, 'hubs', currentMode, 'tasks', taskId));
+                    let imagePaths = [];
+                    if (taskDocSnap && taskDocSnap.exists()) {
+                        const data = taskDocSnap.data();
+                        if (Array.isArray(data.imagePath)) imagePaths = data.imagePath; else if (data.imagePath) imagePaths = [data.imagePath];
+                    }
+                    // delete all associated images
+                    for (const p of imagePaths) { await deleteTaskImage(p).catch(()=>{}); }
+                    await deleteDoc(doc(db, "hubs", currentMode, "tasks", taskId));
+                    showNotification('Task deleted successfully.');
+                } catch (e) { showNotification('Failed to delete task.', true); }
+            }
+        };
+
+        // --- Image helpers ---
+        const uploadTaskImage = async (taskId, file) => {
+            try {
+                const MAX_DIM = 1600;
+                const blob = await resizeImageFile(file, MAX_DIM, MAX_DIM, 0.8);
+                const path = `tasks/${taskId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const ref = storageRef(storage, path);
+                await uploadBytes(ref, blob);
+                const url = await getDownloadURL(ref);
+                return { path, url };
+            } catch (err) { console.error('uploadTaskImage failed', err); return null; }
+        };
+
+        // upload an array of files for a task and return array of {path,url}
+        const uploadTaskImages = async (taskId, files) => {
+            const results = [];
+            for (const f of files) {
+                try {
+                    const r = await uploadTaskImage(taskId, f);
+                    results.push(r);
+                } catch (err) { console.warn('uploadTaskImages entry failed', err); results.push(null); }
+            }
+            return results;
+        };
+
+        const deleteTaskImage = async (path) => {
+            try { if (!path) return; const ref = storageRef(storage, path); await deleteObject(ref); } catch (err) { console.warn('deleteTaskImage failed', err); }
+        };
+
+        const resizeImageFile = (file, maxWidth = 1600, maxHeight = 1600, quality = 0.8) => {
+            return new Promise(async (resolve) => {
+                try {
+                    const ib = await createImageBitmap(file);
+                    const ratio = Math.min(maxWidth / ib.width, maxHeight / ib.height, 1);
+                    const w = Math.round(ib.width * ratio);
+                    const h = Math.round(ib.height * ratio);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(ib, 0, 0, w, h);
+                    ib.close();
+                    canvas.toBlob((blob) => { resolve(blob || file); }, 'image/jpeg', quality);
+                } catch (err) { console.warn('resize failed', err); resolve(file); }
+            });
+        };
+
+        // preview handlers
+        const addTaskImageInput = document.getElementById('add-task-image-input');
+        const addTaskImagePreview = document.getElementById('add-task-image-preview');
+        if (addTaskImageInput) {
+            addTaskImageInput.addEventListener('change', (e) => {
+                const files = e.target.files ? Array.from(e.target.files) : [];
+                const fn = document.getElementById('add-task-image-filename');
+                if (!files.length) { if (addTaskImagePreview) { addTaskImagePreview.src = ''; addTaskImagePreview.classList.add('hidden'); } if (fn) fn.textContent = ''; return; }
+                // show a small count and first filename shortened
+                if (fn) {
+                    const first = files[0].name;
+                    const display = first.length > 24 ? first.slice(0,20) + '…' : first;
+                    fn.textContent = files.length > 1 ? `${display} (+${files.length-1})` : display;
+                }
+                // show first preview
+                const url = URL.createObjectURL(files[0]);
+                if (addTaskImagePreview) { addTaskImagePreview.src = url; addTaskImagePreview.classList.remove('hidden'); }
+            });
+        }
+
+        const detailImageInput = document.getElementById('task-detail-image-input');
+        const detailImagePreview = document.getElementById('task-detail-image-preview');
+        const detailRemoveBtn = document.getElementById('task-detail-remove-image-btn');
+        if (detailImageInput) {
+            detailImageInput.addEventListener('change', (e) => {
+                const files = e.target.files ? Array.from(e.target.files) : [];
+                const fn = document.getElementById('task-detail-image-filename');
+                if (!files.length) { if (detailImagePreview) { detailImagePreview.src = ''; detailImagePreview.classList.add('hidden'); } if (fn) fn.textContent = ''; return; }
+                const first = files[0];
+                const url = URL.createObjectURL(first);
+                if (detailImagePreview) { detailImagePreview.src = url; detailImagePreview.classList.remove('hidden'); }
+                if (detailRemoveBtn) { detailRemoveBtn.dataset.remove = 'false'; detailRemoveBtn.classList.remove('hidden'); }
+                if (fn) { const display = first.name.length > 24 ? first.name.slice(0,20) + '…' : first.name; fn.textContent = files.length > 1 ? `${display} (+${files.length-1})` : display; }
+            });
+        }
+        if (detailRemoveBtn) {
+            detailRemoveBtn.addEventListener('click', () => {
+                detailRemoveBtn.dataset.remove = 'true';
+                if (detailImagePreview) { detailImagePreview.src = ''; detailImagePreview.classList.add('hidden'); }
+                if (detailImageInput) { detailImageInput.value = ''; }
+            });
+        }
 
         const openColumnModal = (id = null, name = '') => {
             const modal = document.getElementById('column-modal');
@@ -1335,6 +1563,24 @@
             document.getElementById('column-name-input').value = name;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+        };
+
+        // Preview modal close handler
+        const imagePreviewModal = document.getElementById('image-preview-modal');
+        const imagePreviewClose = document.getElementById('image-preview-close');
+        if (imagePreviewClose && imagePreviewModal) {
+            imagePreviewClose.addEventListener('click', () => {
+                imagePreviewModal.classList.add('hidden'); imagePreviewModal.classList.remove('flex');
+                // clear inline z-index style if set
+                imagePreviewModal.style.zIndex = '';
+            });
+        }
+
+        // Ensure when opening preview via thumbnails we bring it to front
+        const bringPreviewToFront = () => {
+            if (!imagePreviewModal) return;
+            // use very high z-index to ensure it's above other modals
+            imagePreviewModal.style.zIndex = '99999';
         };
 
         const closeColumnModal = () => {
@@ -1853,8 +2099,20 @@
         document.getElementById('working-mode-btn').addEventListener('click', () => switchMode('working'));
 
     document.getElementById('add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.remove('hidden'); m.classList.add('flex'); });
-    document.getElementById('cancel-add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
-    document.getElementById('add-task-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const input = document.getElementById('task-input-modal'); const descInput = document.getElementById('add-task-desc-input'); if (input.value.trim() !== '') { addTask(input.value.trim(), descInput.value.trim()); input.value = ''; descInput.value = ''; const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } });
+    document.getElementById('cancel-add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); const fn = document.getElementById('add-task-image-filename'); if (fn) fn.textContent = ''; const preview = document.getElementById('add-task-image-preview'); const input = document.getElementById('add-task-image-input'); if (preview) { preview.src = ''; preview.classList.add('hidden'); } if (input) input.value = ''; });
+    document.getElementById('add-task-form-modal').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('task-input-modal');
+        const descInput = document.getElementById('add-task-desc-input');
+        const fileInput = document.getElementById('add-task-image-input');
+        const files = fileInput && fileInput.files && fileInput.files.length ? Array.from(fileInput.files) : null;
+        if (input.value.trim() !== '') {
+            await addTask(input.value.trim(), descInput.value.trim(), files);
+            input.value = ''; descInput.value = '';
+            if (fileInput) { fileInput.value = ''; const preview = document.getElementById('add-task-image-preview'); if (preview) { preview.src = ''; preview.classList.add('hidden'); } const fn = document.getElementById('add-task-image-filename'); if (fn) fn.textContent = ''; }
+            const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex');
+        }
+    });
 
         // Header Add Note opens modal for currently selected folder
         const openNoteModalForCurrent = () => {
@@ -2057,6 +2315,16 @@
         initializeListeners(currentMode);
         renderCalendar();
     setupRecurringModeToggle();
+
+    // Preview modal close handler
+    const imagePreviewCloseBtn = document.getElementById('image-preview-close');
+    if (imagePreviewCloseBtn) {
+        imagePreviewCloseBtn.addEventListener('click', () => {
+            const pm = document.getElementById('image-preview-modal');
+            if (pm) { pm.classList.add('hidden'); pm.classList.remove('flex'); }
+            const pmImg = document.getElementById('image-preview-img'); if (pmImg) pmImg.src = '';
+        });
+    }
 
     </script>
 </body>
