@@ -288,16 +288,23 @@
             margin-left: 8px;
         }
 
-        /* Task text: wrap and let card height adjust to content */
+        /* Task text: smaller and wrap so card height adjusts to content */
         .task-text {
             display: inline-block;
             white-space: normal;
             word-break: break-word;
             color: var(--text);
+            font-size: 0.9rem; /* slightly smaller */
+            line-height: 1.25;
         }
 
         /* Task actions positioned on the right, do not push card height */
         .task-actions { margin-left: auto; display: inline-flex; gap: 8px; align-items: center; }
+
+        /* drag handle removed (dragging will be available across the card) */
+
+        /* Editing textarea transition */
+        textarea.autosize-transition { transition: height 0.14s ease, opacity 0.12s ease; opacity: 0.98; }
 
         /* Clamp long task text to 3 lines and provide a toggle */
         .task-text.clamped {
@@ -653,7 +660,7 @@
     <div id="notification-area" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
         <!-- Notification will be injected here -->
     </div>
-    <div id="custom-confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+    <div id="custom-confirm-modal" style="z-index:9999;" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
         <div class="bg-white rounded-lg p-6 shadow-xl max-w-sm mx-auto"><p id="confirm-modal-text" class="text-lg mb-4"></p><div class="flex justify-end gap-4"><button id="confirm-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Cancel</button><button id="confirm-ok-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Delete</button></div></div>
     </div>
     <div id="folder-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
@@ -796,9 +803,53 @@
                     <label for="task-input-modal" class="block text-sm font-medium text-gray-700">Task Name</label>
                     <input type="text" id="task-input-modal" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
+                <div class="mt-3">
+                    <label for="add-task-desc-input" class="block text-sm font-medium text-gray-700">Description (optional)</label>
+                    <textarea id="add-task-desc-input" rows="3" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="mt-3">
+                    <label for="add-task-image-input" class="block text-sm font-medium text-gray-700">Image (optional)</label>
+                    <input id="add-task-image-input" type="file" accept="image/*" class="mt-1 w-full" />
+                    <img id="add-task-image-preview" src="" alt="Preview" class="mt-2 rounded max-h-40 object-contain hidden" />
+                </div>
                 <div class="flex justify-end gap-4 mt-6">
                     <button type="button" id="cancel-add-task-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div id="task-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-auto p-6">
+            <h3 id="task-detail-title" class="text-2xl font-bold mb-1">Task</h3>
+            <form id="task-detail-form">
+                <input type="hidden" id="task-detail-id">
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700">Title</label>
+                    <input id="task-detail-title-input" type="text" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea id="task-detail-desc-input" rows="6" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700">Image</label>
+                    <div class="flex items-center gap-3">
+                        <input id="task-detail-image-input" type="file" accept="image/*" class="w-full" />
+                        <button id="task-detail-remove-image-btn" type="button" class="px-3 py-1 bg-red-500 text-white rounded hidden">Remove</button>
+                    </div>
+                    <img id="task-detail-image-preview" src="" alt="Image" class="mt-2 rounded max-h-40 object-contain hidden" />
+                </div>
+                <!-- Meta (created/updated) moved below description to match user request -->
+                <div id="task-meta" class="text-xs text-gray-500 mb-3"></div>
+                <div class="flex justify-between items-center">
+                    <button type="button" id="task-delete-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg">Delete</button>
+                    <div class="flex gap-2">
+                        <button type="button" id="task-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -839,8 +890,9 @@
             });
         }
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8KJmXXX5ax3QulbDFKpBI87v36OLcvK0",
@@ -851,8 +903,9 @@
             appId: "1:935346350562:web:a475abd4099b5acbd3b1bb"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
         // --- Global State ---
         let currentMode = localStorage.getItem('currentMode') || 'personal';
@@ -1036,8 +1089,12 @@
                 header.className = 'kanban-column-header flex justify-between items-center mb-4 border-b-2 pb-2';
                 
                 const title = document.createElement('h3');
-                title.className = 'text-lg font-semibold text-gray-700';
-                title.textContent = column.name;
+                title.className = 'text-lg font-semibold text-gray-700 flex items-center gap-2';
+                const titleText = document.createElement('span'); titleText.textContent = column.name;
+                const taskCount = allTasks.filter(t => t.columnId === column.id).length || 0;
+                const countBadge = document.createElement('span'); countBadge.className = 'ml-2 inline-flex items-center justify-center rounded-full bg-gray-200 text-sm px-2 py-0.5'; countBadge.textContent = taskCount;
+                title.appendChild(titleText);
+                title.appendChild(countBadge);
 
                 const actions = document.createElement('div');
                 actions.className = 'column-actions';
@@ -1058,7 +1115,8 @@
                 const taskList = document.createElement('div');
                 taskList.className = 'task-list min-h-[200px] space-y-3 p-1';
                 
-                const tasksForColumn = allTasks.filter(task => task.columnId === column.id);
+                // sort tasks by explicit order (if present) so reorder persists
+                const tasksForColumn = allTasks.filter(task => task.columnId === column.id).sort((a,b) => (a.order || 0) - (b.order || 0));
                 tasksForColumn.forEach(task => {
                     const taskCard = createTaskElement(task.id, task.text);
                     taskList.appendChild(taskCard);
@@ -1073,6 +1131,55 @@
                         taskList.classList.remove('is-scrollable');
                     }
                 }, 20);
+
+                // Enable dragging to reorder inside this column
+                taskList.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(taskList, e.clientY);
+                    const draggingEl = document.querySelector('.dragging');
+                    if (!draggingEl) return;
+                    if (afterElement == null) taskList.appendChild(draggingEl);
+                    else taskList.insertBefore(draggingEl, afterElement);
+                });
+
+                taskList.addEventListener('drop', async (e) => {
+                    e.preventDefault();
+                    const taskId = e.dataTransfer.getData('text/plain') || (document.querySelector('.dragging') ? document.querySelector('.dragging').dataset.id : null);
+                    if (!taskId) return;
+                    const targetColumnId = column.id;
+
+                    // compute new order for tasks in target column from DOM
+                    const children = Array.from(taskList.querySelectorAll('.task-card'));
+                    const updates = children.map((child, idx) => ({ id: child.dataset.id, order: idx + 1 }));
+
+                    // update tasks in this column
+                    const batch = writeBatch(db);
+                    updates.forEach(u => {
+                        batch.update(doc(db, 'hubs', currentMode, 'tasks', u.id), { order: u.order, columnId: targetColumnId });
+                    });
+
+                    // If source column was different, also recompute orders for source column
+                    const srcColumnId = window._dragSrcColumnId || null;
+                    if (srcColumnId && srcColumnId !== targetColumnId) {
+                        const srcColumnEl = document.querySelector(`.kanban-column[data-column-id="${srcColumnId}"]`);
+                        if (srcColumnEl) {
+                            const srcTaskList = srcColumnEl.querySelector('.task-list');
+                            if (srcTaskList) {
+                                const srcChildren = Array.from(srcTaskList.querySelectorAll('.task-card'));
+                                srcChildren.forEach((child, idx) => {
+                                    batch.update(doc(db, 'hubs', currentMode, 'tasks', child.dataset.id), { order: idx + 1, columnId: srcColumnId });
+                                });
+                            }
+                        }
+                    }
+
+                    try {
+                        await batch.commit();
+                    } catch (err) {
+                        console.error('Failed to update task order:', err);
+                        showNotification('Failed to reorder tasks.', true);
+                    }
+                });
 
                 columnEl.appendChild(header);
                 columnEl.appendChild(taskList);
@@ -1093,66 +1200,131 @@
             taskCard.dataset.id = id;
             const taskContent = document.createElement('div');
             taskContent.className = 'task-content';
-            const taskTextSpan = document.createElement('span');
-            taskTextSpan.textContent = text;
-            taskTextSpan.className = 'task-text clamped';
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'task-actions';
-            const editButton = document.createElement('i');
-            editButton.className = 'fas fa-edit';
-            editButton.onclick = () => editTask(id, taskCard, taskTextSpan);
-            const deleteButton = document.createElement('i');
-            deleteButton.className = 'fas fa-trash-alt delete-btn';
-            deleteButton.onclick = () => deleteTask(id);
-            actionsDiv.appendChild(editButton);
-            actionsDiv.appendChild(deleteButton);
-            const toggle = document.createElement('button'); toggle.className = 'text-sm text-blue-600 hidden'; toggle.textContent = 'Show more';
-            toggle.onclick = () => {
-                const nowClamped = taskTextSpan.classList.toggle('clamped');
-                toggle.textContent = nowClamped ? 'Show more' : 'Show less';
-            };
-
-            taskContent.appendChild(taskTextSpan);
-            taskContent.appendChild(toggle);
+            const titleSpan = document.createElement('span');
+            titleSpan.textContent = text || '';
+            // show full title on card and allow wrapping
+            titleSpan.className = 'task-text';
+            titleSpan.style.display = 'block';
+            titleSpan.style.whiteSpace = 'normal';
+            titleSpan.style.overflow = 'visible';
+            taskContent.appendChild(titleSpan);
             taskCard.appendChild(taskContent);
-            taskCard.appendChild(actionsDiv);
+            // open detail modal on click (ignore if currently dragging)
+            taskCard.addEventListener('click', (e) => {
+                if (document.querySelector('.dragging')) return;
+                openTaskDetailModal(id);
+            });
             addDragEventsToTask(taskCard);
             // after layout, if content overflows, show toggle
             setTimeout(() => {
-                if (taskTextSpan.scrollHeight > (taskTextSpan.clientHeight + 4)) {
-                    toggle.classList.remove('hidden');
-                }
+                // nothing for title-only view
             }, 10);
             return taskCard;
         };
         const editTask = (id, taskCard, taskTextSpan) => {
             const currentText = taskTextSpan.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentText;
-            input.className = 'flex-grow p-1 border rounded';
+            const textarea = document.createElement('textarea');
+            textarea.value = currentText;
+            textarea.className = 'w-full p-2 border rounded resize-none';
+            textarea.style.minHeight = '64px';
+
             const parent = taskTextSpan.parentElement || taskCard;
-            parent.replaceChild(input, taskTextSpan);
-            input.focus();
-            const saveChanges = async () => {
-                const newText = input.value.trim();
-                if (newText && newText !== currentText) {
-                    await updateDoc(doc(db, "hubs", currentMode, "tasks", id), { text: newText });
+            parent.replaceChild(textarea, taskTextSpan);
+            textarea.focus();
+
+            const autosize = () => { textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px'; };
+            autosize();
+            textarea.addEventListener('input', autosize);
+
+            const controls = document.createElement('div');
+            controls.className = 'flex gap-2 justify-end mt-2';
+            const saveBtn = document.createElement('button'); saveBtn.className = 'px-3 py-1 bg-blue-600 text-white rounded'; saveBtn.textContent = 'Save';
+            const cancelBtn = document.createElement('button'); cancelBtn.className = 'px-3 py-1 bg-gray-200 rounded'; cancelBtn.textContent = 'Cancel';
+            controls.appendChild(cancelBtn); controls.appendChild(saveBtn);
+            parent.appendChild(controls);
+
+            const finish = async (save) => {
+                if (save) {
+                    const newText = textarea.value.trim();
+                    if (newText && newText !== currentText) {
+                        try { await updateDoc(doc(db, "hubs", currentMode, "tasks", id), { text: newText }); } catch (e) { showNotification('Failed to save task.', true); }
+                    }
                 }
-                parent.replaceChild(taskTextSpan, input);
+                // cleanup and restore view
+                if (controls.parentElement) controls.parentElement.removeChild(controls);
+                parent.replaceChild(taskTextSpan, textarea);
+                taskTextSpan.textContent = save ? textarea.value : currentText;
             };
-            input.addEventListener('blur', saveChanges);
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') input.blur();
-                if (e.key === 'Escape') { input.value = currentText; input.blur(); }
+
+            cancelBtn.addEventListener('click', (e) => { e.preventDefault(); finish(false); });
+            saveBtn.addEventListener('click', async (e) => { e.preventDefault(); await finish(true); });
+            textarea.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { e.preventDefault(); finish(false); }
             });
         };
-        const addTask = async (text) => {
+        // --- Task Detail Modal Handlers ---
+        const openTaskDetailModal = (taskId) => {
+            const modal = document.getElementById('task-detail-modal');
+            const idInput = document.getElementById('task-detail-id');
+            const titleInput = document.getElementById('task-detail-title-input');
+            const descInput = document.getElementById('task-detail-desc-input');
+
+            const taskObj = allTasks.find(t => t.id === taskId) || { id: taskId, text: '' };
+            idInput.value = taskObj.id;
+            titleInput.value = taskObj.text || '';
+            descInput.value = taskObj.description || '';
+            // meta: time and createdAt
+            const metaEl = document.getElementById('task-meta');
+            const created = taskObj.createdAt ? new Date(taskObj.createdAt).toLocaleString() : '';
+            const updated = taskObj.updatedAt ? new Date(taskObj.updatedAt).toLocaleString() : '';
+            const timeStr = taskObj.time ? formatTime(taskObj.time) : '';
+            const parts = [];
+            if (timeStr) parts.push(`Time: ${timeStr}`);
+            if (created) parts.push(`Created: ${created}`);
+            if (updated) parts.push(`Updated: ${updated}`);
+            metaEl.innerHTML = parts.map(p => `<div>${p}</div>`).join('');
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+        };
+
+        document.getElementById('task-cancel-btn').addEventListener('click', () => { const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
+
+        document.getElementById('task-delete-btn').addEventListener('click', async () => {
+            const id = document.getElementById('task-detail-id').value;
+            const confirmed = await showConfirmModal('Delete this task? This cannot be undone.');
+            if (!confirmed) return;
+            try { await deleteDoc(doc(db, 'hubs', currentMode, 'tasks', id)); showNotification('Task deleted.'); const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } catch (e) { showNotification('Failed to delete task.', true); }
+        });
+
+        document.getElementById('task-detail-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('task-detail-id').value;
+            const title = document.getElementById('task-detail-title-input').value.trim();
+            const desc = document.getElementById('task-detail-desc-input').value.trim();
+            if (!title) { showNotification('Title cannot be empty.', true); return; }
+            try { await updateDoc(doc(db, 'hubs', currentMode, 'tasks', id), { text: title, description: desc }); showNotification('Task updated.'); const m = document.getElementById('task-detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } catch (e) { showNotification('Failed to update task.', true); }
+        });
+    const addTask = async (text, description = '') => {
             if (boardColumns.length === 0) {
                 showNotification("Please add a column first before adding tasks.", true);
                 return;
             }
-            try { await addDoc(collection(db, "hubs", currentMode, "tasks"), { text, columnId: boardColumns[0].id }); } catch (e) { showNotification('Failed to add task.', true); }
+            try {
+                // Insert new task at the top: set order = 1 and increment existing tasks' order in the column
+                const colId = boardColumns[0].id;
+                // prepare a batch to bump existing tasks' order by +1
+                const batch = writeBatch(db);
+                const tasksForColumn = allTasks.filter(t => t.columnId === colId).sort((a,b) => (a.order || 0) - (b.order || 0));
+                tasksForColumn.forEach(t => {
+                    const ref = doc(db, 'hubs', currentMode, 'tasks', t.id);
+                    batch.update(ref, { order: (t.order || 0) + 1 });
+                });
+
+                // commit the bump first so new task can be inserted at order=1
+                await batch.commit();
+
+                // add the new task with order 1
+                await addDoc(collection(db, "hubs", currentMode, "tasks"), { text, description: description || null, columnId: colId, order: 1, createdAt: Date.now(), updatedAt: Date.now() });
+            } catch (e) { console.error(e); showNotification('Failed to add task.', true); }
         };
         const deleteTask = async (taskId) => { const confirmed = await showConfirmModal('Are you sure you want to delete this task?'); if (confirmed) { try { await deleteDoc(doc(db, "hubs", currentMode, "tasks", taskId)); showNotification('Task deleted successfully.'); } catch (e) { showNotification('Failed to delete task.', true); } } };
 
@@ -1682,7 +1854,7 @@
 
     document.getElementById('add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.remove('hidden'); m.classList.add('flex'); });
     document.getElementById('cancel-add-task-btn').addEventListener('click', () => { const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
-    document.getElementById('add-task-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const input = document.getElementById('task-input-modal'); if (input.value.trim() !== '') { addTask(input.value.trim()); input.value = ''; const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } });
+    document.getElementById('add-task-form-modal').addEventListener('submit', (e) => { e.preventDefault(); const input = document.getElementById('task-input-modal'); const descInput = document.getElementById('add-task-desc-input'); if (input.value.trim() !== '') { addTask(input.value.trim(), descInput.value.trim()); input.value = ''; descInput.value = ''; const m = document.getElementById('add-task-modal'); m.classList.add('hidden'); m.classList.remove('flex'); } });
 
         // Header Add Note opens modal for currently selected folder
         const openNoteModalForCurrent = () => {
@@ -1794,9 +1966,32 @@
         document.getElementById('column-form').addEventListener('submit', (e) => { e.preventDefault(); const id = document.getElementById('column-id-input').value; const name = document.getElementById('column-name-input').value; saveColumn(id, name); });
     // password unlock removed; notes are plain text
         
-        const addDragEventsToTask = (task) => { task.addEventListener('dragstart', (e) => { task.classList.add('dragging'); e.dataTransfer.setData('text/plain', task.dataset.id); }); task.addEventListener('dragend', () => task.classList.remove('dragging')); };
-        document.body.addEventListener('drop', (e) => { const columnEl = e.target.closest('.kanban-column'); if (columnEl) { const taskId = e.dataTransfer.getData('text/plain'); const newColumnId = columnEl.dataset.columnId; if(taskId && newColumnId) { updateDoc(doc(db, "hubs", currentMode, "tasks", taskId), { columnId: newColumnId }); } } });
-        document.body.addEventListener('dragover', (e) => { if(e.target.closest('.kanban-column')) { e.preventDefault(); } });
+        const getDragAfterElement = (container, y) => {
+            const draggableElements = [...container.querySelectorAll('.task-card:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element || null;
+        };
+
+        const addDragEventsToTask = (task) => {
+            task.draggable = true;
+            task.addEventListener('dragstart', (e) => {
+                task.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', task.dataset.id);
+                const columnEl = task.closest('.kanban-column');
+                window._dragSrcColumnId = columnEl ? columnEl.dataset.columnId : null;
+            });
+            task.addEventListener('dragend', () => {
+                task.classList.remove('dragging');
+                window._dragSrcColumnId = null;
+            });
+        };
         
         document.getElementById('prev-month-btn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); });
         document.getElementById('next-month-btn').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); });
