@@ -107,6 +107,20 @@
         .task-list::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 8px; }
         .dark .task-list::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.18); }
 
+        /* Full-page trade journal layout */
+        body.trade-full {
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+        }
+        body.trade-full #trade-section {
+            max-width: 1200px;
+            margin: 24px auto;
+            min-height: calc(100vh - 160px);
+            box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+            border-radius: 12px;
+        }
+        /* Ensure controls inside the trade panel are clickable above page overlays */
+        body.trade-full #trade-section * { z-index: 2; position: relative; }
+
         .dark .kanban-column .kanban-column-header {
             border-bottom: 1px solid rgba(255,255,255,0.06) !important;
         }
@@ -604,8 +618,10 @@
                     </div>
                 </div>
 
-                <div id="trade-form-panel" class="bg-gray-50 p-4 rounded-lg mb-6 hidden">
-                    <form id="trade-form" class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <!-- Trade form modal (was inline panel) -->
+                <div id="trade-form-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 hidden">
+                    <div class="w-full max-w-3xl rounded-lg p-6 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-lg">
+                        <form id="trade-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="md:col-span-1">
                             <label class="block text-xs font-medium text-gray-600">Asset</label>
                             <input id="trade-asset" type="text" class="mt-1 w-full p-2 border rounded-md bg-white" placeholder="Bitcoin (BTC)" required />
@@ -622,8 +638,16 @@
                             </select>
                         </div>
                         <div class="md:col-span-1">
+                            <label class="block text-xs font-medium text-gray-600">Status</label>
+                            <select id="trade-status" class="mt-1 w-full p-2 border rounded-md bg-white">
+                                <option value="Open">Open</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1">
                             <label class="block text-xs font-medium text-gray-600">Date & Time</label>
-                            <input id="trade-datetime" type="datetime-local" class="mt-1 w-full p-2 border rounded-md bg-white" />
+                            <input id="trade-datetime" type="datetime-local" class="mt-1 w-full p-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                         </div>
 
                         <div class="md:col-span-1">
@@ -664,7 +688,7 @@
                             <div id="trade-form-rules-list" class="grid gap-2"></div>
                         </div>
 
-                        <div class="md:col-span-4">
+                        <div class="md:col-span-2">
                             <label class="block text-xs font-medium text-gray-600 mb-1">Screenshots (entry / exit)</label>
                             <div class="flex items-center gap-3">
                                 <label for="trade-screenshots" class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-white border rounded-md hover:bg-gray-50">
@@ -676,11 +700,12 @@
                             <input id="trade-screenshots" type="file" accept="image/*" multiple class="hidden" />
                         </div>
 
-                        <div class="md:col-span-4 flex justify-end gap-3 mt-2">
+                        <div class="md:col-span-2 flex justify-end gap-3 mt-2">
                             <button type="button" id="trade-cancel" class="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
-                            <button type="submit" id="trade-save" class="px-4 py-2 bg-indigo-600 text-white rounded-md">Save Trade</button>
+                            <button type="submit" id="trade-save" class="px-4 py-2 bg-indigo-600 text-white rounded-md" style="z-index:99999; position:relative; pointer-events:auto;">Save Trade</button>
                         </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
 
                 <div class="mb-4 flex items-center gap-3">
@@ -688,8 +713,9 @@
                     <input id="trade-filter-pair" placeholder="Pair" class="p-2 border rounded-md" />
                     <select id="trade-filter-status" class="p-2 border rounded-md">
                         <option value="">All</option>
-                        <option value="profit">Profit</option>
-                        <option value="loss">Loss</option>
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
                     <button id="trade-filter-apply" class="px-3 py-2 bg-gray-100 rounded-md">Apply</button>
                 </div>
@@ -722,6 +748,49 @@
                     </div>
                     <p class="text-sm text-gray-500 mt-1">You must confirm all active rules before saving a trade.</p>
                     <div id="trade-rules-checklist" class="mt-3 grid gap-2"></div>
+                </div>
+                <!-- Analytics & Summary -->
+                <div id="trade-analytics" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2 bg-white border rounded-md p-4">
+                        <h4 class="font-semibold mb-2">Equity Curve</h4>
+                        <canvas id="chart-equity" height="140"></canvas>
+                        <h4 class="font-semibold mt-4 mb-2">Win Rate</h4>
+                        <canvas id="chart-winrate" height="80"></canvas>
+                    </div>
+                    <div class="bg-white border rounded-md p-4">
+                        <h4 class="font-semibold mb-2">Aggregated Stats</h4>
+                        <div id="agg-stats" class="text-sm text-gray-700 space-y-2">
+                            <div>Total Trades: <span id="stat-total">0</span></div>
+                            <div>Wins: <span id="stat-wins">0</span></div>
+                            <div>Losses: <span id="stat-losses">0</span></div>
+                            <div>Win Rate: <span id="stat-winrate">0%</span></div>
+                            <div>Avg P/L: <span id="stat-avgpl">0</span></div>
+                            <div>Max Drawdown: <span id="stat-mdd">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capital Management (Manajemen Modal) -->
+                <div id="capital-panel" class="mt-6 bg-white border rounded-md p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-semibold">Manajemen Modal</h3>
+                        <button id="capital-new-btn" class="px-3 py-1 bg-green-600 text-white rounded-md">Tambah</button>
+                    </div>
+                    <div id="capital-summary" class="text-sm text-gray-700 mb-3">Saldo: <span id="capital-balance">Rp 0</span></div>
+                    <div class="overflow-x-auto bg-white border rounded-md">
+                        <table id="capital-table" class="w-full text-left table-auto">
+                            <thead class="bg-gray-800">
+                                <tr>
+                                    <th class="p-3 text-sm font-medium text-white border">Tgl</th>
+                                    <th class="p-3 text-sm font-medium text-white border">Tipe</th>
+                                    <th class="p-3 text-sm font-medium text-white border">Jumlah (IDR)</th>
+                                    <th class="p-3 text-sm font-medium text-white border">Catatan</th>
+                                    <th class="p-3 text-sm font-medium text-white border">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="capital-table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1062,6 +1131,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Capital modal removed -->
         </div>
     </div>
 
@@ -1090,6 +1161,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, getDoc, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8KJmXXX5ax3QulbDFKpBI87v36OLcvK0",
@@ -1103,6 +1175,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
+    const auth = getAuth(app);
+    let currentUserUid = null;
+    onAuthStateChanged(auth, user => { currentUserUid = user ? user.uid : null; });
 
         // --- Global State ---
         let currentMode = localStorage.getItem('currentMode') || 'personal';
@@ -2446,16 +2521,11 @@
             validateRulesChecklist();
         };
 
+        // Simplified: always enable Save button. Rules checklist remains visible but does not block saving.
         const validateRulesChecklist = () => {
-            const container = document.getElementById('trade-rules-checklist');
             const saveBtn = document.getElementById('trade-save');
-            if (!container || !saveBtn) return;
-            // For enabling the Save button, require the checkboxes inside the trade form to be all checked
-            const formCheckboxes = document.querySelectorAll('.trade-form-rule-checkbox');
-            // If there are no form checkboxes (no rules), allow saving
-            if (!formCheckboxes.length) { saveBtn.removeAttribute('disabled'); return; }
-            const allChecked = Array.from(formCheckboxes).every(cb => cb.checked);
-            if (allChecked) saveBtn.removeAttribute('disabled'); else saveBtn.setAttribute('disabled','true');
+            if (!saveBtn) return;
+            saveBtn.removeAttribute('disabled');
         };
 
         // Render rules management modal list
@@ -2510,11 +2580,17 @@
         // Save trade form
         const tradeForm = document.getElementById('trade-form');
         if (tradeForm) {
-            tradeForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+        let isSavingTrade = false;
+        tradeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isSavingTrade) { console.warn('Save already in progress, ignoring duplicate submit'); return; }
+            isSavingTrade = true;
+            const saveBtn = document.getElementById('trade-save'); if (saveBtn) { saveBtn.setAttribute('disabled','true'); }
                 const asset = document.getElementById('trade-asset').value.trim();
                 const pair = document.getElementById('trade-pair').value.trim();
                 const type = document.getElementById('trade-type').value;
+                // status field (Open, Closed, Cancelled)
+                const status = document.getElementById('trade-status') ? document.getElementById('trade-status').value : 'Open';
                 const datetime = document.getElementById('trade-datetime').value || new Date().toISOString();
                 const entry = parseFloat(document.getElementById('trade-entry').value) || 0;
                 const exit = parseFloat(document.getElementById('trade-exit').value) || 0;
@@ -2530,7 +2606,7 @@
                 try {
                         if (editingTradeId) {
                         // update existing trade (fees/total removed) and save confirmed rules
-                        await updateDoc(doc(db, 'trades', editingTradeId), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, confirmedRuleIds, updatedAt: Date.now() });
+                        await updateDoc(doc(db, 'trades', editingTradeId), { asset, pair, type, status, datetime, entry, exit, qty, currency, openReason, closeReason, confirmedRuleIds, updatedAt: Date.now() });
                         if (files.length) {
                             const uploads = await uploadTradeScreenshots(editingTradeId, files);
                             const paths = uploads.filter(r=>r).map(r=>r.path);
@@ -2539,7 +2615,7 @@
                         }
                         showNotification('Trade updated.');
                         } else {
-                        const docRef = await addDoc(tradeCollectionPath(), { asset, pair, type, datetime, entry, exit, qty, currency, openReason, closeReason, confirmedRuleIds, createdAt: Date.now(), updatedAt: Date.now() });
+                        const docRef = await addDoc(tradeCollectionPath(), { asset, pair, type, status, datetime, entry, exit, qty, currency, openReason, closeReason, confirmedRuleIds, createdAt: Date.now(), updatedAt: Date.now() });
                         if (files.length) {
                             const uploads = await uploadTradeScreenshots(docRef.id, files);
                             const paths = uploads.filter(r=>r).map(r=>r.path);
@@ -2554,14 +2630,280 @@
                     editingTradeId = null;
                     // refresh listeners will pick up new trade
                 } catch (err) { console.error('save trade failed', err); showNotification('Failed to save trade.', true); }
+                finally { isSavingTrade = false; const saveBtn2 = document.getElementById('trade-save'); if (saveBtn2) { saveBtn2.removeAttribute('disabled'); } }
             });
         }
 
-    document.getElementById('trade-cancel')?.addEventListener('click', () => { editingTradeId = null; document.getElementById('trade-form').reset(); const dt = document.getElementById('trade-datetime'); if (dt) dt.value = new Date().toISOString().slice(0,16); const panel = document.getElementById('trade-form-panel'); if (panel) { panel.classList.add('hidden'); } });
+    document.getElementById('trade-cancel')?.addEventListener('click', () => { editingTradeId = null; document.getElementById('trade-form').reset(); const dt = document.getElementById('trade-datetime'); if (dt) dt.value = new Date().toISOString().slice(0,16); const modal = document.getElementById('trade-form-modal'); if (modal) { modal.classList.add('hidden'); } });
 
-        // Render trade table and listen for updates
-        let tradeUnsub = null;
-        const listenTrades = () => {
+    // --- Analytics (Chart.js) and aggregated stats ---
+    const loadChartJs = () => {
+        if (window.Chart) return Promise.resolve();
+        return new Promise((res, rej) => {
+            const s = document.createElement('script');
+            // Use explicit UMD bundle so window.Chart is available
+            s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js';
+            s.onload = () => { console.debug('Chart.js loaded'); res(); };
+            s.onerror = (e) => { console.warn('Chart.js failed to load', e); rej(e); };
+            document.head.appendChild(s);
+        });
+    };
+
+    let tradeCharts = { equity: null, winrate: null };
+    const computeAndRenderStats = async (trades) => {
+        console.debug('computeAndRenderStats called, trades length:', Array.isArray(trades)?trades.length:0);
+        try { await loadChartJs(); } catch(e){ console.warn('Chart.js load failed', e); }
+
+        // normalize and sort trades by date/createdAt
+        const tlist = Array.isArray(trades) ? trades.slice().map(t=>({
+            ...t,
+            createdAt: t.createdAt || t.date || (t._ts && t._ts.seconds) || 0
+        })).sort((a,b)=> (a.createdAt||0)-(b.createdAt||0)) : [];
+
+        // build P/L list and labels using trade date if available
+        const plList = [];
+        const labels = [];
+        for (const t of tlist) {
+            const entry = Number(t.entry);
+            const exit = Number(t.exit);
+            // require both entry and exit to compute a closed trade P/L
+            if (!isFinite(entry) || !isFinite(exit)) continue;
+            const qty = isFinite(Number(t.qty)) && Number(t.qty)>0 ? Number(t.qty) : 1;
+            const pl = (exit - entry) * qty;
+            if (!isFinite(pl)) continue;
+            plList.push(Math.round(pl*1000000)/1000000);
+            // try to use readable datetime label
+            const dt = t.date || t.datetime || (t.createdAt && new Date(t.createdAt*1000).toISOString()) || null;
+            labels.push(dt ? String(dt).slice(0,16).replace('T',' ') : labels.length+1);
+        }
+
+        const total = plList.length;
+        const wins = plList.filter(p=>p>0).length;
+        const losses = plList.filter(p=>p<=0).length;
+        const winrate = total ? Math.round((wins/total)*10000)/100 : 0;
+        const sum = plList.reduce((s,v)=>s+v,0);
+        const avg = total ? (sum/total) : 0;
+
+        // equity curve
+        const equity = []; let cum = 0; for (const p of plList) { cum += p; equity.push(Math.round(cum*100)/100); }
+
+        // max drawdown
+        let peak = -Infinity, maxDD = 0; for (const v of equity) { if (v>peak) peak=v; const dd = peak - v; if (dd>maxDD) maxDD = dd; }
+
+        console.debug('stats computed', { total, wins, losses, winrate, avg, maxDD, samplePL: plList.slice(0,5), labelsSample: labels.slice(0,5) });
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-wins').textContent = wins;
+        document.getElementById('stat-losses').textContent = losses;
+        document.getElementById('stat-winrate').textContent = winrate + '%';
+        document.getElementById('stat-avgpl').textContent = avg.toFixed(4);
+        document.getElementById('stat-mdd').textContent = maxDD.toFixed(4);
+
+        // equity chart
+        const eqEl = document.getElementById('chart-equity');
+        if (eqEl && window.Chart) {
+            console.debug('chart-equity element size before', { clientWidth: eqEl.clientWidth, clientHeight: eqEl.clientHeight, width: eqEl.width, height: eqEl.height });
+            if (tradeCharts.equity) try { tradeCharts.equity.destroy(); } catch(e){}
+            // enforce explicit canvas sizing to avoid responsive reflows
+            eqEl.style.display = 'block';
+            eqEl.style.width = '100%';
+            eqEl.style.height = '180px';
+            eqEl.style.maxHeight = '400px';
+            eqEl.style.boxSizing = 'border-box';
+            // set canvas pixel attributes to match CSS height for Chart.js when responsive is disabled
+            try { eqEl.width = Math.floor(eqEl.clientWidth); } catch(e){}
+            try { eqEl.height = parseInt(window.getComputedStyle(eqEl).height) || 180; } catch(e){}
+            // pass the element instead of context to Chart (UMD supports both)
+            try {
+                // compute y-axis bounds to avoid zero-range (Chart.js can misbehave when min==max)
+                const dsVals = equity.slice();
+                let yMin = null, yMax = null;
+                if (dsVals.length) {
+                    yMin = Math.min(...dsVals);
+                    yMax = Math.max(...dsVals);
+                    if (yMin === yMax) { yMin = yMin - 1; yMax = yMax + 1; }
+                    else {
+                        const pad = Math.max((yMax - yMin) * 0.08, 0.0001);
+                        yMin = yMin - pad; yMax = yMax + pad;
+                    }
+                }
+                tradeCharts.equity = new Chart(eqEl, {
+                    type: 'line',
+                    data: {
+                        labels: labels.length ? labels : equity.map((_,i)=>i+1),
+                        datasets: [{ label: 'Equity', data: equity, borderColor:'#4f46e5', borderWidth:2, backgroundColor:'rgba(79,70,229,0.08)', fill:true }]
+                    },
+                    options: { responsive:true, maintainAspectRatio:false, animation: false, plugins:{legend:{display:false}}, scales: { y: { min: yMin, max: yMax } } }
+                });
+                // With responsive disabled we don't need forced redraws; still attempt a small update to be safe
+                try { tradeCharts.equity.update(); console.debug('equity chart created and updated'); } catch(e) { console.warn('equity chart update failed', e); }
+            } catch (err) {
+                console.error('Chart creation failed for equity', err);
+            }
+            console.debug('equity dataset', { labels: labels.slice(0,10), equity: equity.slice(0,10) });
+            console.debug('chart-equity element size after', { clientWidth: eqEl.clientWidth, clientHeight: eqEl.clientHeight, width: eqEl.width, height: eqEl.height });
+        }
+
+        // winrate chart
+        const wrEl = document.getElementById('chart-winrate');
+        if (wrEl && window.Chart) {
+            console.debug('chart-winrate element size before', { clientWidth: wrEl.clientWidth, clientHeight: wrEl.clientHeight, width: wrEl.width, height: wrEl.height });
+            if (tradeCharts.winrate) try { tradeCharts.winrate.destroy(); } catch(e){}
+            // enforce explicit sizing for winrate canvas
+            wrEl.style.display = 'block';
+            wrEl.style.width = '100%';
+            wrEl.style.height = '120px';
+            wrEl.style.maxHeight = '300px';
+            wrEl.style.boxSizing = 'border-box';
+            try { wrEl.width = Math.floor(wrEl.clientWidth); } catch(e){}
+            try { wrEl.height = parseInt(window.getComputedStyle(wrEl).height) || 120; } catch(e){}
+            try {
+                tradeCharts.winrate = new Chart(wrEl, {
+                    type: 'bar',
+                    data: { labels:['Wins','Losses'], datasets:[{ data:[wins,losses], backgroundColor:['#10b981','#ef4444'] }] },
+                    options: { responsive:false, maintainAspectRatio:false, animation: false, plugins:{legend:{display:false}} }
+                });
+                try { tradeCharts.winrate.update(); console.debug('winrate chart created and updated'); } catch(e) { console.warn('winrate chart update failed', e); }
+            } catch (err) {
+                console.error('Chart creation failed for winrate', err);
+            }
+            console.debug('chart-winrate element size after', { clientWidth: wrEl.clientWidth, clientHeight: wrEl.clientHeight, width: wrEl.width, height: wrEl.height });
+        }
+    };
+
+    // --- Capital management (capital_movements) ---
+    let capitalUnsub = null;
+    const listenCapitalMovements = () => {
+        if (capitalUnsub) capitalUnsub();
+        const ref = collection(db, 'capital_movements');
+        const q = query(ref, orderBy('date','desc'));
+        capitalUnsub = onSnapshot(q, snap => {
+            const items = snap.docs.map(d=>({ id: d.id, ...d.data() }));
+            renderCapitalList(items);
+        });
+    };
+
+    const renderCapitalList = (items) => {
+        const body = document.getElementById('capital-table-body'); if (!body) return; body.innerHTML = '';
+        let balance = 0;
+        items.forEach(it => {
+            const tr = document.createElement('tr');
+            const date = new Date(it.date || it.createdAt || Date.now()).toLocaleDateString();
+            const type = it.type || 'DEPOSIT';
+            const amt = Number(it.amount || 0);
+            balance += (type === 'DEPOSIT' ? amt : -amt);
+            tr.innerHTML = `<td class="p-2 border text-sm">${date}</td><td class="p-2 border text-sm">${type}</td><td class="p-2 border text-sm">${amt}</td><td class="p-2 border text-sm">${(it.notes||'')}</td><td class="p-2 border text-sm flex gap-2 items-center"><button data-id="${it.id}" data-type="edit" class="edit-capital px-2 py-1 bg-yellow-400 text-white rounded" title="Edit"><i class="fas fa-edit"></i></button><button data-id="${it.id}" data-type="delete" class="del-capital px-2 py-1 bg-red-500 text-white rounded" title="Delete"><i class="fas fa-trash-alt"></i></button></td>`;
+            body.appendChild(tr);
+        });
+    const balEl = document.getElementById('capital-balance'); if (balEl) balEl.textContent = 'Rp ' + balance.toFixed(4);
+        // attach edit/delete handlers
+        document.querySelectorAll('.edit-capital').forEach(btn => btn.addEventListener('click', async (e) => {
+            const id = btn.dataset.id;
+            const snap = await getDoc(doc(db,'capital_movements', id));
+            if (!snap || !snap.exists()) { alert('Item not found'); return; }
+            const data = snap.data();
+            openCapitalModal({ id, ...data });
+        }));
+        document.querySelectorAll('.del-capital').forEach(btn=>btn.addEventListener('click', async (e)=>{ const id = btn.dataset.id; const c = confirm('Hapus transaksi modal?'); if (!c) return; try { await deleteDoc(doc(db,'capital_movements',id)); alert('Deleted'); } catch(err){ alert('Gagal menghapus'); } }));
+    };
+
+    // opens capital modal for create or edit; if item provided, it's edit
+    const openCapitalModal = (item) => {
+        const html = `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="w-full max-w-md rounded-lg p-6 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-lg">
+                    <h3 class="text-lg font-semibold mb-3">${item && item.id ? 'Edit' : 'Tambah'} Manajemen Modal</h3>
+                    <form id="_capital_inline_form_local">
+                        <label class="block text-sm">Tipe</label>
+                        <select id="_capital_type_local" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3"><option value="DEPOSIT">Deposit</option><option value="WITHDRAWAL">Withdrawal</option></select>
+                        <label class="block text-sm">Jumlah</label>
+                        <input id="_capital_amount_local" type="number" step="any" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3" required />
+                        <label class="block text-sm">Tanggal</label>
+                        <input id="_capital_date_local" type="datetime-local" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3" />
+                        <label class="block text-sm">Catatan</label>
+                        <textarea id="_capital_notes_local" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3"></textarea>
+                        <div class="flex justify-end gap-2 mt-4">
+                            <button type="button" id="_capital_cancel_local" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">Batal</button>
+                            <button type="submit" class="px-3 py-1 rounded bg-green-600 text-white">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+        const wrapper = document.createElement('div'); wrapper.innerHTML = html; document.body.appendChild(wrapper);
+        const fm = document.getElementById('_capital_inline_form_local');
+        const cancelBtn = document.getElementById('_capital_cancel_local');
+        const setDefaults = () => {
+            const _d = document.getElementById('_capital_date_local'); if (_d) _d.value = (item && item.date) ? new Date(item.date).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
+            const _t = document.getElementById('_capital_type_local'); if (_t) _t.value = (item && item.type) ? item.type : 'DEPOSIT';
+            const _a = document.getElementById('_capital_amount_local'); if (_a) _a.value = (item && item.amount) ? item.amount : '';
+            const _n = document.getElementById('_capital_notes_local'); if (_n) _n.value = (item && item.notes) ? item.notes : '';
+        };
+        setDefaults();
+        cancelBtn.addEventListener('click', ()=>{ wrapper.remove(); });
+        fm.addEventListener('submit', async (ev)=>{
+            ev.preventDefault();
+            const type = document.getElementById('_capital_type_local').value || 'DEPOSIT';
+            const amount = Number(document.getElementById('_capital_amount_local').value) || 0;
+            const dateVal = document.getElementById('_capital_date_local').value;
+            const notes = document.getElementById('_capital_notes_local').value.trim() || null;
+            if (!amount || amount <= 0) { alert('Jumlah harus lebih besar dari 0'); return; }
+            const date = dateVal ? new Date(dateVal).getTime() : Date.now();
+            try {
+                if (item && item.id) {
+                    await updateDoc(doc(db,'capital_movements', item.id), { user: currentUserUid, type, amount, date, notes, updatedAt: Date.now() });
+                } else {
+                    await addDoc(collection(db,'capital_movements'), { user: currentUserUid, type, amount, date, notes, createdAt: Date.now() });
+                }
+                wrapper.remove();
+            } catch(err){ console.error(err); alert('Gagal menyimpan modal'); }
+        });
+    };
+
+    // Open capital modal
+    document.getElementById('capital-new-btn')?.addEventListener('click', ()=>{
+        const html = `
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="w-full max-w-md rounded-lg p-6 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-lg">
+                    <h3 class="text-lg font-semibold mb-3">Tambah Manajemen Modal</h3>
+                    <form id="_capital_inline_form">
+                        <label class="block text-sm">Tipe</label>
+                        <select id="_capital_type" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3"><option value="DEPOSIT">Deposit</option><option value="WITHDRAWAL">Withdrawal</option></select>
+                        <label class="block text-sm">Jumlah</label>
+                        <input id="_capital_amount" type="number" step="any" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3" required />
+                        <label class="block text-sm">Tanggal</label>
+                        <input id="_capital_date" type="datetime-local" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3" />
+                        <label class="block text-sm">Catatan</label>
+                        <textarea id="_capital_notes" class="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-3"></textarea>
+                        <div class="flex justify-end gap-2 mt-4">
+                            <button type="button" id="_capital_cancel" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100">Batal</button>
+                            <button type="submit" class="px-3 py-1 rounded bg-green-600 text-white">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>`;
+    const wrapper = document.createElement('div'); wrapper.innerHTML = html; document.body.appendChild(wrapper);
+    const fm = document.getElementById('_capital_inline_form');
+    // set default date to now
+    const _dtEl = document.getElementById('_capital_date'); if (_dtEl) _dtEl.value = new Date().toISOString().slice(0,16);
+    document.getElementById('_capital_cancel').addEventListener('click', ()=>{ wrapper.remove(); });
+        fm.addEventListener('submit', async (ev)=>{
+            ev.preventDefault();
+            const type = document.getElementById('_capital_type').value || 'DEPOSIT';
+            const amount = Number(document.getElementById('_capital_amount').value) || 0;
+            const dateVal = document.getElementById('_capital_date').value;
+            const notes = document.getElementById('_capital_notes').value.trim() || null;
+            if (!amount || amount <= 0) { alert('Jumlah harus lebih besar dari 0'); return; }
+            const date = dateVal ? new Date(dateVal).getTime() : Date.now();
+            try {
+                await addDoc(collection(db,'capital_movements'), { user: currentUserUid, type, amount, date, notes, createdAt: Date.now() });
+                alert('Transaksi modal tersimpan.'); wrapper.remove();
+            } catch(err){ console.error(err); alert('Gagal menyimpan modal'); }
+        });
+    });
+
+
+    // Render trade table and listen for updates
+    let tradeUnsub = null;
+    let listenTrades = () => {
             if (tradeUnsub) tradeUnsub();
             const q = query(collection(db, 'trades'), orderBy('createdAt', 'desc'));
             tradeUnsub = onSnapshot(q, snapshot => {
@@ -2572,6 +2914,7 @@
                     const fPair = (document.getElementById('trade-filter-pair')?.value || '').toLowerCase();
                     const fStatus = (document.getElementById('trade-filter-status')?.value || '');
                     let visibleIndex = 0;
+                    const tradesForStats = [];
                     snapshot.docs.forEach((docSnap, i) => {
                         const t = { id: docSnap.id, ...docSnap.data() };
                         // apply client-side filters
@@ -2608,7 +2951,13 @@
                             </td>
                         `;
                         rows.appendChild(tr);
+                        tradesForStats.push(t);
                     });
+
+                    // Update analytics based on filtered trades
+                    console.debug('tradesForStats sample', tradesForStats.slice(0,5));
+                    console.debug('tradesForStats parsed sample', tradesForStats.slice(0,5).map(t=>({ entry:Number(t.entry), exit:Number(t.exit), qty: Number(t.qty) })));
+                    try { computeAndRenderStats(tradesForStats); } catch (e) { console.warn('computeAndRenderStats failed', e); }
                 // attach handlers
                 document.querySelectorAll('.delete-trade').forEach(btn => {
                     btn.onclick = async (e) => {
@@ -2665,6 +3014,7 @@
                         document.getElementById('trade-asset').value = data.asset || '';
                         document.getElementById('trade-pair').value = data.pair || '';
                         document.getElementById('trade-type').value = data.type || 'buy';
+                        if (document.getElementById('trade-status')) document.getElementById('trade-status').value = data.status || 'Open';
                         const dtEl = document.getElementById('trade-datetime'); if (dtEl) dtEl.value = data.datetime ? new Date(data.datetime).toISOString().slice(0,16) : new Date().toISOString().slice(0,16);
                         document.getElementById('trade-entry').value = data.entry || '';
                         document.getElementById('trade-exit').value = data.exit || '';
@@ -2673,9 +3023,9 @@
                         // fees/total fields removed
                         document.getElementById('trade-open-reason').value = data.openReason || '';
                         document.getElementById('trade-close-reason').value = data.closeReason || '';
-                        // set editing id and open panel
+                        // set editing id and open modal
                         editingTradeId = id;
-                        const panel = document.getElementById('trade-form-panel'); if (panel) { panel.classList.remove('hidden'); panel.classList.add('block'); }
+                        const modal = document.getElementById('trade-form-modal'); if (modal) { modal.classList.remove('hidden'); }
                         document.getElementById('trade-asset')?.focus();
                         // pre-check rules in the form based on trade.confirmedRuleIds
                         const confirmed = Array.isArray(data.confirmedRuleIds) ? data.confirmedRuleIds : [];
@@ -2727,23 +3077,24 @@
 
     // start listening for trades (single collection)
     listenTrades();
+    // start listening for capital movements so the list updates when a new entry is saved
+    try { listenCapitalMovements(); } catch(e) { console.warn('listenCapitalMovements failed to start', e); }
 
         // Wire up Trade UI controls (new/panel toggle, screenshots preview, refresh)
         document.getElementById('trade-new-btn')?.addEventListener('click', () => {
-            const panel = document.getElementById('trade-form-panel');
-            if (!panel) return;
-            panel.classList.toggle('hidden');
-            // when opening for a new trade, clear edit state and set default datetime to now
-            if (!panel.classList.contains('hidden')) {
-                editingTradeId = null;
-                setTimeout(()=>{
-                    const dt = document.getElementById('trade-datetime');
-                    if (dt) dt.value = new Date().toISOString().slice(0,16);
-                    document.getElementById('trade-asset')?.focus();
-                    // ensure Save button state is correct when opening form
-                    try { validateRulesChecklist(); } catch (e) {}
-                }, 80);
-            }
+            const modal = document.getElementById('trade-form-modal');
+            if (!modal) return;
+            // open modal for new trade
+            editingTradeId = null;
+            modal.classList.remove('hidden');
+            // set defaults after render
+            setTimeout(()=>{
+                const dt = document.getElementById('trade-datetime');
+                if (dt) dt.value = new Date().toISOString().slice(0,16);
+                if (document.getElementById('trade-status')) document.getElementById('trade-status').value = 'Open';
+                document.getElementById('trade-asset')?.focus();
+                try { validateRulesChecklist(); } catch (e) {}
+            }, 40);
         });
 
         document.getElementById('trade-screenshots')?.addEventListener('change', (e) => {
@@ -3006,6 +3357,16 @@
             const pmImg = document.getElementById('image-preview-img'); if (pmImg) pmImg.src = '';
         });
     }
+
+    // Delegated fallback to ensure Save Trade works even if direct listener isn't bound
+    // Prevent native submit + delegated requestSubmit from both firing by preventing default click behavior
+    document.addEventListener('click', (ev) => {
+        const sbtn = ev.target.closest && ev.target.closest('#trade-save');
+        if (!sbtn) return;
+        ev.preventDefault();
+        console.debug('trade-save clicked (delegated)');
+        const form = document.getElementById('trade-form'); if (form) form.requestSubmit ? form.requestSubmit() : form.submit();
+    });
 
     </script>
 </body>
