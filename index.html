@@ -718,6 +718,8 @@
                     </div>
                 </div>
 
+                        <!-- Trade notes moved below capital panel (see below) -->
+
                 <div class="mb-4 flex items-center gap-3">
                     <input id="trade-filter-asset" placeholder="Asset" class="p-2 border rounded-md" />
                     <input id="trade-filter-pair" placeholder="Pair" class="p-2 border rounded-md" />
@@ -801,6 +803,36 @@
                             <tbody id="capital-table-body"></tbody>
                         </table>
                     </div>
+                </div>
+                
+                <!-- Important Notes (Trade Journal) - placed directly under Capital Management for visibility -->
+                <div id="trade-notes-panel" class="mt-6 bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">Important Notes</h3>
+                            <p class="text-sm text-gray-500">Notes specific to your Trade Journal. These are stored separately from Personal/Working notes.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button id="trade-add-folder-btn" class="px-3 py-2 bg-gray-100 text-sm text-gray-700 rounded-md hover:bg-gray-200">+ Add Folder</button>
+                            <button id="trade-header-add-note-btn" class="px-3 py-2 bg-yellow-500 text-white text-sm rounded-md hover:bg-yellow-600"><i class="fas fa-plus mr-2"></i> Add Note</button>
+                        </div>
+                    </div>
+
+                    <div id="trade-folders-bar" class="mb-4">
+                        <div id="trade-folder-list" class="flex items-center gap-3 overflow-auto"></div>
+                    </div>
+
+                    <!-- Notes area: hidden until a folder selected -->
+                    <div id="trade-notes-area" class="hidden">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <button id="trade-back-to-folders" class="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200">&larr; Back</button>
+                                <h4 id="trade-current-folder-name" class="text-lg font-semibold text-gray-800"></h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="trade-notes-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
                 </div>
             </div>
         </div>
@@ -1200,6 +1232,14 @@
     let boardColumns = [];
     let allTasks = [];
     let allNotes = [];
+    // Trade-specific notes state (separate from hubs/<mode>/notes)
+    let allTradeNotes = [];
+    let tradeNoteFolders = [];
+    let selectedTradeFolderId = null;
+    let tradeNotesUnsub = null;
+    let tradeFoldersUnsub = null;
+    // note modal target: 'mode' uses currentMode's hubs/<mode>/notes; 'trade' uses hubs/trade/notes
+    let noteModalTarget = 'mode';
     let listeners = [];
     let editingNoteId = null; // if set, note-modal is editing this note
     let editingTradeId = null; // id of trade being edited (if any)
@@ -1348,7 +1388,8 @@
         const populateFolderSelect = () => {
             const sel = document.getElementById('note-modal-folder-select');
             if (!sel) return;
-            sel.innerHTML = '<option value="">(None)</option>' + noteFolders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+            const folders = (noteModalTarget === 'trade') ? tradeNoteFolders : noteFolders;
+            sel.innerHTML = '<option value="">(None)</option>' + (folders || []).map(f => `<option value="${f.id}">${f.name}</option>`).join('');
         };
 
         // Render the project board columns and tasks
@@ -2227,14 +2268,99 @@
         // --- Important Notes Functions ---
         const renderNotes = () => {
             const notesList = document.getElementById('notes-list');
+            if (!notesList) return;
             notesList.innerHTML = '';
             const filtered = selectedFolderId ? allNotes.filter(n => n.folderId === selectedFolderId) : allNotes;
             filtered.forEach(note => {
-                const noteItem = createNoteElement(note);
+                const noteItem = createNoteElement(note, 'mode');
                 notesList.appendChild(noteItem);
             });
+            try { renderTradeNotes(); } catch(e) {}
         };
-        const createNoteElement = (note) => {
+
+        // Trade notes are separate from mode notes. Render trade-specific folders & notes into trade panel.
+        const renderTradeFolders = () => {
+            const folderList = document.getElementById('trade-folder-list');
+            if (!folderList) return;
+            folderList.innerHTML = '';
+            const allCount = allTradeNotes.length || 0;
+            const allBtn = document.createElement('button');
+            allBtn.className = `folder-btn ${selectedTradeFolderId === null ? 'active' : ''}`;
+            allBtn.textContent = 'All';
+            const badgeAll = document.createElement('span'); badgeAll.className = 'ml-2 inline-flex items-center justify-center rounded-full bg-gray-200 text-sm px-2 py-0.5'; badgeAll.textContent = allCount;
+            allBtn.appendChild(badgeAll);
+            allBtn.onclick = () => { selectedTradeFolderId = null; renderTradeFolders(); renderTradeNotes(); document.getElementById('trade-notes-area')?.classList.remove('hidden'); };
+            folderList.appendChild(allBtn);
+            tradeNoteFolders.forEach(f => {
+                const btn = document.createElement('button');
+                btn.className = `folder-btn ${selectedTradeFolderId === f.id ? 'active' : ''}`;
+                const titleWrap = document.createElement('div'); titleWrap.className = 'folder-title'; titleWrap.textContent = f.name;
+                const count = allTradeNotes.filter(n => n.folderId === f.id).length || 0;
+                const badge = document.createElement('span'); badge.className = 'ml-2 inline-flex items-center justify-center rounded-full bg-gray-200 text-sm px-2 py-0.5'; badge.textContent = count; titleWrap.appendChild(badge);
+                const actions = document.createElement('div'); actions.className = 'folder-actions';
+                const addNoteIcon = document.createElement('i'); addNoteIcon.className = 'fas fa-plus-circle cursor-pointer text-green-600'; addNoteIcon.title = 'Add Note'; addNoteIcon.onclick = (e) => { e.stopPropagation(); openAddTradeNoteForFolder(f.id, f.name); };
+                actions.appendChild(addNoteIcon);
+                btn.appendChild(titleWrap); btn.appendChild(actions);
+                btn.onclick = () => { selectedTradeFolderId = f.id; renderTradeFolders(); renderTradeNotes(); document.getElementById('trade-notes-area')?.classList.remove('hidden'); };
+                folderList.appendChild(btn);
+            });
+        };
+
+        const renderTradeNotes = () => {
+            const tlist = document.getElementById('trade-notes-list');
+            if (!tlist) return;
+            tlist.innerHTML = '';
+            const filtered = selectedTradeFolderId ? allTradeNotes.filter(n => n.folderId === selectedTradeFolderId) : allTradeNotes;
+            if (!filtered || filtered.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'p-6 text-center text-sm text-gray-500 bg-gray-50 rounded';
+                empty.innerHTML = `
+                    <p class="mb-2">No trading notes yet.</p>
+                    <p class="mb-3 text-xs">Use notes to record trade ideas, lessons, or screenshots you want to keep alongside your journal.</p>
+                    <div><button id="trade-notes-empty-add" class="px-3 py-1 bg-yellow-500 text-white rounded">Add your first trade note</button></div>
+                `;
+                tlist.appendChild(empty);
+                setTimeout(() => {
+                    const cta = document.getElementById('trade-notes-empty-add');
+                    if (cta) cta.addEventListener('click', () => openNoteModalForTrade());
+                }, 30);
+                return;
+            }
+            filtered.forEach(note => {
+                const el = createNoteElement(note, 'trade');
+                // use the main note card style for trade embedded (match personal/work)
+                el.classList.remove('bg-yellow-50');
+                el.classList.add('bg-white');
+                tlist.appendChild(el);
+            });
+        };
+
+        // open add note for a specific trade-folder
+        const openAddTradeNoteForFolder = (folderId, folderName) => {
+            selectedTradeFolderId = folderId || null; renderTradeFolders(); renderTradeNotes();
+            noteModalTarget = 'trade';
+            editingNoteId = null;
+            document.getElementById('note-modal-title-input').value = '';
+            document.getElementById('note-modal-input').value = '';
+            document.getElementById('note-modal-title').textContent = 'Add Note';
+            populateFolderSelect();
+            document.getElementById('note-modal-folder-select').value = folderId || '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        // Open note modal with trade-specific defaults (called from trade area)
+        const openNoteModalForTrade = () => {
+            editingNoteId = null;
+            // prefill modal with contextual placeholder and select '(None)' folder
+            document.getElementById('note-modal-title-input').value = '';
+            document.getElementById('note-modal-input').value = 'Notes about trade: add entry/exit reasoning, screenshots, or links.';
+            document.getElementById('note-modal-title').textContent = 'Add Trade Note';
+            populateFolderSelect();
+            document.getElementById('note-modal-folder-select').value = '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+        // target: 'mode' (personal/working) or 'trade'
+        const createNoteElement = (note, target = 'mode') => {
             const item = document.createElement('div');
             item.className = 'note-item p-4 rounded-lg bg-yellow-50 hover:bg-yellow-100 shadow-sm min-h-[120px] flex flex-col';
             item.dataset.id = note.id;
@@ -2253,11 +2379,17 @@
             const editButton = document.createElement('i');
             editButton.className = 'fas fa-edit';
             editButton.title = 'Edit';
-            editButton.onclick = () => editNote(note.id, item);
+            editButton.onclick = () => {
+                if (target === 'trade') editTradeNote(note.id, item);
+                else editNote(note.id, item);
+            };
             const deleteButton = document.createElement('i');
             deleteButton.className = 'fas fa-trash-alt delete-btn';
             deleteButton.title = 'Delete';
-            deleteButton.onclick = () => deleteNote(note.id);
+            deleteButton.onclick = () => {
+                if (target === 'trade') deleteTradeNote(note.id);
+                else deleteNote(note.id);
+            };
             actionsDiv.appendChild(editButton);
             actionsDiv.appendChild(deleteButton);
 
@@ -2294,6 +2426,21 @@
             }, 10);
             return item;
         };
+        // Edit a trade-scoped note
+        const editTradeNote = (id, item) => {
+            const noteObj = allTradeNotes.find(n => n.id === id) || null;
+            if (!noteObj) return;
+            editingNoteId = id;
+            noteModalTarget = 'trade';
+            document.getElementById('note-modal-title-input').value = noteObj.title || '';
+            document.getElementById('note-modal-input').value = noteObj.text || '';
+            document.getElementById('note-modal-title').textContent = 'Edit Trade Note';
+            // trade folders are separate; leave folder select blank or prefill if available
+            populateFolderSelect();
+            document.getElementById('note-modal-folder-select').value = noteObj.folderId || '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+        const deleteTradeNote = async (id) => { const confirmed = await showConfirmModal('Delete this trade note?'); if (!confirmed) return; try { await deleteDoc(doc(db, 'hubs', 'trade', 'notes', id)); showNotification('Trade note deleted.'); } catch(e){ showNotification('Failed to delete trade note.', true); } };
         const editNote = (id, item, textSpan) => {
             // Open modal to edit note and allow moving between folders
             const noteObj = allNotes.find(n => n.id === id) || null;
@@ -3200,7 +3347,16 @@
         const initializeListeners = (mode) => {
             const tasksListener = onSnapshot(query(collection(db, "hubs", mode, "tasks")), (snapshot) => { allTasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderBoard(); });
             const columnsListener = onSnapshot(query(collection(db, "hubs", mode, "board_columns"), orderBy("order")), (snapshot) => { boardColumns = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderBoard(); });
-            const notesListener = onSnapshot(query(collection(db, "hubs", mode, "notes")), (snapshot) => { allNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderNotes(); });
+            const notesListener = onSnapshot(query(collection(db, "hubs", mode, "notes")), (snapshot) => { allNotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); renderNotes(); try { renderTradeNotes(); } catch(e){} });
+            // trade-scoped notes & folders (separate namespace) - keep listeners so trade notes start empty unless created
+            try {
+                if (tradeNotesUnsub) tradeNotesUnsub();
+                tradeNotesUnsub = onSnapshot(query(collection(db, 'hubs', 'trade', 'notes')), (snap) => { allTradeNotes = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTradeNotes(); });
+            } catch (err) { console.warn('trade notes listener failed', err); }
+            try {
+                if (tradeFoldersUnsub) tradeFoldersUnsub();
+                tradeFoldersUnsub = onSnapshot(query(collection(db, 'hubs', 'trade', 'note_folders'), orderBy('createdAt')), (snap) => { tradeNoteFolders = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderTradeFolders(); });
+            } catch (err) { console.warn('trade folders listener failed', err); }
             const foldersListener = onSnapshot(query(collection(db, 'hubs', mode, 'note_folders'), orderBy('createdAt')), (snapshot) => { noteFolders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); if (!selectedFolderId && noteFolders.length) { /* keep null by default */ } renderFolders(); });
             
             listeners.push(tasksListener, columnsListener, notesListener);
@@ -3238,6 +3394,8 @@
             const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
         };
         document.getElementById('header-add-note-btn').addEventListener('click', () => openNoteModalForCurrent());
+    // Wire the Trade Journal's Add Note button to the trade-specific modal (uses trade-focused placeholder)
+    document.getElementById('trade-header-add-note-btn')?.addEventListener('click', () => openNoteModalForTrade());
 
         document.getElementById('note-modal-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -3246,18 +3404,34 @@
             const folderSel = document.getElementById('note-modal-folder-select').value || null;
             if (!txt) return;
             try {
-                if (editingNoteId) {
-                    await updateDoc(doc(db, 'hubs', currentMode, 'notes', editingNoteId), { title: title || null, text: txt, folderId: folderSel });
-                    showNotification('Note updated.');
+                if (noteModalTarget === 'trade') {
+                    // operate on hubs/trade/notes
+                    if (editingNoteId) {
+                        await updateDoc(doc(db, 'hubs', 'trade', 'notes', editingNoteId), { title: title || null, text: txt, folderId: folderSel });
+                        showNotification('Trade note updated.');
+                    } else {
+                        await addDoc(collection(db, 'hubs', 'trade', 'notes'), { title: title || null, text: txt, folderId: folderSel || null, createdAt: Date.now() });
+                        showNotification('Trade note added.');
+                    }
+                    // hide modal and refresh trade notes UI
+                    document.getElementById('note-modal').classList.add('hidden');
+                    document.getElementById('note-modal').classList.remove('flex');
+                    // refresh local lists handled by onSnapshot listeners
                 } else {
-                    await addNote(title || null, txt);
-                    showNotification('Note added.');
+                    // operate on hubs/<currentMode>/notes
+                    if (editingNoteId) {
+                        await updateDoc(doc(db, 'hubs', currentMode, 'notes', editingNoteId), { title: title || null, text: txt, folderId: folderSel });
+                        showNotification('Note updated.');
+                    } else {
+                        await addNote(title || null, txt);
+                        showNotification('Note added.');
+                    }
+                    document.getElementById('note-modal').classList.add('hidden');
+                    document.getElementById('note-modal').classList.remove('flex');
+                    renderNotes();
+                    renderFolders();
                 }
-                document.getElementById('note-modal').classList.add('hidden');
-                document.getElementById('note-modal').classList.remove('flex');
-                renderNotes();
-                renderFolders();
-            } catch (err) { showNotification('Failed to save note.', true); }
+            } catch (err) { console.error(err); showNotification('Failed to save note.', true); }
         });
 
         document.getElementById('cancel-note-btn').addEventListener('click', () => { const m = document.getElementById('note-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
@@ -3275,19 +3449,29 @@
             const name = document.getElementById('folder-name-input').value.trim();
             if (!name) return;
             try {
+                const fm = document.getElementById('folder-modal');
+                const target = fm && fm.dataset && fm.dataset._target === 'trade' ? 'trade' : currentMode;
+                // clear the modal target flag after reading
+                if (fm && fm.dataset) delete fm.dataset._target;
                 if (id) {
-                    await updateDoc(doc(db, 'hubs', currentMode, 'note_folders', id), { name });
+                    await updateDoc(doc(db, 'hubs', target, 'note_folders', id), { name });
                 } else {
-                    const d = await addDoc(collection(db, 'hubs', currentMode, 'note_folders'), { name, createdAt: Date.now() });
-                    selectedFolderId = d.id;
+                    const d = await addDoc(collection(db, 'hubs', target, 'note_folders'), { name, createdAt: Date.now() });
+                    if (target === 'trade') selectedTradeFolderId = d.id; else selectedFolderId = d.id;
                 }
                 document.getElementById('folder-modal').classList.add('hidden');
                 renderFolders();
                 renderNotes();
+                // ensure trade lists refresh if we created a trade folder
+                renderTradeFolders();
+                renderTradeNotes();
             } catch (err) { showNotification('Failed to save folder', true); }
         });
 
         document.getElementById('cancel-folder-btn').addEventListener('click', () => { const m = document.getElementById('folder-modal'); m.classList.add('hidden'); m.classList.remove('flex'); });
+
+    // ensure folder modal target flag cleared on cancel
+    document.getElementById('cancel-folder-btn').addEventListener('click', () => { const fm = document.getElementById('folder-modal'); if (fm && fm.dataset) delete fm.dataset._target; });
 
         document.getElementById('back-to-folders').addEventListener('click', () => {
             document.getElementById('notes-area').classList.add('hidden');
@@ -3295,6 +3479,25 @@
             selectedFolderId = null;
             renderFolders();
             const h = document.getElementById('header-add-note-btn'); if (h) h.classList.add('hidden');
+        });
+
+        // Trade-specific folder add / back handlers
+        document.getElementById('trade-add-folder-btn')?.addEventListener('click', () => {
+            // reuse the folder modal but operate on trade namespace when saving
+            document.getElementById('folder-modal-title').textContent = 'Add Folder';
+            document.getElementById('folder-id-input').value = '';
+            document.getElementById('folder-name-input').value = '';
+            // mark modal with a data attribute so submit handler can detect trade context
+            const fm = document.getElementById('folder-modal'); fm.dataset._target = 'trade';
+            fm.classList.remove('hidden'); fm.classList.add('flex');
+        });
+
+        document.getElementById('trade-back-to-folders')?.addEventListener('click', () => {
+            document.getElementById('trade-notes-area').classList.add('hidden');
+            document.getElementById('trade-folders-bar').classList.remove('hidden');
+            selectedTradeFolderId = null;
+            renderTradeFolders();
+            const h = document.getElementById('trade-header-add-note-btn'); if (h) h.classList.add('hidden');
         });
 
         // initial render for folders (show folder list first)
