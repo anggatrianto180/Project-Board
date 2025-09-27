@@ -109,7 +109,7 @@
 
         /* Full-page trade journal layout - tuned to match Project Board visuals */
         body.trade-full {
-            background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            background: linear(180deg, #0b0b0b 0%, #0b0b0b 100%);
         }
         body.trade-full #trade-section {
             /* limit width but allow breathing room on large screens */
@@ -122,6 +122,22 @@
             background: #0b0b0b; /* dark background for trade full view */
             color: #e6eef8; /* light text */
             transition: all 180ms ease;
+        }
+
+        /* Ensure the Trade Journal keeps the same light card/background/text styles
+           as the Personal (Project Board) page even if some utility classes linger. */
+        #trade-section, body.trade-full #trade-section {
+            background-color: var(--card) !important;
+            color: var(--text) !important;
+        }
+        #trade-section .bg-white, #trade-section .panel, #trade-section .card, #trade-section .note-item, #trade-section .task-card {
+            background-color: var(--card) !important;
+            color: var(--text) !important;
+        }
+        #trade-section input, #trade-section textarea, #trade-section select {
+            background-color: #ffffff !important;
+            color: var(--text) !important;
+            border-color: rgba(15,23,36,0.06) !important;
         }
         @media (min-width: 768px) {
             body.trade-full #trade-section { padding: 2rem; /* md:p-8 */ }
@@ -2546,23 +2562,12 @@
                     // allow CSS rules keyed on body.trade-full to apply as well
                     document.body.classList.add('trade-full');
 
-                    // Toggle utility classes instead of using CSS !important overrides.
-                    // Convert .bg-white blocks into dark variants and make inputs dark.
-                    try {
-                        const whites = el.querySelectorAll('.bg-white');
-                        whites.forEach((node, idx) => {
-                            if (!node.dataset._origClassAll) node.dataset._origClassAll = node.className;
-                            node.classList.remove('bg-white');
-                            // add dark background and light text utilities
-                            node.classList.add('bg-gray-900','text-gray-100');
-                        });
-
-                        const inputs = el.querySelectorAll('input,textarea,select');
-                        inputs.forEach((inp) => {
-                            if (!inp.dataset._origClassAll) inp.dataset._origClassAll = inp.className;
-                            inp.classList.add('bg-gray-900','text-gray-100','border-gray-700');
-                        });
-                    } catch (e) { console.warn('Toggle to dark utilities failed', e); }
+                    // Keep the existing background and utility classes so Trade Journal
+                    // visually matches the Personal (Project Board) page. Previously
+                    // this area converted .bg-white elements to dark variants; that
+                    // behavior has been removed to keep a consistent white background.
+                    // Run a small sweep to normalize any lingering color utility classes.
+                    try { normalizeTradeColors(el); } catch(e) { console.warn('normalizeTradeColors failed', e); }
                 }
                 document.getElementById('trade-btn')?.classList.add('active');
                 document.getElementById('trade-btn')?.setAttribute('aria-pressed','true');
@@ -2873,6 +2878,29 @@
             s.onload = () => { console.debug('Chart.js loaded'); res(); };
             s.onerror = (e) => { console.warn('Chart.js failed to load', e); rej(e); };
             document.head.appendChild(s);
+        });
+    };
+
+    // Normalize color utilities inside the trade section to ensure consistent light styling
+    const normalizeTradeColors = (rootEl) => {
+        const root = rootEl || document.getElementById('trade-section');
+        if (!root) return;
+        // remove dark utility classes that may have been applied
+        const darkClasses = ['bg-gray-900','text-gray-100','border-gray-700','dark','bg-yellow-50'];
+        darkClasses.forEach(cls => {
+            root.querySelectorAll('.' + cls).forEach(n => n.classList.remove(cls));
+        });
+        // ensure panels and cards have light background classes
+        root.querySelectorAll('.panel, .card, .note-item, .task-card, .bg-white').forEach(n => {
+            n.classList.remove('bg-gray-900','text-gray-100');
+            if (!n.classList.contains('bg-white')) n.classList.add('bg-white');
+            n.style.color = '';
+        });
+        // normalize inputs
+        root.querySelectorAll('input,textarea,select').forEach(inp => {
+            inp.classList.remove('bg-gray-900','text-gray-100','border-gray-700');
+            if (!inp.classList.contains('bg-white')) inp.classList.add('bg-white');
+            inp.style.color = '';
         });
     };
 
