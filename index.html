@@ -126,8 +126,8 @@
         @media (min-width: 768px) {
             body.trade-full #trade-section { padding: 2rem; /* md:p-8 */ }
         }
-        /* Ensure controls inside the trade panel are clickable above page overlays */
-    body.trade-full #trade-section * { z-index: 2; position: relative; }
+        /* Ensure common panels/cards inside the trade panel sit above background but don't interfere with fixed overlays */
+    body.trade-full #trade-section .panel, body.trade-full #trade-section .card, body.trade-full #trade-section .note-item, body.trade-full #trade-section .task-card { z-index: 2; position: relative; }
           /* We now use JS to toggle utility classes on elements inside the trade panel when entering full-page mode.
               That avoids needing !important overrides and keeps styling consistent with Tailwind utilities. */
 
@@ -629,8 +629,8 @@
                 </div>
 
                 <!-- Trade form modal (was inline panel) -->
-                <div id="trade-form-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 hidden">
-                    <div class="w-full max-w-3xl rounded-lg p-6 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-lg">
+                <div id="trade-form-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden" role="dialog" aria-modal="true">
+                    <div class="w-full max-w-3xl rounded-lg p-6 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-lg relative">
                         <form id="trade-form" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="md:col-span-1">
                             <label class="block text-xs font-medium text-gray-600">Asset</label>
@@ -2714,7 +2714,7 @@
             });
         }
 
-    document.getElementById('trade-cancel')?.addEventListener('click', () => { editingTradeId = null; document.getElementById('trade-form').reset(); const dt = document.getElementById('trade-datetime'); if (dt) dt.value = new Date().toISOString().slice(0,16); const modal = document.getElementById('trade-form-modal'); if (modal) { modal.classList.add('hidden'); } });
+    document.getElementById('trade-cancel')?.addEventListener('click', () => { editingTradeId = null; document.getElementById('trade-form').reset(); const dt = document.getElementById('trade-datetime'); if (dt) dt.value = new Date().toISOString().slice(0,16); const modal = document.getElementById('trade-form-modal'); if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); } });
 
     // --- Analytics (Chart.js) and aggregated stats ---
     const loadChartJs = () => {
@@ -3167,6 +3167,7 @@
             // open modal for new trade
             editingTradeId = null;
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
             // set defaults after render
             setTimeout(()=>{
                 const dt = document.getElementById('trade-datetime');
