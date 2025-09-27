@@ -107,19 +107,29 @@
         .task-list::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 8px; }
         .dark .task-list::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.18); }
 
-        /* Full-page trade journal layout */
+        /* Full-page trade journal layout - tuned to match Project Board visuals */
         body.trade-full {
             background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
         }
         body.trade-full #trade-section {
+            /* limit width but allow breathing room on large screens */
             max-width: 1200px;
-            margin: 24px auto;
+            margin: 28px auto;
             min-height: calc(100vh - 160px);
-            box-shadow: 0 10px 30px rgba(2,6,23,0.12);
-            border-radius: 12px;
+            box-shadow: 0 14px 36px rgba(2,6,23,0.13);
+            border-radius: 14px;
+            padding: 1.5rem; /* match Tailwind p-6 */
+            background: #0b0b0b; /* dark background for trade full view */
+            color: #e6eef8; /* light text */
+            transition: all 180ms ease;
+        }
+        @media (min-width: 768px) {
+            body.trade-full #trade-section { padding: 2rem; /* md:p-8 */ }
         }
         /* Ensure controls inside the trade panel are clickable above page overlays */
-        body.trade-full #trade-section * { z-index: 2; position: relative; }
+    body.trade-full #trade-section * { z-index: 2; position: relative; }
+          /* We now use JS to toggle utility classes on elements inside the trade panel when entering full-page mode.
+              That avoids needing !important overrides and keeps styling consistent with Tailwind utilities. */
 
         .dark .kanban-column .kanban-column-header {
             border-bottom: 1px solid rgba(255,255,255,0.06) !important;
@@ -2368,7 +2378,45 @@
 
             // show requested: if target is trade => single trade view; otherwise show all main sections together
             if (target === 'trade' || target === sections.trade) {
-                const el = document.getElementById(sections.trade); if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+                const el = document.getElementById(sections.trade);
+                if (el) {
+                    // Save original className once so we can restore exactly on exit
+                    if (!el.dataset._origClass) el.dataset._origClass = el.className;
+                    // show trade section as a single full-page view
+                    el.classList.remove('hidden');
+                    el.classList.add('flex','w-full','min-h-screen');
+                    // remove rounded that constrains it so it appears full-page
+                    el.classList.remove('rounded-xl');
+
+                    // if there's an inner max-width wrapper, expand it to full width and save its original classes
+                    // try to find a child with a 'max-w-' class (covers max-w-4xl, max-w-5xl, etc.)
+                    const inner = Array.from(el.children).find(c => /max-w-/.test(c.className)) || el.querySelector('.max-w-5xl');
+                    if (inner) {
+                        if (!inner.dataset._origClass) inner.dataset._origClass = inner.className;
+                        inner.classList.remove('max-w-5xl','mx-auto');
+                        inner.classList.add('w-full','max-w-full','mx-0','px-4');
+                    }
+                    // allow CSS rules keyed on body.trade-full to apply as well
+                    document.body.classList.add('trade-full');
+
+                    // Toggle utility classes instead of using CSS !important overrides.
+                    // Convert .bg-white blocks into dark variants and make inputs dark.
+                    try {
+                        const whites = el.querySelectorAll('.bg-white');
+                        whites.forEach((node, idx) => {
+                            if (!node.dataset._origClassAll) node.dataset._origClassAll = node.className;
+                            node.classList.remove('bg-white');
+                            // add dark background and light text utilities
+                            node.classList.add('bg-gray-900','text-gray-100');
+                        });
+
+                        const inputs = el.querySelectorAll('input,textarea,select');
+                        inputs.forEach((inp) => {
+                            if (!inp.dataset._origClassAll) inp.dataset._origClassAll = inp.className;
+                            inp.classList.add('bg-gray-900','text-gray-100','border-gray-700');
+                        });
+                    } catch (e) { console.warn('Toggle to dark utilities failed', e); }
+                }
                 document.getElementById('trade-btn')?.classList.add('active');
                 document.getElementById('trade-btn')?.setAttribute('aria-pressed','true');
             } else {
@@ -2376,6 +2424,38 @@
                 const boardEl = document.getElementById(sections.board); if (boardEl) { boardEl.classList.remove('hidden'); }
                 const dailyEl = document.getElementById(sections.daily); if (dailyEl) { dailyEl.classList.remove('hidden'); }
                 const notesEl = document.getElementById(sections.notes); if (notesEl) { notesEl.classList.remove('hidden'); }
+                // if we left trade view, restore trade section sizing to its original card-like appearance
+                const tradeEl = document.getElementById(sections.trade);
+                if (tradeEl) {
+                    // If we saved original class lists, restore them precisely
+                    if (tradeEl.dataset._origClass) {
+                        tradeEl.className = tradeEl.dataset._origClass;
+                        delete tradeEl.dataset._origClass;
+                    } else {
+                        tradeEl.classList.remove('flex','w-full','min-h-screen');
+                        tradeEl.classList.add('hidden','rounded-xl');
+                    }
+                    const inner = tradeEl.querySelector('[data-_orig-class]') || Array.from(tradeEl.children).find(c => /\bmax-w-/.test(c.className));
+                    if (inner) {
+                        if (inner.dataset._origClass) {
+                            inner.className = inner.dataset._origClass;
+                            delete inner.dataset._origClass;
+                        } else {
+                            inner.classList.remove('w-full','max-w-full','mx-0','px-4');
+                            inner.classList.add('max-w-5xl','mx-auto');
+                        }
+                    }
+                    // restore any elements we toggled to dark utilities
+                    try {
+                        const toggled = tradeEl.querySelectorAll('[data-_orig-class-all]');
+                        toggled.forEach(n => {
+                            n.className = n.dataset._origClassAll;
+                            delete n.dataset._origClassAll;
+                        });
+                    } catch (e) { console.warn('Restore original classes failed', e); }
+                    // remove body trade-full marker
+                    document.body.classList.remove('trade-full');
+                }
                 // set appropriate focus/scroll if user navigated to a specific sub-section
                 if (target === 'daily' || target === sections.daily) { document.getElementById(sections.daily)?.scrollIntoView({ behavior: 'smooth' }); }
                 else if (target === 'notes' || target === sections.notes) { document.getElementById(sections.notes)?.scrollIntoView({ behavior: 'smooth' }); }

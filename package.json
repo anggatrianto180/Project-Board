@@ -1,0 +1,20 @@
+{
+  "name": "web-management-proyek",
+  "version": "1.0.0",
+  "main": "service-worker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anggatrianto180/Project-Board.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anggatrianto180/Project-Board/issues"
+  },
+  "homepage": "https://github.com/anggatrianto180/Project-Board#readme",
+  "description": ""
+}
