@@ -124,6 +124,39 @@
             transition: all 180ms ease;
         }
 
+        /* Trade Journal: improve vertical rhythm — apply spacing to inner wrapper children and panels */
+        /* target the inner max-width wrapper's direct children so spacing applies regardless of nesting */
+        #trade-section .max-w-5xl > * {
+            margin-top: 1.0rem;
+            margin-bottom: 1.6rem;
+        }
+        #trade-section .max-w-5xl > *:first-child { margin-top: 0; }
+        #trade-section .max-w-5xl > *:last-child { margin-bottom: 0; }
+
+        /* extra spacing for key panels and table containers to make sections more distinct */
+        #trade-section #trade-rules-panel,
+        #trade-section #trade-analytics,
+        #trade-section #capital-panel,
+        #trade-section #trade-notes-panel,
+        #trade-section .overflow-x-auto {
+            margin-top: 1.4rem;
+            margin-bottom: 1.8rem;
+        }
+
+        /* make commonly used margin utility classes slightly larger inside trade for consistency */
+        #trade-section .mb-4, #trade-section .mb-6 {
+            margin-bottom: 1.25rem !important;
+        }
+
+        /* desktop: increase breathing room on larger screens */
+        @media (min-width: 768px) {
+            #trade-section .max-w-5xl > * { margin-top: 1.4rem; margin-bottom: 2rem; }
+            #trade-section #trade-rules-panel,
+            #trade-section #trade-analytics,
+            #trade-section #capital-panel,
+            #trade-section #trade-notes-panel { margin-top: 1.6rem; margin-bottom: 2.2rem; }
+        }
+
         /* Ensure the Trade Journal keeps the same light card/background/text styles
            as the Personal (Project Board) page even if some utility classes linger. */
         #trade-section, body.trade-full #trade-section {
