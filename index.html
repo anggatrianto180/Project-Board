@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" style="scroll-behavior: smooth;">
 
 <head>
@@ -7,6 +7,11 @@
     <title>Collaborative Project Hub (Firebase)</title>
     <!-- Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Icon Library for buttons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,6 +20,8 @@
     <meta name="theme-color" content="#0b1220">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <!-- Chart.js for Skill Radar Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Authentication System -->
     <script src="auth.js"></script>
     <style>
@@ -226,7 +233,7 @@
             transition: all 180ms ease;
         }
 
-        /* Trade Journal: improve vertical rhythm — apply spacing to inner wrapper children and panels */
+        /* Trade Journal: improve vertical rhythm â€” apply spacing to inner wrapper children and panels */
         /* target the inner max-width wrapper's direct children so spacing applies regardless of nesting */
         #trade-section .max-w-5xl>* {
             margin-top: 1.0rem;
@@ -842,22 +849,25 @@
         }
 
         /* Mode Toggle Styles */
-        /* Unified active style for header mode/trade buttons */
+        /* Unified active style for header mode/trade/skills buttons */
         .mode-toggle button.active,
         .mode-toggle button.p-2.active,
-        #trade-btn.active {
+        #trade-btn.active,
+        #skills-btn.active {
             background-color: var(--accent) !important;
             color: white !important;
         }
 
         /* Focus and animation for header buttons */
         .mode-toggle button,
-        #trade-btn {
+        #trade-btn,
+        #skills-btn {
             transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
         }
 
         .mode-toggle button:focus,
-        #trade-btn:focus {
+        #trade-btn:focus,
+        #skills-btn:focus {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.18);
             outline: 2px solid rgba(79, 70, 229, 0.18);
@@ -966,6 +976,11 @@
                     class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open Trade Journal">
                     <i class="fas fa-chart-line"></i>
+                </button>
+                <button id="skills-btn" title="Skill Tracking"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Open Skill Tracking">
+                    <i class="fas fa-brain"></i>
                 </button>
                 <div class="mode-toggle flex items-center gap-2" role="tablist" aria-label="Workspace modes">
                     <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
@@ -1266,6 +1281,38 @@
 
         <hr class="section-divider">
 
+        <!-- Skills Tracking Section -->
+        <div id="skills-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8 hidden">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-3xl font-bold text-gray-800">Software QA Engineer - Skill Tracking</h2>
+                    <button id="add-skill-btn"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        <span class="hidden sm:inline">Add Skill</span>
+                    </button>
+                </div>
+                <p class="text-gray-600">Track your professional development across Core QA, AI, Languages, and
+                    Investment</p>
+            </div>
+
+            <!-- Skill Overview Radar Chart -->
+            <div
+                class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6 mb-8 border border-indigo-100 dark:border-gray-700">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-area text-indigo-600 dark:text-indigo-400"></i>
+                    Skill Balance Overview
+                </h3>
+                <div class="max-w-md mx-auto">
+                    <canvas id="skillRadarChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="section-divider">
+
         <!-- Daily Routine Section -->
         <div id="daily-routine-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-center items-center mb-6 relative">
@@ -1410,6 +1457,96 @@
             </form>
         </div>
     </div>
+
+    <!-- Skill Modal (Add/Edit) -->
+    <div id="skill-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-auto p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+            <h3 id="skill-modal-title" class="text-2xl font-bold mb-6">Add New Skill</h3>
+            <form id="skill-modal-form" class="space-y-4">
+                <div>
+                    <label for="skill-name-input" class="block text-sm font-medium text-gray-700 mb-1">Skill Name
+                        *</label>
+                    <input id="skill-name-input" type="text" placeholder="e.g., Selenium, Python, Crypto Trading"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required>
+                </div>
+
+                <div>
+                    <label for="skill-category-select" class="block text-sm font-medium text-gray-700 mb-1">Category
+                        *</label>
+                    <select id="skill-category-select"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required>
+                        <option value="">Select a category...</option>
+                        <option value="Core QA & Automation">Core QA & Automation</option>
+                        <option value="AI & Creative">AI & Creative</option>
+                        <option value="Programming Languages">Programming Languages</option>
+                        <option value="Investment & Trading">Investment & Trading</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="skill-level-select" class="block text-sm font-medium text-gray-700 mb-1">Proficiency
+                        Level *</label>
+                    <select id="skill-level-select"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required>
+                        <option value="">Select level...</option>
+                        <option value="1">1 - Novice (Just started)</option>
+                        <option value="2">2 - Beginner (Basic knowledge)</option>
+                        <option value="3">3 - Intermediate (Can work independently)</option>
+                        <option value="4">4 - Advanced (High proficiency)</option>
+                        <option value="5">5 - Expert (Mastery level)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="skill-subtitle-input"
+                        class="block text-sm font-medium text-gray-700 mb-1">Subtitle/Description</label>
+                    <input id="skill-subtitle-input" type="text" placeholder="e.g., Web Automation, ES6+, BTC/Altcoins"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="skill-tags-input" class="block text-sm font-medium text-gray-700 mb-1">Tags
+                        (comma-separated)</label>
+                    <input id="skill-tags-input" type="text" placeholder="e.g., playwright, testing, e2e"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p class="text-xs text-gray-500 mt-1">Separate tags with commas for better organization</p>
+                </div>
+
+                <div>
+                    <label for="skill-icon-select" class="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+                    <select id="skill-icon-select"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="fas fa-code">Code (Generic)</option>
+                        <option value="fas fa-robot">Robot (Automation)</option>
+                        <option value="fas fa-bug">Bug (Testing)</option>
+                        <option value="fas fa-plug">Plug (API)</option>
+                        <option value="fas fa-database">Database</option>
+                        <option value="fab fa-js">JavaScript</option>
+                        <option value="fab fa-python">Python</option>
+                        <option value="fas fa-brain">Brain (AI)</option>
+                        <option value="fas fa-video">Video</option>
+                        <option value="fas fa-palette">Palette (Design)</option>
+                        <option value="fab fa-bitcoin">Bitcoin</option>
+                        <option value="fas fa-chart-line">Chart (Trading)</option>
+                        <option value="fas fa-shield-alt">Shield (Security)</option>
+                        <option value="fas fa-sync-alt">Sync (CI/CD)</option>
+                        <option value="fas fa-theater-masks">Theater Masks</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 border-t flex justify-end gap-3">
+                    <button type="button" id="cancel-skill-btn"
+                        class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save
+                        Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="routine-modal" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden items-center justify-center">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-lg md:max-w-4xl mx-auto p-6 md:p-8"
             style="max-height:80vh; overflow:auto;">
@@ -1842,7 +1979,7 @@
             const badgeAll = document.createElement('span'); badgeAll.className = 'ml-2 inline-flex items-center justify-center rounded-full bg-gray-200 text-sm px-2 py-0.5'; badgeAll.textContent = allCount;
             allBtn.appendChild(badgeAll);
             allBtn.onclick = () => { selectedFolderId = null; renderFolders(); renderNotes(); document.getElementById('notes-area').classList.remove('hidden'); document.getElementById('folders-bar').classList.add('hidden'); document.getElementById('current-folder-name').textContent = 'All'; const h = document.getElementById('header-add-note-btn'); if (h) h.classList.remove('hidden'); };
-            // 'All' is a filter-only card — no add action appended
+            // 'All' is a filter-only card â€” no add action appended
             folderList.appendChild(allBtn);
 
             noteFolders.forEach(f => {
@@ -2139,7 +2276,7 @@
             const paths = taskObj.imagePath ? (Array.isArray(taskObj.imagePath) ? taskObj.imagePath : [taskObj.imagePath]) : [];
             if (paths.length) {
                 const firstName = (paths[0].split('/').pop() || 'image');
-                const display = firstName.length > 24 ? firstName.slice(0, 20) + '…' : firstName;
+                const display = firstName.length > 24 ? firstName.slice(0, 20) + 'â€¦' : firstName;
                 if (detailFn) detailFn.textContent = paths.length > 1 ? `${display} (+${paths.length - 1})` : display;
                 if (removeBtn) { removeBtn.classList.remove('hidden'); removeBtn.dataset.remove = 'false'; }
             } else {
@@ -2355,7 +2492,7 @@
                 // show a small count and first filename shortened
                 if (fn) {
                     const first = files[0].name;
-                    const display = first.length > 24 ? first.slice(0, 20) + '…' : first;
+                    const display = first.length > 24 ? first.slice(0, 20) + 'â€¦' : first;
                     fn.textContent = files.length > 1 ? `${display} (+${files.length - 1})` : display;
                 }
                 // show first preview
@@ -2376,7 +2513,7 @@
                 const url = URL.createObjectURL(first);
                 if (detailImagePreview) { detailImagePreview.src = url; detailImagePreview.classList.remove('hidden'); }
                 if (detailRemoveBtn) { detailRemoveBtn.dataset.remove = 'false'; detailRemoveBtn.classList.remove('hidden'); }
-                if (fn) { const display = first.name.length > 24 ? first.name.slice(0, 20) + '…' : first.name; fn.textContent = files.length > 1 ? `${display} (+${files.length - 1})` : display; }
+                if (fn) { const display = first.name.length > 24 ? first.name.slice(0, 20) + 'â€¦' : first.name; fn.textContent = files.length > 1 ? `${display} (+${files.length - 1})` : display; }
             });
         }
         if (detailRemoveBtn) {
@@ -2667,7 +2804,7 @@
                 checkbox.onchange = () => updateRoutineStatus(routine.id, checkbox.checked);
                 const timeDiv = document.createElement('div');
                 timeDiv.className = 'text-xs text-gray-500 dark:text-gray-400';
-                timeDiv.innerHTML = `${routine.time ? '<strong class="mr-2">' + formatTime(routine.time) + '</strong>' : ''}${routine.duration ? ' • ' + escapeHtml(routine.duration) : ''}`;
+                timeDiv.innerHTML = `${routine.time ? '<strong class="mr-2">' + formatTime(routine.time) + '</strong>' : ''}${routine.duration ? ' â€¢ ' + escapeHtml(routine.duration) : ''}`;
                 left.appendChild(checkbox);
                 left.appendChild(timeDiv);
 
@@ -3077,7 +3214,8 @@
             board: 'project-board-section',
             daily: 'daily-routine-section',
             notes: 'important-notes-section',
-            trade: 'trade-section'
+            trade: 'trade-section',
+            skills: 'skills-section'
         };
 
         const applyNavigationState = (target) => {
@@ -3087,14 +3225,16 @@
 
             // clear active states
             document.getElementById('trade-btn')?.classList.remove('active');
+            document.getElementById('skills-btn')?.classList.remove('active');
             document.getElementById('personal-mode-btn')?.classList.remove('active');
             document.getElementById('working-mode-btn')?.classList.remove('active');
             // reset aria
             document.getElementById('trade-btn')?.setAttribute('aria-pressed', 'false');
+            document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed', 'false');
 
-            // show requested: if target is trade => single trade view; otherwise show all main sections together
+            // show requested: if target is trade or skills => single view; otherwise show all main sections together
             if (target === 'trade' || target === sections.trade) {
                 const el = document.getElementById(sections.trade);
                 if (el) {
@@ -3126,6 +3266,15 @@
                 }
                 document.getElementById('trade-btn')?.classList.add('active');
                 document.getElementById('trade-btn')?.setAttribute('aria-pressed', 'true');
+            } else if (target === 'skills' || target === sections.skills) {
+                // Show skills section
+                const el = document.getElementById(sections.skills);
+                if (el) {
+                    el.classList.remove('hidden');
+                    // el.classList.add('flex', 'w-full'); // Incorrectly forces row layout
+                }
+                document.getElementById('skills-btn')?.classList.add('active');
+                document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'true');
             } else {
                 // show all main sections (Project Board + Daily + Notes)
                 const boardEl = document.getElementById(sections.board); if (boardEl) { boardEl.classList.remove('hidden'); }
@@ -3227,6 +3376,510 @@
             });
             makeKeyboardClickable(tradeBtn);
         }
+
+        // --- Skills Tracking JS ---
+        const skillsBtn = document.getElementById('skills-btn');
+        const skillsSection = document.getElementById('skills-section');
+        if (skillsBtn && skillsSection) {
+            skillsBtn.addEventListener('click', () => {
+                const cur = parseHash();
+                if (cur === 'skills') {
+                    // go back to board
+                    navigateTo('board');
+                } else {
+                    navigateTo('skills');
+                }
+            });
+            makeKeyboardClickable(skillsBtn);
+        }
+
+        // --- Skills Radar Chart Initialization ---
+        let skillRadarChart = null;
+        const initializeSkillRadarChart = () => {
+            const canvas = document.getElementById('skillRadarChart');
+            if (!canvas) return;
+
+            // Destroy existing chart instance if it exists
+            if (skillRadarChart) {
+                skillRadarChart.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            skillRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Core QA & Automation', 'AI & Creative', 'Programming', 'Investment & Trading'],
+                    datasets: [{
+                        label: 'Current Level',
+                        data: [4.5, 4.0, 4.25, 4.67], // Average levels per category
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        borderColor: 'rgb(99, 102, 241)',
+                        pointBackgroundColor: 'rgb(99, 102, 241)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(99, 102, 241)',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5,
+                            min: 0,
+                            ticks: {
+                                stepSize: 1,
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                },
+                                color: '#374151'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.parsed.r.toFixed(2) + '/5';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        // Initialize chart when skills section becomes visible
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const skillsSectionEl = document.getElementById('skills-section');
+                    if (skillsSectionEl && !skillsSectionEl.classList.contains('hidden')) {
+                        // Skills section is now visible, initialize chart
+                        setTimeout(() => initializeSkillRadarChart(), 100);
+                    }
+                }
+            });
+        });
+
+        const skillsSectionObserved = document.getElementById('skills-section');
+        if (skillsSectionObserved) {
+            observer.observe(skillsSectionObserved, { attributes: true });
+        }
+
+        // --- Skills Management System ---
+        let skillsData = [];
+        let editingSkillId = null;
+
+        // Firebase collection for skills (global, not per mode)
+        const skillsCollectionPath = () => collection(db, 'skills');
+
+        // Helper: Get level badge styling
+        const getLevelBadge = (level) => {
+            const levelNum = parseInt(level);
+            if (levelNum === 5) return { text: 'Expert', class: 'bg-green-100 text-green-800' };
+            if (levelNum === 4) return { text: 'Advanced', class: 'bg-blue-100 text-blue-800' };
+            if (levelNum === 3) return { text: 'Intermediate', class: 'bg-yellow-100 text-yellow-800' };
+            if (levelNum === 2) return { text: 'Beginner', class: 'bg-orange-100 text-orange-800' };
+            return { text: 'Novice', class: 'bg-gray-100 text-gray-800' };
+        };
+
+        // Helper: Get icon color based on category
+        const getCategoryIconColor = (category) => {
+            if (category.includes('QA')) return 'bg-indigo-100 text-indigo-600';
+            if (category.includes('AI') || category.includes('Creative')) return 'bg-purple-100 text-purple-600';
+            if (category.includes('Programming')) return 'bg-blue-100 text-blue-600';
+            if (category.includes('Investment') || category.includes('Trading')) return 'bg-green-100 text-green-600';
+            return 'bg-gray-100 text-gray-600';
+        };
+
+        // Helper: Get category hover color
+        const getCategoryHoverColor = (category) => {
+            if (category.includes('QA')) return 'hover:border-indigo-300';
+            if (category.includes('AI') || category.includes('Creative')) return 'hover:border-purple-300';
+            if (category.includes('Programming')) return 'hover:border-blue-300';
+            if (category.includes('Investment') || category.includes('Trading')) return 'hover:border-green-300';
+            return 'hover:border-gray-300';
+        };
+
+        // Helper: Format relative time
+        const getRelativeTime = (timestamp) => {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return `${days} days ago`;
+            if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+            if (days < 365) return `${Math.floor(days / 30)} months ago`;
+            return `${Math.floor(days / 365)} years ago`;
+        };
+
+        // Helper: Check if skill needs practice (30+ days)
+        const needsPractice = (timestamp) => {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            return days >= 30;
+        };
+
+
+
+        // Render all skills dynamically
+        const renderSkills = () => {
+            const skillsSection = document.getElementById('skills-section');
+            if (!skillsSection) return;
+
+            // Group skills by category
+            const categories = {
+                'Core QA & Automation': { icon: 'fas fa-bug', color: 'text-indigo-600', skills: [] },
+                'AI & Creative': { icon: 'fas fa-brain', color: 'text-purple-600', skills: [] },
+                'Programming Languages': { icon: 'fas fa-code', color: 'text-blue-600', skills: [] },
+                'Investment & Trading': { icon: 'fas fa-chart-line', color: 'text-green-600', skills: [] }
+            };
+
+            skillsData.forEach(skill => {
+                if (categories[skill.category]) {
+                    categories[skill.category].skills.push(skill);
+                }
+            });
+
+            // Clear existing skill categories (but keep header and radar chart)
+            const existingCategories = skillsSection.querySelectorAll('.skill-category');
+            existingCategories.forEach(cat => cat.remove());
+
+            // Render each category
+            Object.keys(categories).forEach(catName => {
+                const catData = categories[catName];
+                if (catData.skills.length === 0) return; // Skip empty categories
+
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'skill-category mb-8';
+
+                const categoryHeader = `
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="${catData.icon} text-2xl ${catData.color}"></i>
+                        <h3 class="text-2xl font-bold text-gray-800">${catName}</h3>
+                    </div>
+                `;
+
+                const skillCards = catData.skills.map(skill => {
+                    const badge = getLevelBadge(skill.level);
+                    const percentage = (parseInt(skill.level) / 5) * 100;
+                    const iconColor = getCategoryIconColor(skill.category);
+                    const hoverColor = getCategoryHoverColor(skill.category);
+                    const relativeTime = getRelativeTime(skill.updated_at);
+                    const stale = needsPractice(skill.updated_at);
+
+                    return `
+                        <div class="bg-white rounded-lg p-5 border-2 border-gray-200 ${hoverColor} transition-all hover:shadow-lg relative">
+                            ${stale ? '<div class="absolute top-2 right-2"><span class="bg-red-100 text-red-700 text-xs font-semibold px-2 py-1 rounded flex items-center gap-1"><i class="fas fa-exclamation-triangle"></i> Needs Practice</span></div>' : ''}
+                            <div class="flex items-start justify-between mb-3 ${stale ? 'mt-6' : ''}">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 ${iconColor} rounded-lg flex items-center justify-center">
+                                        <i class="${skill.icon || 'fas fa-code'} text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">${skill.name}</h4>
+                                        ${skill.subtitle ? `<p class="text-xs text-gray-500">${skill.subtitle}</p>` : ''}
+                                    </div>
+                                </div>
+                                <span class="${badge.class} text-xs font-semibold px-2 py-1 rounded">${badge.text}</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>Level ${skill.level}/5</span>
+                                    <span>${percentage}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-indigo-600 h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                                </div>
+                            </div>
+                            ${skill.tags && skill.tags.length > 0 ? `
+                                <div class="mb-2 flex flex-wrap gap-1">
+                                    ${skill.tags.map(tag => `<span class="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            <p class="text-xs text-gray-500 mb-2">
+                                <i class="far fa-calendar-alt mr-1"></i>
+                                Last practiced: <span class="font-medium ${stale ? 'text-red-600' : ''}">${relativeTime}</span>
+                            </p>
+                            <div class="flex gap-2 pt-2 border-t">
+                                <button onclick="editSkill('${skill.id}')" class="text-blue-600 hover:text-blue-700 text-sm font-medium"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                <button onclick="deleteSkill('${skill.id}')" class="text-red-600 hover:text-red-700 text-sm font-medium"><i class="fas fa-trash mr-1"></i>Delete</button>
+                                <button onclick="updateSkillPractice('${skill.id}')" class="text-green-600 hover:text-green-700 text-sm font-medium ml-auto"><i class="fas fa-check mr-1"></i>Practiced</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                categoryDiv.innerHTML = `
+                    ${categoryHeader}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${skillCards}
+                    </div>
+                `;
+
+                skillsSection.appendChild(categoryDiv);
+            });
+
+            // Update radar chart
+            updateSkillRadarChart();
+        };
+
+        // Update radar chart with real data and theme-aware colors
+        const updateSkillRadarChart = async () => {
+            const canvas = document.getElementById('skillRadarChart');
+            if (!canvas) return;
+
+            // Ensure Chart.js is loaded
+            if (!window.Chart) {
+                try { await loadChartJs(); } catch (e) { console.error(e); return; }
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#e5e7eb' : '#1f2937'; // gray-200 / gray-800
+            const gridColor = isDark ? '#374151' : '#e5e7eb'; // gray-700 / gray-200
+            const bgColor = isDark ? 'rgba(99, 102, 241, 0.5)' : 'rgba(79, 70, 229, 0.2)';
+            const borderColor = '#4f46e5';
+
+            // Init if needed
+            if (!skillRadarChart) {
+                skillRadarChart = new Chart(canvas, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Core QA & Automation', 'AI & Creative', 'Programming Languages', 'Investment & Trading'],
+                        datasets: [{
+                            label: 'Skill Level',
+                            data: [0, 0, 0, 0],
+                            backgroundColor: bgColor,
+                            borderColor: borderColor,
+                            pointBackgroundColor: borderColor,
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: borderColor,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { color: gridColor },
+                                grid: { color: gridColor },
+                                pointLabels: { color: textColor, font: { size: 12, weight: '600' } },
+                                ticks: { display: false, min: 0, max: 5, stepSize: 1 }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Prepare data
+            const categories = {
+                'Core QA & Automation': [],
+                'AI & Creative': [],
+                'Programming Languages': [],
+                'Investment & Trading': []
+            };
+
+            skillsData.forEach(skill => {
+                if (categories[skill.category] !== undefined) {
+                    categories[skill.category].push(parseInt(skill.level));
+                }
+            });
+
+            const averages = Object.keys(categories).map(cat => {
+                const levels = categories[cat];
+                if (levels.length === 0) return 0;
+                const sum = levels.reduce((a, b) => a + b, 0);
+                return Math.round((sum / levels.length) * 100) / 100;
+            });
+
+            // Update chart data
+            skillRadarChart.data.datasets[0].data = averages;
+
+            // Update chart colors for current theme
+            skillRadarChart.data.datasets[0].backgroundColor = bgColor;
+            skillRadarChart.options.scales.r.pointLabels.color = textColor;
+            skillRadarChart.options.scales.r.grid.color = gridColor;
+            skillRadarChart.options.scales.r.angleLines.color = gridColor;
+
+            skillRadarChart.update();
+        };
+
+        // Listen to skills collection
+        let skillsUnsub = null;
+        const listenSkills = () => {
+            if (skillsUnsub) skillsUnsub();
+            const q = query(skillsCollectionPath(), orderBy('updated_at', 'desc'));
+            skillsUnsub = onSnapshot(q, snapshot => {
+                skillsData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderSkills();
+            });
+        };
+
+        // Add new skill
+        const addSkill = async (skillData) => {
+            try {
+                await addDoc(skillsCollectionPath(), {
+                    ...skillData,
+                    updated_at: Date.now(),
+                    created_at: Date.now()
+                });
+                showNotification('Skill added successfully!');
+            } catch (err) {
+                console.error('addSkill failed', err);
+                showNotification('Failed to add skill', true);
+            }
+        };
+
+        // Update skill
+        const updateSkill = async (id, skillData) => {
+            if (!id) return;
+            try {
+                await updateDoc(doc(db, 'skills', id), {
+                    ...skillData,
+                    updated_at: Date.now()
+                });
+                showNotification('Skill updated successfully!');
+            } catch (err) {
+                console.error('updateSkill failed', err);
+                showNotification('Failed to update skill', true);
+            }
+        };
+
+        // Delete skill
+        window.deleteSkill = async (id) => {
+            if (!id) return;
+            if (!confirm('Are you sure you want to delete this skill?')) return;
+
+            try {
+                await deleteDoc(doc(db, 'skills', id));
+                showNotification('Skill deleted successfully!');
+            } catch (err) {
+                console.error('deleteSkill failed', err);
+                showNotification('Failed to delete skill', true);
+            }
+        };
+
+        // Edit skill (open modal with data)
+        window.editSkill = (id) => {
+            const skill = skillsData.find(s => s.id === id);
+            if (!skill) return;
+
+            editingSkillId = id;
+            document.getElementById('skill-modal-title').textContent = 'Edit Skill';
+            document.getElementById('skill-name-input').value = skill.name || '';
+            document.getElementById('skill-category-select').value = skill.category || '';
+            document.getElementById('skill-level-select').value = skill.level || '';
+            document.getElementById('skill-subtitle-input').value = skill.subtitle || '';
+            document.getElementById('skill-tags-input').value = (skill.tags || []).join(', ');
+            document.getElementById('skill-icon-select').value = skill.icon || 'fas fa-code';
+
+            const modal = document.getElementById('skill-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        // Update skill practice timestamp
+        window.updateSkillPractice = async (id) => {
+            if (!id) return;
+            try {
+                await updateDoc(doc(db, 'skills', id), {
+                    updated_at: Date.now()
+                });
+                showNotification('Skill practice updated!');
+            } catch (err) {
+                console.error('updateSkillPractice failed', err);
+                showNotification('Failed to update practice time', true);
+            }
+        };
+
+        // Open add skill modal
+        document.getElementById('add-skill-btn')?.addEventListener('click', () => {
+            editingSkillId = null;
+            document.getElementById('skill-modal-title').textContent = 'Add New Skill';
+            document.getElementById('skill-modal-form').reset();
+            const modal = document.getElementById('skill-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+
+        // Close skill modal
+        document.getElementById('cancel-skill-btn')?.addEventListener('click', () => {
+            const modal = document.getElementById('skill-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        // Handle skill form submission
+        document.getElementById('skill-modal-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('skill-name-input').value.trim();
+            const category = document.getElementById('skill-category-select').value;
+            const level = document.getElementById('skill-level-select').value;
+            const subtitle = document.getElementById('skill-subtitle-input').value.trim();
+            const tagsInput = document.getElementById('skill-tags-input').value.trim();
+            const icon = document.getElementById('skill-icon-select').value;
+
+            const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+
+            const skillData = {
+                name,
+                category,
+                level: parseInt(level),
+                subtitle,
+                tags,
+                icon
+            };
+
+            if (editingSkillId) {
+                await updateSkill(editingSkillId, skillData);
+            } else {
+                await addSkill(skillData);
+            }
+
+            // Close modal
+            const modal = document.getElementById('skill-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
+        // Start listening to skills when app initializes
+        listenSkills();
 
         // Trade helpers (single collection for all modes)
         const tradeCollectionPath = () => collection(db, 'trades');
