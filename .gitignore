@@ -1,0 +1,22 @@
+# Sensitive files - DO NOT COMMIT
+auth.js
+CARA-GANTI-PASSWORD.md
+
+# Node modules
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup-*
