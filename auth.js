@@ -1,9 +1,16 @@
 // Password protection dengan SHA-256 hash
+// JANGAN tulis password asli di sini - hanya hash yang aman
 const PASSWORD_HASHES = [
-    "66ba11c8b57047bc31dcba9dde802fb5f9d55940b0d98e692d4b47f6eead97ad",
-    "91b1e240ed103f291c16765cb201a9e4f2c23ff4057050b9fd78571f373ace3d",
-    "53e82907713e3ba97612d1b0105ce270fd6992f0ec37a0d91ee0d5c04e614f85"
+    "9210b1fd76d104cbf27555f862919a53e64cd382059dd4b23e4e5ec852c287e5"
 ];
+
+// Rate limiting configuration
+const RATE_LIMIT = {
+    maxAttempts: 5,         // Max attempts before lockout
+    lockoutDuration: 60000, // Lockout duration in ms (60 seconds)
+    attempts: 0,
+    lockoutUntil: 0
+};
 
 // Fungsi untuk hash password menggunakan SHA-256
 async function hashPassword(password) {
@@ -20,14 +27,51 @@ function isAuthenticated() {
     return PASSWORD_HASHES.includes(authToken);
 }
 
-// Fungsi login
-async function login(password) {
-    const hashedInput = await hashPassword(password);
-    if (PASSWORD_HASHES.includes(hashedInput)) {
-        sessionStorage.setItem('authToken', hashedInput);
+// Check if rate limited
+function isRateLimited() {
+    if (Date.now() < RATE_LIMIT.lockoutUntil) {
         return true;
     }
+    // Reset attempts after lockout expires
+    if (RATE_LIMIT.lockoutUntil > 0 && Date.now() >= RATE_LIMIT.lockoutUntil) {
+        RATE_LIMIT.attempts = 0;
+        RATE_LIMIT.lockoutUntil = 0;
+    }
     return false;
+}
+
+// Get remaining lockout seconds
+function getRemainingLockout() {
+    const remaining = Math.ceil((RATE_LIMIT.lockoutUntil - Date.now()) / 1000);
+    return remaining > 0 ? remaining : 0;
+}
+
+// Fungsi login with rate limiting
+async function login(password) {
+    // Check rate limit
+    if (isRateLimited()) {
+        return { success: false, rateLimited: true, remaining: getRemainingLockout() };
+    }
+
+    const hashedInput = await hashPassword(password);
+    if (PASSWORD_HASHES.includes(hashedInput)) {
+        RATE_LIMIT.attempts = 0;
+        RATE_LIMIT.lockoutUntil = 0;
+        sessionStorage.setItem('authToken', hashedInput);
+        return { success: true };
+    }
+
+    // Failed attempt
+    RATE_LIMIT.attempts++;
+    if (RATE_LIMIT.attempts >= RATE_LIMIT.maxAttempts) {
+        RATE_LIMIT.lockoutUntil = Date.now() + RATE_LIMIT.lockoutDuration;
+    }
+
+    return {
+        success: false,
+        rateLimited: false,
+        attemptsLeft: RATE_LIMIT.maxAttempts - RATE_LIMIT.attempts
+    };
 }
 
 // Fungsi logout
@@ -136,11 +180,12 @@ function showLoginPage() {
                         text-align: center;
                     ">
                         <i class="fas fa-exclamation-circle"></i>
-                        <span>Password salah, silakan coba lagi</span>
+                        <span id="error-text">Password salah, silakan coba lagi</span>
                     </div>
                     
                     <button 
-                        type="submit" 
+                        type="submit"
+                        id="login-submit-btn"
                         style="
                             width: 100%;
                             padding: 1rem;
@@ -200,11 +245,17 @@ function showLoginPage() {
         e.preventDefault();
         const passwordInput = document.getElementById('password-input');
         const errorMessage = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const submitBtn = document.getElementById('login-submit-btn');
         const password = passwordInput.value;
 
-        const success = await login(password);
+        // Disable button during login attempt
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
 
-        if (success) {
+        const result = await login(password);
+
+        if (result.success) {
             // Login sukses, hapus overlay dan tampilkan konten
             document.getElementById('login-overlay').remove();
             const mainContent = document.querySelector('main');
@@ -212,11 +263,42 @@ function showLoginPage() {
             if (mainContent) mainContent.style.display = 'block';
             if (header) header.style.display = 'block';
             addLogoutButton();
+        } else if (result.rateLimited) {
+            // Rate limited - show lockout message with countdown
+            errorMessage.style.display = 'block';
+            passwordInput.value = '';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            const updateCountdown = () => {
+                const secs = getRemainingLockout();
+                if (secs > 0) {
+                    errorText.innerHTML = `<i class="fas fa-ban"></i> Terlalu banyak percobaan! Coba lagi dalam <strong>${secs} detik</strong>`;
+                    submitBtn.innerHTML = `<i class="fas fa-clock" style="margin-right: 0.5rem;"></i> Tunggu ${secs}s`;
+                    setTimeout(updateCountdown, 1000);
+                } else {
+                    errorMessage.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Masuk';
+                    passwordInput.focus();
+                }
+            };
+            updateCountdown();
         } else {
             // Login gagal, tampilkan pesan error
             errorMessage.style.display = 'block';
+            if (result.attemptsLeft <= 2) {
+                errorText.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Password salah! <strong>${result.attemptsLeft} percobaan tersisa</strong>`;
+            } else {
+                errorText.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password salah, silakan coba lagi';
+            }
             passwordInput.value = '';
             passwordInput.focus();
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
 
             // Animasi shake
             passwordInput.style.animation = 'shake 0.5s';
