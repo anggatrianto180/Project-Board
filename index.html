@@ -931,7 +931,8 @@
         .mode-toggle button.active,
         .mode-toggle button.p-2.active,
         #trade-btn.active,
-        #skills-btn.active {
+        #skills-btn.active,
+        #youtube-btn.active {
             background-color: var(--accent) !important;
             color: white !important;
         }
@@ -1060,6 +1061,11 @@
                     aria-pressed="false" aria-label="Open Skill Tracking">
                     <i class="fas fa-brain"></i>
                 </button>
+                <button id="youtube-btn" title="YouTube Inventory"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Open YouTube Inventory">
+                    <i class="fab fa-youtube"></i>
+                </button>
                 <div class="mode-toggle flex items-center gap-2" role="tablist" aria-label="Workspace modes">
                     <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
                         title="Personal" aria-pressed="false" aria-label="Switch to personal workspace" role="tab"> <i
@@ -1083,6 +1089,8 @@
             <a href="#daily-routine-section" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Daily
                 Routine</a>
             <a href="#important-notes-section" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Notes</a>
+            <a href="#" id="mobile-youtube-btn" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">YouTube
+                Inventory</a>
         </div>
     </header>
 
@@ -1391,6 +1399,58 @@
 
         <hr class="section-divider">
 
+        <!-- YouTube Inventory Section -->
+        <div id="youtube-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
+            <!-- Header -->
+            <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">YouTube Channel Inventory</h2>
+                    <p class="text-gray-600 dark:text-gray-300">Manage your YouTube channels, monetization status, and
+                        assets.</p>
+                </div>
+                <button id="add-channel-btn"
+                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all flex items-center gap-2">
+                    <i class="fas fa-plus"></i>
+                    <span>Add New Channel</span>
+                </button>
+            </div>
+
+            <!-- YouTube Channels List -->
+            <div id="youtube-channels-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Channels will be rendered here -->
+            </div>
+
+            <!-- Empty State (hidden by default) -->
+            <div id="youtube-empty-state" class="hidden text-center py-12">
+                <div
+                    class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                    <i class="fab fa-youtube text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">No channels yet</h3>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">Get started by creating a new YouTube channel inventory
+                    item.</p>
+            </div>
+
+            <hr class="my-8 border-gray-200 dark:border-gray-700">
+
+            <!-- YouTube Notes Section -->
+            <div id="youtube-notes-section">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 dark:text-white">YouTube Notes</h3>
+                    <button id="youtube-add-note-btn"
+                        class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
+                        <i class="fas fa-plus"></i> Add Note
+                    </button>
+                </div>
+                <!-- YouTube Notes List -->
+                <div id="youtube-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Notes rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
         <!-- Daily Routine Section -->
         <div id="daily-routine-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-center items-center mb-6 relative">
@@ -1630,6 +1690,150 @@
                         class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
                     <button type="submit" class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save
                         Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- YouTube Channel Modal (Add/Edit) -->
+    <div id="youtube-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-auto p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+            <h3 id="youtube-modal-title" class="text-2xl font-bold mb-6">Add New Channel</h3>
+            <form id="youtube-modal-form" class="space-y-4">
+                <input type="hidden" id="youtube-channel-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-channel-id-input" class="block text-sm font-medium text-gray-700 mb-1">Channel ID
+                            (e.g. UC...)</label>
+                        <input id="yt-channel-id-input" type="text" placeholder="UCxxxxxxxxxxxx"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label for="yt-name-input" class="block text-sm font-medium text-gray-700 mb-1">Channel Name
+                            *</label>
+                        <input id="yt-name-input" type="text" placeholder="e.g. Tekno Review"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                            required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="yt-link-input" class="block text-sm font-medium text-gray-700 mb-1">Channel
+                        Link</label>
+                    <input id="yt-link-input" type="url" placeholder="https://youtube.com/..."
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-email-input" class="block text-sm font-medium text-gray-700 mb-1">Main Email
+                            (Gmail)</label>
+                        <input id="yt-email-input" type="email" placeholder="example@gmail.com"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label for="yt-recovery-input" class="block text-sm font-medium text-gray-700 mb-1">Recovery
+                            Email</label>
+                        <input id="yt-recovery-input" type="email" placeholder="recovery@gmail.com"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-phone-input" class="block text-sm font-medium text-gray-700 mb-1">Phone Number
+                            (for
+                            verification)</label>
+                        <input id="yt-phone-input" type="tel" placeholder="+62 812..."
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label for="yt-device-input" class="block text-sm font-medium text-gray-700 mb-1">Device Used to
+                            Create</label>
+                        <input id="yt-device-input" type="text" placeholder="e.g. Samsung S23, iPhone 15"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-niche-input"
+                            class="block text-sm font-medium text-gray-700 mb-1">Niche/Category</label>
+                        <input id="yt-niche-input" type="text" placeholder="e.g. Tech, Gaming, Vlog"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label for="yt-audience-input" class="block text-sm font-medium text-gray-700 mb-1">Target
+                            Audience</label>
+                        <input id="yt-audience-input" type="text" placeholder="e.g. Gen Z, Investors"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-target-region-select" class="block text-sm font-medium text-gray-700 mb-1">Target
+                            Region</label>
+                        <select id="yt-target-region-select"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="Indonesia">🇮🇩 Indonesia</option>
+                            <option value="Luar Negeri">🌍 Luar Negeri</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-monetization-select"
+                            class="block text-sm font-medium text-gray-700 mb-1">Monetization Status</label>
+                        <select id="yt-monetization-select"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="Not Monetized">Not Monetized</option>
+                            <option value="Chasing Hours">Chasing Hours</option>
+                            <option value="Monetized">Monetized</option>
+                            <option value="Demonetized">Demonetized</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="yt-content-status-select"
+                            class="block text-sm font-medium text-gray-700 mb-1">Content Status</label>
+                        <select id="yt-content-status-select"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                            <option value="Sudah Dikerjakan">✅ Sudah Dikerjakan</option>
+                            <option value="Sedang Dikerjakan">🔄 Sedang Dikerjakan</option>
+                            <option value="Belum Dikerjakan">⬜ Belum Dikerjakan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="yt-asset-input" class="block text-sm font-medium text-gray-700 mb-1">Asset Folder
+                            Link (Drive)</label>
+                        <input id="yt-asset-input" type="url" placeholder="https://drive.google.com/..."
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="yt-competitor-input" class="block text-sm font-medium text-gray-700 mb-1">Competitor
+                        Video References</label>
+                    <textarea id="yt-competitor-input" rows="3"
+                        placeholder="https://youtube.com/watch?v=...&#10;Channel B - Strategy X"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Add links or notes about competitor videos to reference.</p>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-youtube-btn"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                        Save Channel
+                    </button>
                 </div>
             </form>
         </div>
@@ -3481,13 +3685,16 @@
             editButton.title = 'Edit';
             editButton.onclick = () => {
                 if (target === 'trade') editTradeNote(note.id, item);
+                else if (target === 'youtube') editYouTubeNote(note.id, item);
                 else editNote(note.id, item);
             };
             const deleteButton = document.createElement('i');
             deleteButton.className = 'fas fa-trash-alt delete-btn';
             deleteButton.title = 'Delete';
+            deleteButton.title = 'Delete';
             deleteButton.onclick = () => {
                 if (target === 'trade') deleteTradeNote(note.id);
+                else if (target === 'youtube') deleteYouTubeNote(note.id);
                 else deleteNote(note.id);
             };
             actionsDiv.appendChild(editButton);
@@ -3564,11 +3771,87 @@
         const deleteNote = async (id) => { const confirmed = await showConfirmModal('Are you sure you want to delete this note?'); if (confirmed) { try { await deleteDoc(doc(db, "hubs", currentMode, "notes", id)); showNotification('Note deleted.'); } catch (e) { showNotification('Failed to delete note.', true); } } };
 
 
+        // --- YouTube Notes ---
+        let youtubeNotesUnsub = null;
+        let allYouTubeNotes = [];
+
+        const listenYouTubeNotes = () => {
+            if (youtubeNotesUnsub) youtubeNotesUnsub();
+            // hubs/youtube/notes
+            const q = query(collection(db, 'hubs', 'youtube', 'notes'), orderBy('createdAt', 'desc'));
+            youtubeNotesUnsub = onSnapshot(q, (snapshot) => {
+                allYouTubeNotes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderYouTubeNotes();
+            });
+        };
+
+        const renderYouTubeNotes = () => {
+            const container = document.getElementById('youtube-notes-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (allYouTubeNotes.length === 0) {
+                container.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-8 text-gray-500">No notes yet.</div>`;
+                return;
+            }
+
+            allYouTubeNotes.forEach(note => {
+                const el = createNoteElement(note, 'youtube');
+                el.classList.remove('bg-yellow-50');
+                el.classList.add('bg-white', 'border', 'border-gray-200');
+                container.appendChild(el);
+            });
+        };
+
+        const openAddYouTubeNote = () => {
+            editingNoteId = null;
+            noteModalTarget = 'youtube';
+            document.getElementById('note-modal-title-input').value = '';
+            document.getElementById('note-modal-input').value = '';
+            document.getElementById('note-modal-title').textContent = 'Add YouTube Note';
+            // Folder select not used for YouTube notes currently, hide or disable? 
+            // For now, just leave it as is or set to empty.
+            if (document.getElementById('note-modal-folder-select')) document.getElementById('note-modal-folder-select').value = '';
+
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        const editYouTubeNote = (id) => {
+            const noteFn = allYouTubeNotes.find(n => n.id === id);
+            if (!noteFn) return;
+            editingNoteId = id;
+            noteModalTarget = 'youtube';
+            document.getElementById('note-modal-title-input').value = noteFn.title || '';
+            document.getElementById('note-modal-input').value = noteFn.text || '';
+            document.getElementById('note-modal-title').textContent = 'Edit YouTube Note';
+            if (document.getElementById('note-modal-folder-select')) document.getElementById('note-modal-folder-select').value = '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        const deleteYouTubeNote = async (id) => {
+            const confirmed = await showConfirmModal('Delete this YouTube note?');
+            if (!confirmed) return;
+            try {
+                await deleteDoc(doc(db, 'hubs', 'youtube', 'notes', id));
+                showNotification('YouTube note deleted.');
+            } catch (e) {
+                console.error(e);
+                showNotification('Failed to delete note.', true);
+            }
+        };
+
+        // Wire up button
+        document.getElementById('youtube-add-note-btn')?.addEventListener('click', openAddYouTubeNote);
+
+        // Init listener
+        listenYouTubeNotes();
+
 
         // --- Mode Switching ---
         const switchMode = (newMode) => {
             // hide trade section and clear trade active state when switching modes
             const tradeSection = document.getElementById('trade-section'); if (tradeSection) { tradeSection.classList.add('hidden'); tradeSection.classList.remove('flex'); }
+            const youtubeSection = document.getElementById('youtube-section'); if (youtubeSection) { youtubeSection.classList.add('hidden'); }
             document.getElementById('trade-btn')?.classList.remove('active');
 
             if (currentMode === newMode) return;
@@ -3607,22 +3890,25 @@
             daily: 'daily-routine-section',
             notes: 'important-notes-section',
             trade: 'trade-section',
-            skills: 'skills-section'
+            skills: 'skills-section',
+            youtube: 'youtube-section'
         };
 
         const applyNavigationState = (target) => {
-            // target: one of 'board'|'daily'|'notes'|'trade' or section id
+            // target: one of 'board'|'daily'|'notes'|'trade'|'skills'|'youtube' or section id
             // hide all primary sections first
             Object.values(sections).forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('hidden'); el.classList.remove('flex'); } });
 
             // clear active states
             document.getElementById('trade-btn')?.classList.remove('active');
             document.getElementById('skills-btn')?.classList.remove('active');
+            document.getElementById('youtube-btn')?.classList.remove('active');
             document.getElementById('personal-mode-btn')?.classList.remove('active');
             document.getElementById('working-mode-btn')?.classList.remove('active');
             // reset aria
             document.getElementById('trade-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'false');
+            document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed', 'false');
 
@@ -3667,6 +3953,14 @@
                 }
                 document.getElementById('skills-btn')?.classList.add('active');
                 document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'true');
+            } else if (target === 'youtube' || target === sections.youtube) {
+                // Show youtube section
+                const el = document.getElementById(sections.youtube);
+                if (el) {
+                    el.classList.remove('hidden');
+                }
+                document.getElementById('youtube-btn')?.classList.add('active');
+                document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'true');
             } else {
                 // show all main sections (Project Board + Daily + Notes)
                 const boardEl = document.getElementById(sections.board); if (boardEl) { boardEl.classList.remove('hidden'); }
@@ -3783,6 +4077,32 @@
                 }
             });
             makeKeyboardClickable(skillsBtn);
+        }
+
+        // --- YouTube Inventory JS ---
+        const youtubeBtn = document.getElementById('youtube-btn');
+        const youtubeMobileBtn = document.getElementById('mobile-youtube-btn');
+        const youtubeSection = document.getElementById('youtube-section');
+
+        if (youtubeBtn) {
+            youtubeBtn.addEventListener('click', () => {
+                const cur = parseHash();
+                if (cur === 'youtube') {
+                    navigateTo('board');
+                } else {
+                    navigateTo('youtube');
+                }
+            });
+            makeKeyboardClickable(youtubeBtn);
+        }
+
+        if (youtubeMobileBtn) {
+            youtubeMobileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('youtube');
+                // close mobile menu if needed (assuming simple implementation)
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
         }
 
         // --- Skills Radar Chart Initialization ---
@@ -4994,6 +5314,371 @@
             listenRules();
         };
 
+        // --- YouTube Inventory Logic ---
+        let youtubeUnsub = null;
+        let editingChannelId = null;
+
+        const youtubeCollectionPath = () => collection(db, 'youtube_channels');
+
+        const listenYouTubeChannels = () => {
+            if (youtubeUnsub) youtubeUnsub();
+            const q = query(youtubeCollectionPath(), orderBy('name'));
+            youtubeUnsub = onSnapshot(q, (snapshot) => {
+                const channels = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderYouTubeChannels(channels);
+            });
+        };
+
+        // --- Subscriber Count Fetching (via YouTube Page Scraping) ---
+        const fetchSubscriberCount = async (channelId) => {
+            if (!channelId) return null;
+            const cleanId = channelId.trim();
+            const youtubeUrl = `https://www.youtube.com/channel/${cleanId}`;
+
+            // CORS proxies to bypass browser restrictions
+            const proxyUrls = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(youtubeUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(youtubeUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(youtubeUrl)}`
+            ];
+
+            for (const proxiedUrl of proxyUrls) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+                    const response = await fetch(proxiedUrl, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) continue;
+
+                    const html = await response.text();
+
+                    // Strategy 1: Extract from ytInitialData JSON
+                    const ytDataMatch = html.match(/var\s+ytInitialData\s*=\s*(\{.+?\});/s);
+                    if (ytDataMatch) {
+                        try {
+                            const ytData = JSON.parse(ytDataMatch[1]);
+                            // Navigate to subscriber count in ytInitialData
+                            const header = ytData?.header?.c4TabbedHeaderRenderer || ytData?.header?.pageHeaderRenderer;
+                            if (header) {
+                                const subText = header?.subscriberCountText?.simpleText || '';
+                                if (subText) {
+                                    // Returns something like "1.23K subscribers" or "123 subscribers"
+                                    const cleaned = subText.replace(/\s*subscribers?/i, '').trim();
+                                    if (cleaned) return cleaned;
+                                }
+                            }
+                            // Alternative path through metadata
+                            const meta = ytData?.metadata?.channelMetadataRenderer;
+                            if (meta) {
+                                // Some channels expose this differently
+                                const headerAlt = ytData?.header;
+                                const content = JSON.stringify(headerAlt);
+                                const subMatch = content.match(/"subscriberCountText".*?"simpleText":"([^"]+)"/);
+                                if (subMatch) {
+                                    return subMatch[1].replace(/\s*subscribers?/i, '').trim();
+                                }
+                            }
+                        } catch (parseErr) {
+                            // JSON parse failed, try next strategy
+                        }
+                    }
+
+                    // Strategy 2: Extract from meta tags or structured data
+                    const ogMatch = html.match(/subscriberCountText.*?simpleText.*?["']([^"']+?)["']/);
+                    if (ogMatch) {
+                        return ogMatch[1].replace(/\s*subscribers?/i, '').trim();
+                    }
+
+                    // Strategy 3: Look for interaction count in JSON-LD
+                    const ldMatch = html.match(/"interactionCount"\s*:\s*"?(\d+)"?/);
+                    if (ldMatch) {
+                        const count = parseInt(ldMatch[1]);
+                        if (count > 0) {
+                            return Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(count);
+                        }
+                    }
+
+                } catch (error) {
+                    continue; // Try next proxy
+                }
+            }
+
+            return null;
+        };
+
+        const updateSubscriberCounts = async (channels) => {
+            for (const channel of channels) {
+                if (!channel.channelId) continue;
+
+                // Show loading state if needed, or just wait
+                const count = await fetchSubscriberCount(channel.channelId);
+
+                if (count) {
+                    const el = document.getElementById(`sub-count-${channel.id}`);
+                    if (el) {
+                        el.innerHTML = `<i class="fas fa-signal"></i> ${count} Subs`;
+                        el.classList.remove('hidden');
+                    }
+                }
+            }
+        };
+
+        const renderYouTubeChannels = (channels) => {
+            const container = document.getElementById('youtube-channels-list');
+            const emptyState = document.getElementById('youtube-empty-state');
+            if (!container) return;
+
+            container.innerHTML = '';
+            if (channels.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+            if (emptyState) emptyState.classList.add('hidden');
+
+            // Sort: active/in-progress channels first, not-started channels last
+            const statusOrder = { 'Sudah Dikerjakan': 0, 'Sedang Dikerjakan': 1, 'Belum Dikerjakan': 2 };
+            const sorted = [...channels].sort((a, b) => {
+                const orderA = statusOrder[a.contentStatus] ?? 2;
+                const orderB = statusOrder[b.contentStatus] ?? 2;
+                return orderA - orderB;
+            });
+            channels = sorted;
+
+            // Determine if we need a divider (some active + some not-started)
+            const activeChannels = channels.filter(c => (c.contentStatus || 'Belum Dikerjakan') !== 'Belum Dikerjakan');
+            const inactiveChannels = channels.filter(c => (c.contentStatus || 'Belum Dikerjakan') === 'Belum Dikerjakan');
+            const needsDivider = activeChannels.length > 0 && inactiveChannels.length > 0;
+
+            let dividerInserted = false;
+            channels.forEach(channel => {
+                // Insert divider line before the first inactive channel
+                if (!dividerInserted && needsDivider && (channel.contentStatus || 'Belum Dikerjakan') === 'Belum Dikerjakan') {
+                    dividerInserted = true;
+                    const divider = document.createElement('div');
+                    divider.className = 'col-span-full flex items-center gap-4 my-2';
+                    divider.innerHTML = `
+                        <div class="flex-1 border-t-2 border-gray-300 dark:border-gray-600"></div>
+                        <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">⬜ Belum Dikerjakan</span>
+                        <div class="flex-1 border-t-2 border-gray-300 dark:border-gray-600"></div>
+                    `;
+                    container.appendChild(divider);
+                }
+                const badgeColor = {
+                    'Not Monetized': 'bg-gray-100 text-gray-800',
+                    'Chasing Hours': 'bg-yellow-100 text-yellow-800',
+                    'Monetized': 'bg-green-100 text-green-800',
+                    'Demonetized': 'bg-red-100 text-red-800'
+                }[channel.monetization] || 'bg-gray-100 text-gray-800';
+
+                const card = document.createElement('div');
+                card.className = 'bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-4 relative';
+                card.innerHTML = `
+                    <div id="sub-count-${channel.id}" class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1 hidden">
+                        <!-- Count will be injected here -->
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
+                                <i class="fab fa-youtube text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white pr-8">${channel.name}</h3>
+                                <a href="${channel.link}" target="_blank" class="text-xs text-red-600 dark:text-red-400 hover:underline flex items-center gap-1">
+                                    Visit Channel <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 rounded text-xs font-medium ${badgeColor}">
+                            ${channel.monetization}
+                        </span>
+                        ${(() => {
+                        const cs = channel.contentStatus || 'Belum Dikerjakan';
+                        const csColor = { 'Sudah Dikerjakan': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'Sedang Dikerjakan': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400', 'Belum Dikerjakan': 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }[cs] || 'bg-gray-100 text-gray-600';
+                        const csIcon = { 'Sudah Dikerjakan': '✅', 'Sedang Dikerjakan': '🔄', 'Belum Dikerjakan': '⬜' }[cs] || '';
+                        return `<span class="px-2 py-1 rounded text-xs font-medium ${csColor}">${csIcon} ${cs}</span>`;
+                    })()}
+                        ${(() => {
+                        const tr = channel.targetRegion || 'Indonesia';
+                        const trColor = { 'Indonesia': 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400', 'Luar Negeri': 'bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400' }[tr] || 'bg-gray-100 text-gray-600';
+                        const trIcon = { 'Indonesia': '🇮🇩', 'Luar Negeri': '🌍' }[tr] || '';
+                        return `<span class="px-2 py-1 rounded text-xs font-medium ${trColor}">${trIcon} ${tr}</span>`;
+                    })()}
+                        ${channel.channelId ? `<span class="px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">ID: ${channel.channelId}</span>` : ''}
+                    </div>
+                    
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-envelope text-gray-400 dark:text-gray-500 w-4"></i>
+                            <span class="truncate" title="${channel.email}">${channel.email}</span>
+                        </div>
+                         ${channel.recoveryEmail ? `
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-gray-400 dark:text-gray-500 w-4"></i>
+                            <span class="truncate text-xs" title="Recovery: ${channel.recoveryEmail}">${channel.recoveryEmail}</span>
+                        </div>` : ''}
+                        ${channel.phoneNumber ? `
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-phone text-gray-400 dark:text-gray-500 w-4"></i>
+                            <span class="truncate text-sm">${channel.phoneNumber}</span>
+                        </div>` : ''}
+                        ${channel.createdOnDevice ? `
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-mobile-alt text-gray-400 dark:text-gray-500 w-4"></i>
+                            <span class="truncate text-sm" title="Device">${channel.createdOnDevice}</span>
+                        </div>` : ''}
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-tag text-gray-400 dark:text-gray-500 w-4"></i>
+                            <span><strong class="text-red-600 dark:text-red-400">${channel.niche}</strong> &bull; ${channel.audience}</span>
+                        </div>
+                        ${channel.assetLink ? `
+                        <div class="flex items-center gap-2">
+                            <i class="fab fa-google-drive text-gray-400 dark:text-gray-500 w-4"></i>
+                            <a href="${channel.assetLink}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Assets Folder</a>
+                        </div>` : ''}
+                        ${channel.competitorRefs ? `
+                        <div class="mt-2 pt-2 border-t dark:border-gray-700">
+                            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Competitor Refs:</p>
+                            <p class="text-xs whitespace-pre-line text-gray-600 dark:text-gray-300">${channel.competitorRefs}</p>
+                        </div>` : ''}
+                    </div>
+
+                    <div class="pt-4 border-t dark:border-gray-700 flex justify-end gap-2 mt-auto">
+                        <button class="edit-channel-btn text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-channel-btn text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Start fetching subs
+            updateSubscriberCounts(channels);
+
+            // Attach listeners to new buttons (re-query needed after innerHTML replacement)
+            container.querySelectorAll('.edit-channel-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    const channel = channels.find(c => c.id === id);
+                    if (channel) openYouTubeModal(channel);
+                });
+            });
+
+            container.querySelectorAll('.delete-channel-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    if (confirm('Delete this YouTube channel inventory item?')) {
+                        await deleteYouTubeChannel(id);
+                    }
+                });
+            });
+        };
+
+        const addYouTubeChannel = async (data) => {
+            try {
+                await addDoc(youtubeCollectionPath(), { ...data, createdAt: Date.now() });
+                showNotification('Channel added successfully.');
+            } catch (err) {
+                console.error(err);
+                showNotification('Failed to add channel.', true);
+            }
+        };
+
+        const updateYouTubeChannel = async (id, data) => {
+            try {
+                await updateDoc(doc(db, 'youtube_channels', id), { ...data, updatedAt: Date.now() });
+                showNotification('Channel updated successfully.');
+            } catch (err) {
+                console.error(err);
+                showNotification('Failed to update channel.', true);
+            }
+        };
+
+        const deleteYouTubeChannel = async (id) => {
+            try {
+                await deleteDoc(doc(db, 'youtube_channels', id));
+                showNotification('Channel deleted.');
+            } catch (err) {
+                console.error(err);
+                showNotification('Failed to delete channel.', true);
+            }
+        };
+
+        const openYouTubeModal = (channel = null) => {
+            editingChannelId = channel ? channel.id : null;
+            document.getElementById('youtube-modal-title').textContent = channel ? 'Edit Channel' : 'Add New Channel';
+
+            // Set values
+            document.getElementById('yt-channel-id-input').value = channel ? (channel.channelId || '') : '';
+            document.getElementById('yt-name-input').value = channel ? channel.name : '';
+            document.getElementById('yt-link-input').value = channel ? channel.link : '';
+            document.getElementById('yt-email-input').value = channel ? channel.email : '';
+            document.getElementById('yt-recovery-input').value = channel ? channel.recoveryEmail : '';
+            document.getElementById('yt-phone-input').value = channel ? (channel.phoneNumber || '') : '';
+            document.getElementById('yt-device-input').value = channel ? (channel.createdOnDevice || '') : '';
+            document.getElementById('yt-niche-input').value = channel ? channel.niche : '';
+            document.getElementById('yt-audience-input').value = channel ? channel.audience : '';
+            document.getElementById('yt-target-region-select').value = channel ? (channel.targetRegion || 'Indonesia') : 'Indonesia';
+            document.getElementById('yt-monetization-select').value = channel ? channel.monetization : 'Not Monetized';
+            document.getElementById('yt-content-status-select').value = channel ? (channel.contentStatus || 'Belum Dikerjakan') : 'Belum Dikerjakan';
+            document.getElementById('yt-asset-input').value = channel ? channel.assetLink : '';
+            document.getElementById('yt-competitor-input').value = channel ? (channel.competitorRefs || '') : '';
+
+            const m = document.getElementById('youtube-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        };
+
+        // Event Listeners for YouTube Feature
+        document.getElementById('add-channel-btn')?.addEventListener('click', () => openYouTubeModal());
+
+        document.getElementById('cancel-youtube-btn')?.addEventListener('click', () => {
+            const m = document.getElementById('youtube-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+        });
+
+        document.getElementById('youtube-modal-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                channelId: document.getElementById('yt-channel-id-input').value.trim(),
+                name: document.getElementById('yt-name-input').value.trim(),
+                link: document.getElementById('yt-link-input').value.trim(),
+                email: document.getElementById('yt-email-input').value.trim(),
+                recoveryEmail: document.getElementById('yt-recovery-input').value.trim(),
+                phoneNumber: document.getElementById('yt-phone-input').value.trim(),
+                createdOnDevice: document.getElementById('yt-device-input').value.trim(),
+                niche: document.getElementById('yt-niche-input').value.trim(),
+                audience: document.getElementById('yt-audience-input').value.trim(),
+                targetRegion: document.getElementById('yt-target-region-select').value,
+                monetization: document.getElementById('yt-monetization-select').value,
+                contentStatus: document.getElementById('yt-content-status-select').value,
+                assetLink: document.getElementById('yt-asset-input').value.trim(),
+                competitorRefs: document.getElementById('yt-competitor-input').value.trim()
+            };
+
+            if (!data.name) return;
+
+            if (editingChannelId) {
+                await updateYouTubeChannel(editingChannelId, data);
+            } else {
+                await addYouTubeChannel(data);
+            }
+
+            const m = document.getElementById('youtube-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+        });
+
+
+
+        // Initialize YouTube Listener
+        listenYouTubeChannels();
+
         document.getElementById('personal-mode-btn').addEventListener('click', () => switchMode('personal'));
         document.getElementById('working-mode-btn').addEventListener('click', () => switchMode('working'));
 
@@ -5051,6 +5736,17 @@
                     document.getElementById('note-modal').classList.add('hidden');
                     document.getElementById('note-modal').classList.remove('flex');
                     // refresh local lists handled by onSnapshot listeners
+                } else if (noteModalTarget === 'youtube') {
+                    // operate on hubs/youtube/notes
+                    if (editingNoteId) {
+                        await updateDoc(doc(db, 'hubs', 'youtube', 'notes', editingNoteId), { title: title || null, text: txt, updatedAt: Date.now() });
+                        showNotification('YouTube note updated.');
+                    } else {
+                        await addDoc(collection(db, 'hubs', 'youtube', 'notes'), { title: title || null, text: txt, createdAt: Date.now() });
+                        showNotification('YouTube note added.');
+                    }
+                    document.getElementById('note-modal').classList.add('hidden');
+                    document.getElementById('note-modal').classList.remove('flex');
                 } else {
                     // operate on hubs/<currentMode>/notes
                     if (editingNoteId) {
