@@ -28,78 +28,121 @@
         :root {
             --bg: #f8fafc;
             --card: #ffffff;
-            --card-border: rgba(15, 23, 36, 0.06);
+            --card-border: rgba(15, 23, 36, 0.08);
             --text: #1f2937;
-            --muted: #6b7280;
+            --muted: #64748b;
             --accent: #3b82f6;
+            --header-bg: rgba(255, 255, 255, 0.85);
+            /* Glassmorphism light */
         }
 
         .dark {
-            --bg: #0b1220;
-            --card: #0f1724;
-            --card-border: rgba(255, 255, 255, 0.06);
-            --text: #e6eef8;
-            --muted: #9ca3af;
+            --bg: #0f172a;
+            /* Slate 900 - Deeper, richer background */
+            --card: #1e293b;
+            /* Slate 800 - Slightly lighter for cards */
+            --card-border: rgba(255, 255, 255, 0.15);
+            /* Increased opacity for better visibility */
+            --text: #f1f5f9;
+            /* Slate 100 - High contrast text */
+            --muted: #94a3b8;
+            /* Slate 400 - Readable muted text */
             --accent: #60a5fa;
+            /* Blue 400 - Vivid accent */
+            --header-bg: rgba(15, 23, 42, 0.85);
+            /* Glassmorphism dark */
         }
 
-        /* Card borders for task cards */
-        .task-card {
+        /* Card borders and shadows for visual depth */
+        .task-card,
+        .note-item,
+        .bg-white,
+        .modal-panel {
             border: 1px solid var(--card-border);
-            padding: 0.9rem;
-            /* snugger padding for tasks */
             border-radius: 12px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .task-card {
+            padding: 1rem;
             min-height: initial;
             height: auto;
             align-items: flex-start;
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            background-color: var(--card);
+            /* Ensure bg color is explicit */
         }
 
         /* Note cards keep a larger min height */
         .note-item {
-            border: 1px solid var(--card-border);
             padding: 1.25rem;
-            /* larger padding */
             min-height: 160px;
-            /* larger cards */
-            border-radius: 12px;
         }
 
-        /* Ensure card borders are visible in dark mode (stronger contrast) */
+        /* Dark mode specific enhancements */
         .dark .task-card,
-        .dark .note-item {
-            border: 1px solid rgba(255, 255, 255, 0.22) !important;
-            /* brighter border */
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
-            /* subtle outer shadow for separation */
+        .dark .note-item,
+        .dark .bg-white,
+        /* Matches panels like project-board-section */
+        .dark .modal-panel {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+            /* Deep shadow */
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            /* Crisp/visible border */
         }
 
-        /* Kanban column borders (structure of board) */
+        /* Hover effects for interactivity */
+        .task-card:hover,
+        .note-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: var(--accent);
+            /* Highlight border on hover */
+        }
+
+        .dark .task-card:hover,
+        .dark .note-item:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+            border-color: rgba(96, 165, 250, 0.5) !important;
+        }
+
+        /* Kanban area styling */
         .kanban-column {
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            /* Cleaner look */
+            background-color: rgba(241, 245, 249, 0.5);
+            /* Very subtle gray for column bg */
+            border-radius: 12px;
+            padding: 8px;
+            /* Add padding around tasks */
         }
 
-        /* Stronger column borders in dark mode so structure is visible */
+        /* Stronger column contrast in dark mode */
         .dark .kanban-column {
+            background-color: rgba(30, 41, 59, 0.4) !important;
+            /* Semi-transparent slate */
             border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            background-color: rgba(255, 255, 255, 0.02) !important;
+            /* Visible border */
         }
 
         .kanban-column .kanban-column-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: 2px solid rgba(0, 0, 0, 0.04);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
         }
 
         /* Limit visible tasks to ~6 items per column; enable vertical scroll when more tasks exist */
         .task-list {
-            max-height: 420px;
-            /* roughly 6 tasks at ~64-70px each including gaps */
+            max-height: 480px;
+            /* Slightly taller */
             overflow-y: auto;
             scroll-behavior: smooth;
-            position: relative;
-            padding-right: 6px;
-            /* spacing for scrollbar */
+            padding-right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            /* Space between tasks */
         }
 
         /* subtle gradient hint to show there's more content when scrollable */
@@ -109,37 +152,47 @@
             left: 0;
             right: 0;
             bottom: 0;
-            height: 28px;
+            height: 32px;
             pointer-events: none;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.9));
-            opacity: 0.9;
-        }
-
-        .dark .task-list::after {
-            background: linear-gradient(to bottom, rgba(15, 23, 36, 0), rgba(15, 23, 36, 0.9));
-        }
-
-        /* hide gradient by default; only show when is-scrollable is set */
-        .task-list::after {
-            display: none;
+            background: linear-gradient(to bottom, transparent, var(--bg));
+            /* Adapt to theme */
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
         .task-list.is-scrollable::after {
-            display: block;
+            opacity: 1;
         }
 
-        /* Custom scrollbar styling */
-        .task-list::-webkit-scrollbar {
+        /* Custom scrollbar styling - Refined */
+        ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
-        .task-list::-webkit-scrollbar-thumb {
-            background: rgba(100, 116, 139, 0.4);
-            border-radius: 8px;
+        ::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .dark .task-list::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.18);
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            /* Slate 300 */
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+            /* Slate 400 */
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+            /* Slate 600 */
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+            /* Slate 500 */
         }
 
         /* Scrollbar styling for routine lists and modal list */
@@ -332,38 +385,34 @@
         #folder-list {
             display: flex;
             flex-direction: column;
-            /* vertical stack on small screens */
             gap: 0.5rem;
             overflow-y: auto;
             max-height: 60vh;
             padding-bottom: 4px;
-            -webkit-overflow-scrolling: touch;
         }
 
         .folder-btn {
-            padding: 0.6rem 0.75rem;
-            border-radius: 8px;
-            background-color: #f3f4f6;
-            /* gray-100 */
-            color: #374151;
-            /* gray-700 */
-            border: 1px solid rgba(15, 23, 36, 0.06);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            background-color: #f1f5f9;
+            /* Slate 100 */
+            color: #334155;
+            /* Slate 700 */
+            border: 1px solid transparent;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            /* full width on mobile */
             justify-content: space-between;
+            transition: all 0.2s;
         }
 
         .folder-title {
             flex: 1 1 auto;
             min-width: 0;
-            /* allow ellipsis */
             white-space: normal;
-            /* allow wrapping on small screens */
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -377,14 +426,16 @@
         }
 
         .folder-btn:hover {
-            background-color: #e6e9ef;
+            background-color: #e2e8f0;
+            /* Slate 200 */
+            transform: translateY(-1px);
         }
 
         .folder-btn.active {
-            background-color: #4338ca;
-            /* indigo-700 */
+            background-color: #4f46e5;
+            /* Indigo 600 */
             color: white;
-            border-color: rgba(67, 56, 202, 0.9);
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
         }
 
         /* Stack folder bar on small screens */
@@ -426,6 +477,7 @@
         #folder-modal .modal-panel {
             width: 100%;
             max-width: 460px;
+            background-color: var(--card);
         }
 
         body {
@@ -454,29 +506,39 @@
 
         /* Soften primary/secondary button colors in dark mode to avoid harsh contrast */
         .dark .bg-blue-600 {
-            background-color: rgba(96, 165, 250, 0.16) !important;
-            /* subtle blue */
-            color: var(--text) !important;
-            border: 1px solid rgba(96, 165, 250, 0.22);
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            color: #60a5fa !important;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark .bg-blue-600:hover {
+            background-color: rgba(59, 130, 246, 0.3) !important;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
         }
 
         .dark .bg-indigo-600 {
-            background-color: rgba(99, 102, 241, 0.14) !important;
-            color: var(--text) !important;
-            border: 1px solid rgba(99, 102, 241, 0.18);
+            background-color: rgba(99, 102, 241, 0.2) !important;
+            color: #818cf8 !important;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark .bg-indigo-600:hover {
+            background-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
         }
 
         .dark .bg-indigo-500 {
-            background-color: rgba(79, 70, 229, 0.12) !important;
-            color: var(--text) !important;
-            border: 1px solid rgba(79, 70, 229, 0.16);
+            background-color: rgba(79, 70, 229, 0.2) !important;
+            color: #a5b4fc !important;
+            border: 1px solid rgba(79, 70, 229, 0.3);
         }
 
         .dark .bg-yellow-500 {
-            background-color: rgba(245, 158, 11, 0.10) !important;
-            /* muted yellow */
-            color: var(--text) !important;
-            border: 1px solid rgba(245, 158, 11, 0.12);
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            color: #fbbf24 !important;
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
 
         .dark .bg-gray-200 {
@@ -507,24 +569,30 @@
             color: white !important;
         }
 
-        /* Notes textarea in dark mode: slightly dark input with clear text (modal) */
-        .dark #note-modal-input,
-        .dark textarea {
-            background-color: #0b1220 !important;
-            color: var(--text) !important;
-            border: 1px solid rgba(255, 255, 255, 0.06) !important;
-        }
-
-        /* Form controls on modals / add-edit follow dark mode */
+        /* Input Styling in Dark Mode */
         .dark input[type="text"],
         .dark input[type="password"],
         .dark input[type="time"],
+        .dark input[type="number"],
+        .dark input[type="email"],
+        .dark input[type="url"],
+        .dark input[type="tel"],
+        .dark input[type="datetime-local"],
         .dark textarea,
-        .dark select,
-        .dark input {
-            background-color: #0b1220 !important;
+        .dark select {
+            background-color: #020617 !important;
+            /* Very dark background for inputs */
             color: var(--text) !important;
-            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 8px;
+            /* Consistent rounded */
+        }
+
+        .dark input:focus,
+        .dark textarea:focus,
+        .dark select:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2) !important;
         }
 
         .dark .bg-white,
@@ -572,8 +640,17 @@
         }
 
         .dark header {
-            background-color: var(--card) !important;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            background-color: var(--header-bg) !important;
+            backdrop-filter: blur(12px);
+            /* Glassmorphism */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Light mode header glass */
+        header {
+            background-color: var(--header-bg);
+            backdrop-filter: blur(12px);
         }
 
         .dragging {
@@ -647,6 +724,7 @@
         .task-text.clamped {
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -659,6 +737,7 @@
         .clamped-note {
             display: -webkit-box;
             -webkit-line-clamp: 6;
+            line-clamp: 6;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
