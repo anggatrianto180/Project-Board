@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" style="scroll-behavior: smooth;">
 
 <head>
@@ -1128,6 +1128,91 @@
             border-color: #4ade80;
         }
 
+        /* TikTok Tab System */
+        .tt-hp-tab-bar {
+            display: flex;
+            gap: 6px;
+            padding-bottom: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .tt-hp-tab-bar::-webkit-scrollbar { display: none; }
+        .dark .tt-hp-tab-bar { border-bottom-color: rgba(255, 255, 255, 0.1); }
+
+        .tt-hp-tab {
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid transparent;
+            border-bottom: none;
+            position: relative;
+            top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tt-hp-tab:hover { background: #e2e8f0; color: #334155; }
+        .tt-hp-tab.active {
+            background: linear-gradient(135deg, #010101, #2a2a2a);
+            color: white;
+            box-shadow: 0 -2px 10px rgba(1, 1, 1, 0.3);
+            border-color: #010101;
+        }
+        .dark .tt-hp-tab { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
+        .dark .tt-hp-tab:hover { background: rgba(255, 255, 255, 0.1); color: #e2e8f0; }
+        .dark .tt-hp-tab.active { background: linear-gradient(135deg, #1a1a1a, #333); color: white; }
+
+        .tt-hp-tab .tt-tab-name-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: inherit;
+            width: 80px;
+            cursor: text;
+        }
+        .tt-hp-tab .tab-edit-btn {
+            opacity: 0;
+            margin-left: 4px;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 50%;
+            transition: all 0.15s ease;
+        }
+        .tt-hp-tab:hover .tab-edit-btn,
+        .tt-hp-tab.active .tab-edit-btn { opacity: 0.7; }
+        .tt-hp-tab .tab-edit-btn:hover { opacity: 1 !important; }
+        .tt-add-hp-btn {
+            padding: 10px 16px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: transparent;
+            color: #94a3b8;
+            border: 1px dashed #cbd5e1;
+            border-bottom: none;
+            position: relative;
+            top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tt-add-hp-btn:hover { background: #f0fdf4; color: #16a34a; border-color: #16a34a; }
+        .dark .tt-add-hp-btn { border-color: rgba(255,255,255,0.15); color: #64748b; }
+        .dark .tt-add-hp-btn:hover { background: rgba(22,163,74,0.1); color: #4ade80; border-color: #4ade80; }
+
         /* Mode Toggle Styles */
 
         /* Unified active style for header mode/trade/skills buttons */
@@ -1135,7 +1220,8 @@
         .mode-toggle button.p-2.active,
         #trade-btn.active,
         #skills-btn.active,
-        #youtube-btn.active {
+        #youtube-btn.active,
+        #tiktok-btn.active {
             background-color: var(--accent) !important;
             color: white !important;
         }
@@ -1269,6 +1355,11 @@
                     aria-pressed="false" aria-label="Open YouTube Inventory">
                     <i class="fab fa-youtube"></i>
                 </button>
+                <button id="tiktok-btn" title="TikTok Affiliate"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Open TikTok Affiliate">
+                    <i class="fab fa-tiktok"></i>
+                </button>
                 <div class="mode-toggle flex items-center gap-2" role="tablist" aria-label="Workspace modes">
                     <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
                         title="Personal" aria-pressed="false" aria-label="Switch to personal workspace" role="tab"> <i
@@ -1294,6 +1385,8 @@
             <a href="#important-notes-section" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Notes</a>
             <a href="#" id="mobile-youtube-btn" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">YouTube
                 Inventory</a>
+            <a href="#" id="mobile-tiktok-btn" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">TikTok
+                Affiliate</a>
         </div>
     </header>
 
@@ -1655,6 +1748,64 @@
                     </div>
                     <!-- YouTube Notes List -->
                     <div id="youtube-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Notes rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- TikTok Affiliate Inventory Section -->
+        <div id="tiktok-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
+            <!-- Header -->
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                        <i class="fab fa-tiktok"></i> TikTok Affiliate Inventory
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300">Kelola akun TikTok Affiliate, progress konten, dan stok video Anda.</p>
+                </div>
+                <button id="add-tiktok-account-btn"
+                    class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-all flex items-center gap-2">
+                    <i class="fas fa-plus"></i>
+                    <span>Tambah Akun</span>
+                </button>
+            </div>
+
+            <!-- HP Tab Bar -->
+            <div id="tt-hp-tab-bar" class="tt-hp-tab-bar mb-6">
+                <!-- Tabs rendered by JS -->
+            </div>
+
+            <!-- Tab Content Area -->
+            <div id="tt-tab-content" class="mt-6">
+                <!-- TikTok Accounts Grid -->
+                <div id="tiktok-accounts-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="tiktok-empty-state" class="hidden text-center py-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                        <i class="fab fa-tiktok text-3xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Belum ada akun</h3>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">Mulai dengan menambahkan akun TikTok Affiliate pertama Anda.</p>
+                </div>
+
+                <hr class="my-8 border-gray-200 dark:border-gray-700">
+
+                <!-- TikTok Notes Section -->
+                <div id="tiktok-notes-section">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Catatan</h3>
+                        <button id="tiktok-add-note-btn"
+                            class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
+                            <i class="fas fa-plus"></i> Tambah Catatan
+                        </button>
+                    </div>
+                    <div id="tiktok-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <!-- Notes rendered here -->
                     </div>
                 </div>
@@ -2046,6 +2197,115 @@
                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                         Save Channel
                     </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TikTok Account Modal (Add/Edit) -->
+    <div id="tiktok-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-auto p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+            <h3 id="tiktok-modal-title" class="text-2xl font-bold mb-6 flex items-center gap-2">
+                <i class="fab fa-tiktok"></i> Tambah Akun TikTok
+            </h3>
+            <form id="tiktok-modal-form" class="space-y-4">
+                <input type="hidden" id="tiktok-account-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tt-username-input" class="block text-sm font-medium text-gray-700 mb-1">Username / Handle *</label>
+                        <input id="tt-username-input" type="text" placeholder="@username_tiktok"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800" required>
+                    </div>
+                    <div>
+                        <label for="tt-name-input" class="block text-sm font-medium text-gray-700 mb-1">Nama Akun *</label>
+                        <input id="tt-name-input" type="text" placeholder="e.g. Toko Fashion Saya"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="tt-link-input" class="block text-sm font-medium text-gray-700 mb-1">Link Profil TikTok</label>
+                    <input id="tt-link-input" type="url" placeholder="https://www.tiktok.com/@username"
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tt-email-input" class="block text-sm font-medium text-gray-700 mb-1">Email Utama</label>
+                        <input id="tt-email-input" type="email" placeholder="example@gmail.com"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                    <div>
+                        <label for="tt-recovery-input" class="block text-sm font-medium text-gray-700 mb-1">Recovery Email</label>
+                        <input id="tt-recovery-input" type="email" placeholder="recovery@gmail.com"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tt-phone-input" class="block text-sm font-medium text-gray-700 mb-1">Nomor HP</label>
+                        <input id="tt-phone-input" type="tel" placeholder="+62 812..."
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                    <div>
+                        <label for="tt-device-input" class="block text-sm font-medium text-gray-700 mb-1">HP yang Digunakan</label>
+                        <input id="tt-device-input" type="text" placeholder="e.g. Samsung A54, iPhone 13"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tt-niche-input" class="block text-sm font-medium text-gray-700 mb-1">Niche / Kategori</label>
+                        <input id="tt-niche-input" type="text" placeholder="e.g. Fashion, Beauty, Food"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                    <div>
+                        <label for="tt-audience-input" class="block text-sm font-medium text-gray-700 mb-1">Target Audiens</label>
+                        <input id="tt-audience-input" type="text" placeholder="e.g. Wanita 18-35 tahun"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="tt-affiliate-status-select" class="block text-sm font-medium text-gray-700 mb-1">Status Affiliate</label>
+                        <select id="tt-affiliate-status-select"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                            <option value="Belum Memenuhi Syarat">&#9634; Belum Memenuhi Syarat</option>
+                            <option value="Chasing">&#127919; Chasing Requirements</option>
+                            <option value="Sudah Affiliate">&#10003; Sudah Affiliate</option>
+                            <option value="Kena Pelanggaran">&#9888; Kena Pelanggaran</option>
+                            <option value="Banned">&#128683; Banned</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="tt-content-status-select" class="block text-sm font-medium text-gray-700 mb-1">Status Konten</label>
+                        <select id="tt-content-status-select"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                            <option value="Belum Dikerjakan">&#9634; Belum Dikerjakan</option>
+                            <option value="Plan">&#128203; Plan</option>
+                            <option value="Sudah Dikerjakan">&#9989; Sudah Dikerjakan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="tt-video-stock-input" class="block text-sm font-medium text-gray-700 mb-1">Stok Video</label>
+                        <input id="tt-video-stock-input" type="number" min="0" placeholder="0"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                    </div>
+                </div>
+                <div>
+                    <label for="tt-asset-input" class="block text-sm font-medium text-gray-700 mb-1">Link Folder Aset (Drive)</label>
+                    <input id="tt-asset-input" type="url" placeholder="https://drive.google.com/..."
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800">
+                </div>
+                <div>
+                    <label for="tt-competitor-input" class="block text-sm font-medium text-gray-700 mb-1">Referensi Kompetitor / Catatan Strategi</label>
+                    <textarea id="tt-competitor-input" rows="3"
+                        placeholder="https://www.tiktok.com/@kompetitor&#10;Strategi: posting 2x sehari..."
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-800"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="cancel-tiktok-btn"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">Batal</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700 transition-colors">Simpan Akun</button>
                 </div>
             </form>
         </div>
@@ -3898,6 +4158,7 @@
             editButton.onclick = () => {
                 if (target === 'trade') editTradeNote(note.id, item);
                 else if (target === 'youtube') editYouTubeNote(note.id, item);
+                else if (target === 'tiktok') editTikTokNote(note.id);
                 else editNote(note.id, item);
             };
             const deleteButton = document.createElement('i');
@@ -3907,6 +4168,7 @@
             deleteButton.onclick = () => {
                 if (target === 'trade') deleteTradeNote(note.id);
                 else if (target === 'youtube') deleteYouTubeNote(note.id);
+                else if (target === 'tiktok') deleteTikTokNote(note.id);
                 else deleteNote(note.id);
             };
             actionsDiv.appendChild(editButton);
@@ -4198,6 +4460,7 @@
             // hide trade section and clear trade active state when switching modes
             const tradeSection = document.getElementById('trade-section'); if (tradeSection) { tradeSection.classList.add('hidden'); tradeSection.classList.remove('flex'); }
             const youtubeSection = document.getElementById('youtube-section'); if (youtubeSection) { youtubeSection.classList.add('hidden'); }
+            const tiktokSection = document.getElementById('tiktok-section'); if (tiktokSection) { tiktokSection.classList.add('hidden'); }
             document.getElementById('trade-btn')?.classList.remove('active');
 
             if (currentMode === newMode) return;
@@ -4237,7 +4500,8 @@
             notes: 'important-notes-section',
             trade: 'trade-section',
             skills: 'skills-section',
-            youtube: 'youtube-section'
+            youtube: 'youtube-section',
+            tiktok: 'tiktok-section'
         };
 
         const applyNavigationState = (target) => {
@@ -4249,12 +4513,14 @@
             document.getElementById('trade-btn')?.classList.remove('active');
             document.getElementById('skills-btn')?.classList.remove('active');
             document.getElementById('youtube-btn')?.classList.remove('active');
+            document.getElementById('tiktok-btn')?.classList.remove('active');
             document.getElementById('personal-mode-btn')?.classList.remove('active');
             document.getElementById('working-mode-btn')?.classList.remove('active');
             // reset aria
             document.getElementById('trade-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'false');
+            document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed', 'false');
 
@@ -4302,11 +4568,15 @@
             } else if (target === 'youtube' || target === sections.youtube) {
                 // Show youtube section
                 const el = document.getElementById(sections.youtube);
-                if (el) {
-                    el.classList.remove('hidden');
-                }
+                if (el) { el.classList.remove('hidden'); }
                 document.getElementById('youtube-btn')?.classList.add('active');
                 document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'true');
+            } else if (target === 'tiktok' || target === sections.tiktok) {
+                // Show tiktok section
+                const el = document.getElementById(sections.tiktok);
+                if (el) { el.classList.remove('hidden'); }
+                document.getElementById('tiktok-btn')?.classList.add('active');
+                document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'true');
             } else {
                 // show all main sections (Project Board + Daily + Notes)
                 const boardEl = document.getElementById(sections.board); if (boardEl) { boardEl.classList.remove('hidden'); }
@@ -5826,6 +6096,64 @@
                 }[cs] || 'bg-gray-100 text-gray-600';
                 const csIcon = { 'Sudah Dikerjakan': '✅', 'Plan': '📋', 'Belum Dikerjakan': '⬜' }[cs] || '';
 
+                let calendarHtml = '';
+                if (channel.contentStatus === 'Sudah Dikerjakan') {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = today.getMonth();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const monthName = today.toLocaleString('default', { month: 'long' });
+
+                    let daysHtml = '';
+                    const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+                    weekdays.forEach(wd => {
+                        daysHtml += `<div class="text-center text-[10px] font-bold text-gray-400 py-1">${wd}</div>`;
+                    });
+                    for (let i = 0; i < firstDay; i++) {
+                        daysHtml += `<div></div>`;
+                    }
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                        const isChecked = channel.uploads && channel.uploads[dateStr] ? 'checked' : '';
+
+                        let todayClass = '';
+                        if (i === today.getDate()) {
+                            todayClass = isMonetized
+                                ? 'bg-yellow-100 dark:bg-yellow-900/30 rounded ring-1 ring-yellow-400'
+                                : 'bg-green-100 dark:bg-green-900/30 rounded ring-1 ring-green-400';
+                        }
+
+                        const cbClass = isMonetized
+                            ? 'text-yellow-600 focus:ring-yellow-500 dark:focus:ring-yellow-600'
+                            : 'text-green-600 focus:ring-green-500 dark:focus:ring-green-600';
+
+                        daysHtml += `
+                            <div class="flex flex-col items-center p-1 ${todayClass} hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors" title="${dateStr}">
+                                <span class="text-[10px] text-gray-600 dark:text-gray-400 select-none">${i}</span>
+                                <input type="checkbox" class="yt-upload-checkbox w-3.5 h-3.5 ${cbClass} bg-white border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 mt-0.5 cursor-pointer" 
+                                       data-channel-id="${channel.id}" data-date="${dateStr}" ${isChecked}>
+                            </div>
+                        `;
+                    }
+
+                    const trackerBorder = isMonetized ? 'border-yellow-200 dark:border-yellow-800/50' : 'border-green-200 dark:border-green-800/50';
+                    const trackerIconColor = isMonetized ? 'text-yellow-600' : 'text-green-600';
+
+                    calendarHtml = `
+                        <div class="mt-4 pt-4 border-t ${trackerBorder}">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex justify-between items-center text-xs font-bold text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center gap-1"><i class="far fa-calendar-check ${trackerIconColor}"></i> Upload Tracker - ${monthName} ${year}</span>
+                                </div>
+                                <div class="grid grid-cols-7 gap-1 bg-white/50 dark:bg-gray-900/30 p-2 rounded-lg border border-gray-100 dark:border-gray-700 shadow-inner">
+                                    ${daysHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 const card = document.createElement('div');
                 if (isMonetized) {
                     // Premium layout for monetized channels
@@ -5901,6 +6229,8 @@
                         </div>` : ''}
                     </div>
 
+                    ${calendarHtml}
+
                     <div class="pt-4 border-t ${isMonetized ? 'border-yellow-200 dark:border-yellow-800' : 'dark:border-gray-700'} flex justify-end gap-2 mt-auto">
                         <button class="edit-channel-btn text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
                             <i class="fas fa-edit"></i>
@@ -5964,6 +6294,29 @@
                     const id = btn.dataset.id;
                     if (confirm('Delete this YouTube channel inventory item?')) {
                         await deleteYouTubeChannel(id);
+                    }
+                });
+            });
+
+            container.querySelectorAll('.yt-upload-checkbox').forEach(chk => {
+                chk.addEventListener('change', async (e) => {
+                    const channelId = e.target.dataset.channelId;
+                    const dateStr = e.target.dataset.date;
+                    const isChecked = e.target.checked;
+
+                    const channel = channels.find(c => c.id === channelId);
+                    if (channel) {
+                        const uploads = channel.uploads || {};
+                        uploads[dateStr] = isChecked;
+
+                        try {
+                            const colName = ytChannelCollectionName(currentYtAdsenseTab);
+                            await updateDoc(doc(db, colName, channelId), { uploads });
+                        } catch (err) {
+                            console.error('Failed to update upload status:', err);
+                            e.target.checked = !isChecked; // revert
+                            showNotification('Failed to update upload status', true);
+                        }
                     }
                 });
             });
@@ -6465,6 +6818,572 @@
             console.debug('trade-save clicked (delegated)');
             const form = document.getElementById('trade-form'); if (form) form.requestSubmit ? form.requestSubmit() : form.submit();
         });
+
+        // =============================================
+        // --- TikTok Affiliate Inventory Logic ---
+        // =============================================
+        let ttHpTabs = [];
+        let currentTtHpTab = 1;
+        let tiktokUnsub = null;
+        let tiktokNotesUnsub = null;
+        let allTikTokNotes = [];
+        let editingTikTokAccountId = null;
+
+        const defaultTtHpTabs = [
+            { id: 1, name: 'HP1' },
+            { id: 2, name: 'HP2' },
+            { id: 3, name: 'HP3' }
+        ];
+
+        // Firestore paths
+        const ttAccountCollectionName = (tabId) => `tiktok_accounts_hp_${tabId}`;
+        const ttNotesPath = (tabId) => ['hubs', `tiktok_hp_${tabId}`, 'notes'];
+
+        // Load/Save HP Tab Config
+        const loadTtHpTabs = async () => {
+            try {
+                const snap = await getDoc(doc(db, 'config', 'tiktok_hp_tabs'));
+                if (snap.exists() && snap.data().tabs && snap.data().tabs.length > 0) {
+                    ttHpTabs = snap.data().tabs;
+                } else {
+                    ttHpTabs = [...defaultTtHpTabs];
+                    await saveTtHpTabs();
+                }
+            } catch (e) {
+                console.error('Failed to load TikTok HP tabs config', e);
+                ttHpTabs = [...defaultTtHpTabs];
+            }
+        };
+
+        const saveTtHpTabs = async () => {
+            try {
+                await setDoc(doc(db, 'config', 'tiktok_hp_tabs'), { tabs: ttHpTabs, updatedAt: Date.now() });
+            } catch (e) {
+                console.error('Failed to save TikTok HP tabs config', e);
+            }
+        };
+
+        // Render Tab Bar
+        const renderTtHpTabBar = () => {
+            const tabBar = document.getElementById('tt-hp-tab-bar');
+            if (!tabBar) return;
+            tabBar.innerHTML = '';
+
+            ttHpTabs.forEach(tab => {
+                const btn = document.createElement('button');
+                btn.className = `tt-hp-tab ${tab.id === currentTtHpTab ? 'active' : ''}`;
+                btn.dataset.tabId = tab.id;
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'tt-tab-name-display';
+                nameSpan.textContent = tab.name;
+
+                // Edit icon - pencil
+                const editIcon = document.createElement('span');
+                editIcon.className = 'tab-edit-btn';
+                editIcon.innerHTML = '<i class="fas fa-pencil-alt" style="font-size:0.6rem;"></i>';
+                editIcon.title = 'Edit nama tab';
+                editIcon.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const currentName = tab.name;
+                    const newName = prompt(`Ubah nama tab "${currentName}":`, currentName);
+                    if (newName && newName.trim() && newName.trim() !== currentName) {
+                        tab.name = newName.trim();
+                        await saveTtHpTabs();
+                        renderTtHpTabBar();
+                        showNotification(`Tab diubah menjadi "${newName.trim()}".`);
+                    }
+                });
+
+                btn.appendChild(nameSpan);
+                btn.appendChild(editIcon);
+
+                btn.addEventListener('click', () => {
+                    if (currentTtHpTab !== tab.id) {
+                        switchTtHpTab(tab.id);
+                    }
+                });
+
+                tabBar.appendChild(btn);
+            });
+
+            // Add "+" button
+            const addBtn = document.createElement('button');
+            addBtn.className = 'tt-add-hp-btn';
+            addBtn.innerHTML = '<i class="fas fa-plus"></i> Tambah HP';
+            addBtn.addEventListener('click', async () => {
+                const maxId = ttHpTabs.reduce((max, t) => Math.max(max, t.id), 0);
+                const newId = maxId + 1;
+                const newName = `HP${newId}`;
+                ttHpTabs.push({ id: newId, name: newName });
+                await saveTtHpTabs();
+                renderTtHpTabBar();
+                switchTtHpTab(newId);
+                showNotification(`Tab "${newName}" ditambahkan.`);
+            });
+            tabBar.appendChild(addBtn);
+        };
+
+        // Switch HP Tab
+        const switchTtHpTab = (tabId) => {
+            currentTtHpTab = tabId;
+            document.querySelectorAll('.tt-hp-tab').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.tabId) === tabId);
+            });
+            listenTikTokAccounts();
+            listenTikTokNotes();
+        };
+
+        // Listen TikTok Notes
+        const listenTikTokNotes = () => {
+            if (tiktokNotesUnsub) tiktokNotesUnsub();
+            const pathParts = ttNotesPath(currentTtHpTab);
+            const q = query(collection(db, ...pathParts), orderBy('createdAt', 'desc'));
+            tiktokNotesUnsub = onSnapshot(q, (snapshot) => {
+                allTikTokNotes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderTikTokNotes();
+            });
+        };
+
+        const renderTikTokNotes = () => {
+            const container = document.getElementById('tiktok-notes-list');
+            if (!container) return;
+            container.innerHTML = '';
+            if (allTikTokNotes.length === 0) {
+                container.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-8 text-gray-500">Belum ada catatan.</div>`;
+                return;
+            }
+            allTikTokNotes.forEach(note => {
+                const el = createNoteElement(note, 'tiktok');
+                el.classList.remove('bg-yellow-50');
+                el.classList.add('bg-white', 'border', 'border-gray-200');
+                container.appendChild(el);
+            });
+        };
+
+        const openAddTikTokNote = () => {
+            editingNoteId = null;
+            noteModalTarget = 'tiktok';
+            document.getElementById('note-modal-title-input').value = '';
+            document.getElementById('note-modal-input').value = '';
+            const tabName = ttHpTabs.find(t => t.id === currentTtHpTab)?.name || 'TikTok';
+            document.getElementById('note-modal-title').textContent = `Tambah Catatan — ${tabName}`;
+            if (document.getElementById('note-modal-folder-select')) document.getElementById('note-modal-folder-select').value = '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        const editTikTokNote = (id) => {
+            const noteFn = allTikTokNotes.find(n => n.id === id);
+            if (!noteFn) return;
+            editingNoteId = id;
+            noteModalTarget = 'tiktok';
+            document.getElementById('note-modal-title-input').value = noteFn.title || '';
+            document.getElementById('note-modal-input').value = noteFn.text || '';
+            const tabName = ttHpTabs.find(t => t.id === currentTtHpTab)?.name || 'TikTok';
+            document.getElementById('note-modal-title').textContent = `Edit Catatan — ${tabName}`;
+            if (document.getElementById('note-modal-folder-select')) document.getElementById('note-modal-folder-select').value = '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        const deleteTikTokNote = async (id) => {
+            const confirmed = await showConfirmModal('Hapus catatan ini?');
+            if (!confirmed) return;
+            try {
+                const pathParts = ttNotesPath(currentTtHpTab);
+                await deleteDoc(doc(db, ...pathParts, id));
+                showNotification('Catatan dihapus.');
+            } catch (e) {
+                showNotification('Gagal menghapus catatan.', true);
+            }
+        };
+
+        // Listen TikTok Accounts
+        const listenTikTokAccounts = () => {
+            if (tiktokUnsub) tiktokUnsub();
+            const colName = ttAccountCollectionName(currentTtHpTab);
+            const q = query(collection(db, colName), orderBy('name'));
+            tiktokUnsub = onSnapshot(q, (snapshot) => {
+                const accounts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderTikTokAccounts(accounts);
+            });
+        };
+
+        // Render Account Cards
+        const renderTikTokAccounts = (accounts) => {
+            const container = document.getElementById('tiktok-accounts-list');
+            const emptyState = document.getElementById('tiktok-empty-state');
+            if (!container) return;
+
+            container.innerHTML = '';
+            if (accounts.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+            if (emptyState) emptyState.classList.add('hidden');
+
+            // Sort: Sudah Affiliate → Chasing → Belum/Banned/Pelanggaran
+            const affiliateOrder = { 'Sudah Affiliate': 0, 'Chasing': 1, 'Belum Memenuhi Syarat': 2, 'Kena Pelanggaran': 3, 'Banned': 4 };
+            accounts.sort((a, b) => (affiliateOrder[a.affiliateStatus] ?? 99) - (affiliateOrder[b.affiliateStatus] ?? 99));
+
+            const createDividerTt = (icon, label, colorClass) => {
+                const divider = document.createElement('div');
+                divider.className = 'col-span-full flex items-center gap-4 my-3';
+                divider.innerHTML = `
+                    <div class="flex-1 border-t-2 ${colorClass}"></div>
+                    <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">${icon} ${label}</span>
+                    <div class="flex-1 border-t-2 ${colorClass}"></div>
+                `;
+                return divider;
+            };
+
+            // Build card
+            const buildTikTokCard = (account) => {
+                const isAffiliate = account.affiliateStatus === 'Sudah Affiliate';
+                const isChasing = account.affiliateStatus === 'Chasing';
+                const isBanned = account.affiliateStatus === 'Banned' || account.affiliateStatus === 'Kena Pelanggaran';
+
+                const affiliateBadge = {
+                    'Belum Memenuhi Syarat': 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+                    'Chasing': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+                    'Sudah Affiliate': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+                    'Kena Pelanggaran': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+                    'Banned': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                }[account.affiliateStatus] || 'bg-gray-100 text-gray-700';
+
+                const affiliateIcon = {
+                    'Belum Memenuhi Syarat': '⬜',
+                    'Chasing': '🎯',
+                    'Sudah Affiliate': '✅',
+                    'Kena Pelanggaran': '⚠️',
+                    'Banned': '🚫'
+                }[account.affiliateStatus] || '';
+
+                const cs = account.contentStatus || 'Belum Dikerjakan';
+                const csColor = {
+                    'Sudah Dikerjakan': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                    'Plan': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                    'Belum Dikerjakan': 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                }[cs] || 'bg-gray-100 text-gray-600';
+                const csIcon = { 'Sudah Dikerjakan': '✅', 'Plan': '📋', 'Belum Dikerjakan': '⬜' }[cs] || '';
+
+                // Calendar HTML (same as YouTube tracker)
+                let calendarHtml = '';
+                if (account.contentStatus === 'Sudah Dikerjakan') {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = today.getMonth();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const monthName = today.toLocaleString('default', { month: 'long' });
+
+                    let daysHtml = '';
+                    const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+                    weekdays.forEach(wd => {
+                        daysHtml += `<div class="text-center text-[10px] font-bold text-gray-400 py-1">${wd}</div>`;
+                    });
+                    for (let i = 0; i < firstDay; i++) { daysHtml += `<div></div>`; }
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                        const isChecked = account.uploads && account.uploads[dateStr] ? 'checked' : '';
+                        let todayClass = '';
+                        if (i === today.getDate()) {
+                            todayClass = isAffiliate
+                                ? 'bg-green-100 dark:bg-green-900/30 rounded ring-1 ring-green-400'
+                                : isChasing
+                                    ? 'bg-yellow-100 dark:bg-yellow-900/30 rounded ring-1 ring-yellow-400'
+                                    : 'bg-gray-100 dark:bg-gray-700 rounded ring-1 ring-gray-400';
+                        }
+                        const cbClass = isAffiliate ? 'text-green-600 focus:ring-green-500'
+                            : isChasing ? 'text-yellow-600 focus:ring-yellow-500'
+                                : 'text-gray-600 focus:ring-gray-500';
+
+                        daysHtml += `
+                            <div class="flex flex-col items-center p-1 ${todayClass} hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors" title="${dateStr}">
+                                <span class="text-[10px] text-gray-600 dark:text-gray-400 select-none">${i}</span>
+                                <input type="checkbox" class="tt-upload-checkbox w-3.5 h-3.5 ${cbClass} focus:ring-2 bg-white border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 mt-0.5 cursor-pointer"
+                                    data-account-id="${account.id}" data-date="${dateStr}" ${isChecked}>
+                            </div>
+                        `;
+                    }
+
+                    const trackerBorder = isAffiliate ? 'border-green-200 dark:border-green-800/50'
+                        : isChasing ? 'border-yellow-200 dark:border-yellow-800/50'
+                            : 'border-gray-200 dark:border-gray-700';
+                    const trackerIconColor = isAffiliate ? 'text-green-600' : isChasing ? 'text-yellow-600' : 'text-gray-500';
+
+                    calendarHtml = `
+                        <div class="mt-4 pt-4 border-t ${trackerBorder}">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex justify-between items-center text-xs font-bold text-gray-700 dark:text-gray-300">
+                                    <span class="flex items-center gap-1"><i class="far fa-calendar-check ${trackerIconColor}"></i> Upload Tracker - ${monthName} ${year}</span>
+                                </div>
+                                <div class="grid grid-cols-7 gap-1 bg-white/50 dark:bg-gray-900/30 p-2 rounded-lg border border-gray-100 dark:border-gray-700 shadow-inner">
+                                    ${daysHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const videoStock = account.videoStock !== undefined && account.videoStock !== null ? Number(account.videoStock) : null;
+
+                let cardClass = 'bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-4 relative';
+                if (isAffiliate) {
+                    cardClass = 'bg-gradient-to-br from-green-50 via-white to-green-50 dark:from-green-900/20 dark:via-gray-800 dark:to-green-900/10 border-2 border-green-400 dark:border-green-600 rounded-xl shadow-md hover:shadow-lg transition-all p-5 flex flex-col gap-4 relative ring-1 ring-green-200 dark:ring-green-800';
+                } else if (isBanned) {
+                    cardClass = 'bg-red-50 dark:bg-red-900/10 border-2 border-red-300 dark:border-red-700 rounded-xl shadow-sm p-5 flex flex-col gap-4 relative opacity-75';
+                }
+
+                const card = document.createElement('div');
+                card.className = cardClass;
+                card.innerHTML = `
+                    ${isAffiliate ? '<div class="absolute top-3 left-3"><span class="text-lg">💎</span></div>' : ''}
+                    ${isBanned ? '<div class="absolute top-3 left-3"><span class="text-lg">🚫</span></div>' : ''}
+                    <div class="flex justify-between items-start ${isAffiliate || isBanned ? 'ml-7' : ''}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-900 dark:bg-gray-700 flex items-center justify-center text-white">
+                                <i class="fab fa-tiktok text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white pr-8">${account.name}</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">${account.username || ''}</p>
+                                ${account.link ? `<a href="${account.link}" target="_blank" class="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">Visit Profile <i class="fas fa-external-link-alt"></i></a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 rounded text-xs font-medium ${affiliateBadge}">${affiliateIcon} ${account.affiliateStatus || 'Belum Memenuhi Syarat'}</span>
+                        <span class="px-2 py-1 rounded text-xs font-medium ${csColor}">${csIcon} ${cs}</span>
+                        ${videoStock !== null ? `<span class="px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"><i class="fas fa-film mr-1"></i>${videoStock} Video</span>` : ''}
+                    </div>
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        ${account.email ? `<div class="flex items-center gap-2"><i class="fas fa-envelope text-gray-400 w-4"></i><span class="truncate">${account.email}</span></div>` : ''}
+                        ${account.recoveryEmail ? `<div class="flex items-center gap-2"><i class="fas fa-shield-alt text-gray-400 w-4"></i><span class="truncate text-xs">${account.recoveryEmail}</span></div>` : ''}
+                        ${account.phoneNumber ? `<div class="flex items-center gap-2"><i class="fas fa-phone text-gray-400 w-4"></i><span>${account.phoneNumber}</span></div>` : ''}
+                        ${account.createdOnDevice ? `<div class="flex items-center gap-2"><i class="fas fa-mobile-alt text-gray-400 w-4"></i><span>${account.createdOnDevice}</span></div>` : ''}
+                        ${account.niche ? `<div class="flex items-center gap-2"><i class="fas fa-tag text-gray-400 w-4"></i><span><strong class="text-gray-800 dark:text-gray-200">${account.niche}</strong>${account.audience ? ' &bull; ' + account.audience : ''}</span></div>` : ''}
+                        ${account.assetLink ? `<div class="flex items-center gap-2"><i class="fab fa-google-drive text-gray-400 w-4"></i><a href="${account.assetLink}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Folder Aset</a></div>` : ''}
+                        ${account.competitorRefs ? `<div class="mt-2 pt-2 border-t dark:border-gray-700"><p class="text-xs font-semibold text-gray-500 mb-1">Referensi Kompetitor:</p><p class="text-xs whitespace-pre-line text-gray-600 dark:text-gray-300">${account.competitorRefs}</p></div>` : ''}
+                    </div>
+                    ${calendarHtml}
+                    <div class="pt-4 border-t dark:border-gray-700 flex justify-end gap-2 mt-auto">
+                        <button class="edit-tt-account-btn text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${account.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-tt-account-btn text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${account.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                return card;
+            };
+
+            // Group and render
+            const affiliateAccs = accounts.filter(a => a.affiliateStatus === 'Sudah Affiliate');
+            const chasingAccs = accounts.filter(a => a.affiliateStatus === 'Chasing');
+            const belumAccs = accounts.filter(a => a.affiliateStatus === 'Belum Memenuhi Syarat');
+            const pelanggaranAccs = accounts.filter(a => a.affiliateStatus === 'Kena Pelanggaran');
+            const bannedAccs = accounts.filter(a => a.affiliateStatus === 'Banned');
+
+            if (affiliateAccs.length > 0) {
+                container.appendChild(createDividerTt('✅', 'Sudah Affiliate', 'border-green-400 dark:border-green-600'));
+                affiliateAccs.forEach(a => container.appendChild(buildTikTokCard(a)));
+            }
+            if (chasingAccs.length > 0) {
+                container.appendChild(createDividerTt('🎯', 'Chasing Requirements', 'border-yellow-400 dark:border-yellow-600'));
+                chasingAccs.forEach(a => container.appendChild(buildTikTokCard(a)));
+            }
+            if (belumAccs.length > 0) {
+                container.appendChild(createDividerTt('⬜', 'Belum Memenuhi Syarat', 'border-gray-300 dark:border-gray-600'));
+                belumAccs.forEach(a => container.appendChild(buildTikTokCard(a)));
+            }
+            if (pelanggaranAccs.length > 0) {
+                container.appendChild(createDividerTt('⚠️', 'Kena Pelanggaran', 'border-orange-400 dark:border-orange-600'));
+                pelanggaranAccs.forEach(a => container.appendChild(buildTikTokCard(a)));
+            }
+            if (bannedAccs.length > 0) {
+                container.appendChild(createDividerTt('🚫', 'Banned', 'border-red-400 dark:border-red-600'));
+                bannedAccs.forEach(a => container.appendChild(buildTikTokCard(a)));
+            }
+
+            // Attach button listeners
+            container.querySelectorAll('.edit-tt-account-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const account = accounts.find(a => a.id === id);
+                    if (account) openTikTokModal(account);
+                });
+            });
+            container.querySelectorAll('.delete-tt-account-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.dataset.id;
+                    if (await showConfirmModal('Hapus akun TikTok ini?')) {
+                        try {
+                            await deleteDoc(doc(db, ttAccountCollectionName(currentTtHpTab), id));
+                            showNotification('Akun TikTok dihapus.');
+                        } catch (err) { showNotification('Gagal menghapus akun.', true); }
+                    }
+                });
+            });
+
+            // Upload tracker checkbox listeners
+            container.querySelectorAll('.tt-upload-checkbox').forEach(chk => {
+                chk.addEventListener('change', async (e) => {
+                    const accountId = e.target.dataset.accountId;
+                    const dateStr = e.target.dataset.date;
+                    const isChecked = e.target.checked;
+                    const account = accounts.find(a => a.id === accountId);
+                    if (account) {
+                        const uploads = account.uploads || {};
+                        uploads[dateStr] = isChecked;
+                        try {
+                            await updateDoc(doc(db, ttAccountCollectionName(currentTtHpTab), accountId), { uploads });
+                        } catch (err) {
+                            console.error('Failed to update TikTok upload status:', err);
+                            e.target.checked = !isChecked;
+                            showNotification('Gagal menyimpan status upload', true);
+                        }
+                    }
+                });
+            });
+        };
+
+        // Open TikTok Modal
+        const openTikTokModal = (account = null) => {
+            editingTikTokAccountId = account ? account.id : null;
+            document.getElementById('tiktok-modal-title').innerHTML = `<i class="fab fa-tiktok"></i> ${account ? 'Edit Akun TikTok' : 'Tambah Akun TikTok'}`;
+            document.getElementById('tiktok-account-id').value = account ? account.id : '';
+            document.getElementById('tt-username-input').value = account ? (account.username || '') : '';
+            document.getElementById('tt-name-input').value = account ? account.name : '';
+            document.getElementById('tt-link-input').value = account ? (account.link || '') : '';
+            document.getElementById('tt-email-input').value = account ? (account.email || '') : '';
+            document.getElementById('tt-recovery-input').value = account ? (account.recoveryEmail || '') : '';
+            document.getElementById('tt-phone-input').value = account ? (account.phoneNumber || '') : '';
+            document.getElementById('tt-device-input').value = account ? (account.createdOnDevice || '') : '';
+            document.getElementById('tt-niche-input').value = account ? (account.niche || '') : '';
+            document.getElementById('tt-audience-input').value = account ? (account.audience || '') : '';
+            document.getElementById('tt-affiliate-status-select').value = account ? (account.affiliateStatus || 'Belum Memenuhi Syarat') : 'Belum Memenuhi Syarat';
+            document.getElementById('tt-content-status-select').value = account ? (account.contentStatus || 'Belum Dikerjakan') : 'Belum Dikerjakan';
+            document.getElementById('tt-video-stock-input').value = account ? (account.videoStock !== undefined ? account.videoStock : '') : '';
+            document.getElementById('tt-asset-input').value = account ? (account.assetLink || '') : '';
+            document.getElementById('tt-competitor-input').value = account ? (account.competitorRefs || '') : '';
+            const m = document.getElementById('tiktok-modal');
+            m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        // TikTok Modal Event Listeners
+        document.getElementById('add-tiktok-account-btn')?.addEventListener('click', () => openTikTokModal());
+        document.getElementById('cancel-tiktok-btn')?.addEventListener('click', () => {
+            const m = document.getElementById('tiktok-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+        });
+
+        document.getElementById('tiktok-modal-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                username: document.getElementById('tt-username-input').value.trim(),
+                name: document.getElementById('tt-name-input').value.trim(),
+                link: document.getElementById('tt-link-input').value.trim(),
+                email: document.getElementById('tt-email-input').value.trim(),
+                recoveryEmail: document.getElementById('tt-recovery-input').value.trim(),
+                phoneNumber: document.getElementById('tt-phone-input').value.trim(),
+                createdOnDevice: document.getElementById('tt-device-input').value.trim(),
+                niche: document.getElementById('tt-niche-input').value.trim(),
+                audience: document.getElementById('tt-audience-input').value.trim(),
+                affiliateStatus: document.getElementById('tt-affiliate-status-select').value,
+                contentStatus: document.getElementById('tt-content-status-select').value,
+                videoStock: parseInt(document.getElementById('tt-video-stock-input').value) || 0,
+                assetLink: document.getElementById('tt-asset-input').value.trim(),
+                competitorRefs: document.getElementById('tt-competitor-input').value.trim()
+            };
+            if (!data.name) return;
+            try {
+                const colName = ttAccountCollectionName(currentTtHpTab);
+                if (editingTikTokAccountId) {
+                    await updateDoc(doc(db, colName, editingTikTokAccountId), { ...data, updatedAt: Date.now() });
+                    showNotification('Akun TikTok diperbarui.');
+                } else {
+                    await addDoc(collection(db, colName), { ...data, createdAt: Date.now() });
+                    showNotification('Akun TikTok ditambahkan.');
+                }
+                const m = document.getElementById('tiktok-modal');
+                m.classList.add('hidden'); m.classList.remove('flex');
+            } catch (err) {
+                console.error(err);
+                showNotification('Gagal menyimpan akun.', true);
+            }
+        });
+
+        // TikTok notes button
+        const wireTtNoteButton = () => {
+            const btn = document.getElementById('tiktok-add-note-btn');
+            if (btn) {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', openAddTikTokNote);
+            }
+        };
+
+        // TikTok Navigation buttons
+        const tiktokBtn = document.getElementById('tiktok-btn');
+        const mobileTiktokBtn = document.getElementById('mobile-tiktok-btn');
+        if (tiktokBtn) {
+            tiktokBtn.addEventListener('click', () => {
+                const cur = parseHash();
+                if (cur === 'tiktok') { navigateTo('board'); } else { navigateTo('tiktok'); }
+            });
+            makeKeyboardClickable(tiktokBtn);
+        }
+        if (mobileTiktokBtn) {
+            mobileTiktokBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('tiktok');
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
+        }
+
+        // Hook editTikTokNote & deleteTikTokNote into createNoteElement target='tiktok'
+        // (createNoteElement already calls the function by target name — we extend the note-modal submit handler)
+
+        // Extend note-modal form submit to handle tiktok target
+        const origNoteSubmit = document.getElementById('note-modal-form')?.getAttribute('data-has-tiktok');
+        if (!origNoteSubmit) {
+            document.getElementById('note-modal-form')?.setAttribute('data-has-tiktok', '1');
+            document.getElementById('note-modal-form')?.addEventListener('submit', async (e2) => {
+                if (noteModalTarget !== 'tiktok') return;
+                e2.stopImmediatePropagation();
+                e2.preventDefault();
+                const title = document.getElementById('note-modal-title-input').value.trim();
+                const txt = document.getElementById('note-modal-input').value.trim();
+                if (!txt) return;
+                try {
+                    const pathParts = ttNotesPath(currentTtHpTab);
+                    if (editingNoteId) {
+                        await updateDoc(doc(db, ...pathParts, editingNoteId), { title: title || null, text: txt, updatedAt: Date.now() });
+                        showNotification('Catatan diperbarui.');
+                    } else {
+                        await addDoc(collection(db, ...pathParts), { title: title || null, text: txt, createdAt: Date.now() });
+                        showNotification('Catatan ditambahkan.');
+                    }
+                    document.getElementById('note-modal').classList.add('hidden');
+                    document.getElementById('note-modal').classList.remove('flex');
+                } catch (err) { console.error(err); showNotification('Gagal menyimpan catatan.', true); }
+            }, true); // use capture so it fires before the original listener when target=tiktok
+        }
+
+        // Extend createNoteElement to support tiktok target
+        const _origCreateNoteElement = createNoteElement;
+
+        // Also patch note-modal-form original submit to skip tiktok (already handled by capture above)
+
+        // Initialize TikTok HP Tab System
+        const initTtHpTabs = async () => {
+            await loadTtHpTabs();
+            renderTtHpTabBar();
+            switchTtHpTab(currentTtHpTab);
+            wireTtNoteButton();
+        };
+        initTtHpTabs();
 
     </script>
 </body>
