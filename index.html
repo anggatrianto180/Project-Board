@@ -2191,16 +2191,18 @@
                 <!-- Lagu Viral Section -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">🎵 Lagu Sedang Viral</label>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2 mb-1">
                         <input id="yt-viral-song-input" type="text" placeholder="Nama lagu atau artis..."
                             class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <input id="yt-viral-song-url-input" type="url" placeholder="URL lagu (opsional)"
+                            class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
                         <button type="button" id="yt-viral-song-add-btn"
-                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center gap-1">
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center gap-1 whitespace-nowrap">
                             <i class="fas fa-plus"></i> Tambah
                         </button>
                     </div>
-                    <div id="yt-viral-songs-list" class="flex flex-wrap gap-2 min-h-[32px]"></div>
-                    <p class="text-xs text-gray-500 mt-1">Tambahkan lagu-lagu yang sedang viral untuk channel ini.</p>
+                    <div id="yt-viral-songs-list" class="flex flex-wrap gap-2 min-h-[32px] mt-2"></div>
+                    <p class="text-xs text-gray-500 mt-1">Tambahkan lagu-lagu yang sedang viral beserta URL referensinya.</p>
                 </div>
 
                 <div class="flex justify-end gap-3 mt-6">
@@ -6204,7 +6206,20 @@
                 const viralSongsHtml = (() => {
                     const songs = Array.isArray(channel.viralSongs) ? channel.viralSongs.filter(Boolean) : [];
                     if (!songs.length) return '';
-                    const tags = songs.map(s => `<span class="inline-flex items-center gap-1 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm"><i class="fas fa-music text-[10px]"></i> ${s}</span>`).join('');
+                    const tags = songs.map((s, idx) => {
+                        // Backward compat: s can be string or {title, url}
+                        const title = (typeof s === 'object' && s !== null) ? (s.title || '') : s;
+                        const url   = (typeof s === 'object' && s !== null) ? (s.url || '') : '';
+                        const safeTitle = title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                        const safeUrl   = url.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                        const hasUrl = url && url.trim() !== '';
+                        return `<button type="button"
+                            class="yt-viral-tag inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm transition-colors cursor-pointer"
+                            data-title="${safeTitle}" data-url="${safeUrl}" data-idx="${channel.id}-${idx}"
+                            title="${hasUrl ? 'Klik untuk lihat URL' : safeTitle}">
+                            <i class="fas fa-music text-[10px]"></i> ${title}${hasUrl ? ' <i class="fas fa-link text-[9px] opacity-70"></i>' : ''}
+                        </button>`;
+                    }).join('');
                     return `
                         <div class="mt-3 pt-3 border-t border-red-200 dark:border-red-900/50">
                             <p class="text-xs font-bold text-red-600 dark:text-red-400 mb-2 flex items-center gap-1"><i class="fas fa-fire"></i> Lagu Sedang Viral</p>
@@ -6564,6 +6579,97 @@
                     }
                 });
             });
+
+            // --- Viral Song Tag: click to show URL popover ---
+            container.querySelectorAll('.yt-viral-tag').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.getElementById('yt-viral-popover')?.remove();
+
+                    const title = btn.dataset.title || '';
+                    const url   = btn.dataset.url   || '';
+
+                    const popover = document.createElement('div');
+                    popover.id = 'yt-viral-popover';
+                    popover.className = 'fixed z-[9999] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-2xl p-4 w-80 text-sm';
+
+                    if (url) {
+                        popover.innerHTML = `
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-music text-red-500"></i>
+                                <span class="font-bold text-gray-800 dark:text-white truncate flex-1">${title}</span>
+                                <button id="yt-viral-popover-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-1" title="Tutup"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-lg px-3 py-2 mb-3">
+                                <i class="fas fa-link text-red-400 text-xs flex-shrink-0"></i>
+                                <a href="${url}" target="_blank" rel="noopener noreferrer"
+                                   class="text-xs text-blue-600 dark:text-blue-400 hover:underline truncate flex-1" title="${url}">${url}</a>
+                            </div>
+                            <button id="yt-viral-copy-btn"
+                                class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-copy"></i> Salin URL
+                            </button>
+                        `;
+                    } else {
+                        popover.innerHTML = `
+                            <div class="flex items-center gap-2 mb-1">
+                                <i class="fas fa-music text-red-500"></i>
+                                <span class="font-bold text-gray-800 dark:text-white truncate flex-1">${title}</span>
+                                <button id="yt-viral-popover-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-1" title="Tutup"><i class="fas fa-times"></i></button>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 flex items-center gap-1"><i class="fas fa-info-circle"></i> Tidak ada URL tersimpan.</p>
+                        `;
+                    }
+
+                    document.body.appendChild(popover);
+
+                    // Position near the button
+                    const rect = btn.getBoundingClientRect();
+                    const pw = popover.offsetWidth || 320;
+                    const ph = popover.offsetHeight || 120;
+                    let left = rect.left;
+                    let top  = rect.bottom + 8;
+                    if (left + pw > window.innerWidth - 12)  left = window.innerWidth - pw - 12;
+                    if (top  + ph > window.innerHeight - 12) top  = rect.top - ph - 8;
+                    if (left < 8) left = 8;
+                    popover.style.left = left + 'px';
+                    popover.style.top  = top  + 'px';
+
+                    popover.querySelector('#yt-viral-popover-close')?.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        popover.remove();
+                    });
+
+                    if (url) {
+                        popover.querySelector('#yt-viral-copy-btn')?.addEventListener('click', async (ev) => {
+                            ev.stopPropagation();
+                            try {
+                                await navigator.clipboard.writeText(url);
+                                const copyBtn = popover.querySelector('#yt-viral-copy-btn');
+                                if (copyBtn) {
+                                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                                    copyBtn.classList.replace('bg-red-600', 'bg-green-600');
+                                    copyBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                                    setTimeout(() => {
+                                        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Salin URL';
+                                        copyBtn.classList.replace('bg-green-600', 'bg-red-600');
+                                        copyBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+                                    }, 2000);
+                                }
+                            } catch { showNotification('Gagal menyalin URL', true); }
+                        });
+                    }
+                });
+            });
+
+            // Close popover on outside click (attach once)
+            if (!window._ytViralPopoverGlobalHandler) {
+                window._ytViralPopoverGlobalHandler = true;
+                document.addEventListener('click', (e) => {
+                    const popover = document.getElementById('yt-viral-popover');
+                    if (popover && !popover.contains(e.target)) popover.remove();
+                });
+            }
         };
 
         const addYouTubeChannel = async (data) => {
@@ -6632,27 +6738,39 @@
         };
 
         // Helper: render a viral song tag in the modal list
+        // Accepts string (legacy) or {title, url} object
         const renderYtViralSongTag = (song) => {
             const viralList = document.getElementById('yt-viral-songs-list');
             if (!viralList || !song) return;
+            const title = (typeof song === 'object' && song !== null) ? (song.title || '') : song;
+            const url   = (typeof song === 'object' && song !== null) ? (song.url || '') : '';
+            if (!title) return;
             const tag = document.createElement('span');
             tag.className = 'flex items-center gap-1 bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full border border-red-300';
-            tag.dataset.song = song;
-            tag.innerHTML = `<i class="fas fa-music text-xs"></i> ${song} <button type="button" class="ml-1 text-red-500 hover:text-red-700 font-bold leading-none" title="Hapus">×</button>`;
+            tag.dataset.songTitle = title;
+            tag.dataset.songUrl   = url;
+            const urlIcon = url ? ` <i class="fas fa-link text-[10px] opacity-60"></i>` : '';
+            tag.innerHTML = `<i class="fas fa-music text-xs"></i> ${title}${urlIcon} <button type="button" class="ml-1 text-red-500 hover:text-red-700 font-bold leading-none" title="Hapus">&times;</button>`;
             tag.querySelector('button').addEventListener('click', () => tag.remove());
             viralList.appendChild(tag);
         };
 
         // Wire add viral song button
         document.getElementById('yt-viral-song-add-btn')?.addEventListener('click', () => {
-            const input = document.getElementById('yt-viral-song-input');
-            const val = input ? input.value.trim() : '';
-            if (!val) return;
-            renderYtViralSongTag(val);
-            input.value = '';
-            input.focus();
+            const titleInput = document.getElementById('yt-viral-song-input');
+            const urlInput   = document.getElementById('yt-viral-song-url-input');
+            const titleVal = titleInput ? titleInput.value.trim() : '';
+            const urlVal   = urlInput   ? urlInput.value.trim()   : '';
+            if (!titleVal) return;
+            renderYtViralSongTag({ title: titleVal, url: urlVal });
+            titleInput.value = '';
+            if (urlInput) urlInput.value = '';
+            titleInput.focus();
         });
         document.getElementById('yt-viral-song-input')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); document.getElementById('yt-viral-song-add-btn').click(); }
+        });
+        document.getElementById('yt-viral-song-url-input')?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); document.getElementById('yt-viral-song-add-btn').click(); }
         });
 
@@ -6681,7 +6799,7 @@
                 contentStatus: document.getElementById('yt-content-status-select').value,
                 assetLink: document.getElementById('yt-asset-input').value.trim(),
                 competitorRefs: document.getElementById('yt-competitor-input').value.trim(),
-                viralSongs: Array.from(document.querySelectorAll('#yt-viral-songs-list [data-song]')).map(el => el.dataset.song).filter(Boolean)
+                viralSongs: Array.from(document.querySelectorAll('#yt-viral-songs-list [data-song-title]')).map(el => ({ title: el.dataset.songTitle, url: el.dataset.songUrl || '' })).filter(el => el.title)
             };
 
             if (!data.name) return;
