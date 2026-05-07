@@ -23,7 +23,6 @@
     <!-- Chart.js for Skill Radar Chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Authentication System -->
-    <script src="auth.js"></script>
     <style>
         :root {
             --bg: #f8fafc;
@@ -2732,7 +2731,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, where, getDocs, getDoc, setDoc, writeBatch, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA8KJmXXX5ax3QulbDFKpBI87v36OLcvK0",
@@ -2748,7 +2747,125 @@
         const storage = getStorage(app);
         const auth = getAuth(app);
         let currentUserUid = null;
-        onAuthStateChanged(auth, user => { currentUserUid = user ? user.uid : null; });
+        
+        // Hide UI until auth state is confirmed
+        document.querySelector('main').style.display = 'none';
+        document.querySelector('header').style.display = 'none';
+
+        onAuthStateChanged(auth, user => { 
+            currentUserUid = user ? user.uid : null; 
+            if (user) {
+                // User is signed in
+                const overlay = document.getElementById('login-overlay');
+                if (overlay) overlay.remove();
+                document.querySelector('main').style.display = 'block';
+                document.querySelector('header').style.display = 'block';
+                
+                // Add logout button if not exists
+                const nav = document.querySelector('header nav .flex.items-center.gap-3');
+                if (nav && !document.getElementById('logout-btn')) {
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.id = 'logout-btn';
+                    logoutBtn.className = 'p-2 rounded-full bg-gray-100 hover:bg-gray-200';
+                    logoutBtn.title = 'Logout';
+                    logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
+                    logoutBtn.addEventListener('click', async () => {
+                        if (confirm('Apakah Anda yakin ingin keluar?')) {
+                            await signOut(auth);
+                            location.reload();
+                        }
+                    });
+                    nav.insertBefore(logoutBtn, nav.firstChild);
+                }
+            } else {
+                // User is signed out
+                document.querySelector('main').style.display = 'none';
+                document.querySelector('header').style.display = 'none';
+                if (!document.getElementById('login-overlay')) {
+                    showLoginPage();
+                }
+            }
+        });
+
+        function showLoginPage() {
+            const loginHTML = `
+                <div id="login-overlay" style="
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    display: flex; align-items: center; justify-content: center;
+                    z-index: 9999; font-family: 'Inter', sans-serif;
+                ">
+                    <div style="
+                        background: white; border-radius: 20px; padding: 3rem 2.5rem;
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 90%; max-width: 420px;
+                        animation: slideUp 0.4s ease-out;
+                    ">
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <i class="fas fa-lock" style="font-size: 3.5rem; color: #667eea; margin-bottom: 1rem;"></i>
+                            <h2 style="font-size: 1.875rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">Project Board AT</h2>
+                            <p style="color: #6b7280; font-size: 0.95rem;">Login dengan Akun Firebase</p>
+                        </div>
+                        <form id="login-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <div>
+                                <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Email</label>
+                                <input type="email" id="email-input" placeholder="Masukkan email" required style="width: 100%; padding: 0.875rem 1rem; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none;"/>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Password</label>
+                                <input type="password" id="password-input" placeholder="Masukkan password" required style="width: 100%; padding: 0.875rem 1rem; border: 2px solid #e5e7eb; border-radius: 12px; font-size: 1rem; outline: none;"/>
+                            </div>
+                            <div>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #374151; margin-bottom: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" id="remember-me" checked style="width: 1rem; height: 1rem; cursor: pointer;">
+                                    Tetap Login
+                                </label>
+                            </div>
+                            <div id="error-message" style="display: none; padding: 0.875rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #dc2626; font-size: 0.875rem; text-align: center;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span id="error-text">Login gagal</span>
+                            </div>
+                            <button type="submit" id="login-submit-btn" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(102,126,234,0.4);">
+                                <i class="fas fa-sign-in-alt" style="margin-right: 0.5rem;"></i> Masuk
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <style>
+                    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                    @keyframes shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 20%, 40%, 60%, 80% { transform: translateX(5px); } }
+                </style>
+            `;
+            document.body.insertAdjacentHTML('beforeend', loginHTML);
+
+            document.getElementById('login-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const email = document.getElementById('email-input').value;
+                const password = document.getElementById('password-input').value;
+                const rememberMe = document.getElementById('remember-me').checked;
+                const btn = document.getElementById('login-submit-btn');
+                const errDiv = document.getElementById('error-message');
+                
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                
+                try {
+                    // Set persistence explicitly based on user choice
+                    await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // onAuthStateChanged will handle the rest
+                } catch (err) {
+                    console.error("Firebase Auth Error:", err);
+                    errDiv.style.display = 'block';
+                    document.getElementById('error-text').textContent = 'Email atau password salah!';
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    
+                    const pwInput = document.getElementById('password-input');
+                    pwInput.style.animation = 'shake 0.5s';
+                    setTimeout(() => pwInput.style.animation = '', 500);
+                }
+            });
+        }
 
         // --- Global State ---
         let currentMode = localStorage.getItem('currentMode') || 'personal';
