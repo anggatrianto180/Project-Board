@@ -4264,9 +4264,10 @@
 
         // --- YouTube Adsense Tab System ---
         let ytAdsenseTabs = []; // Array of { id: number, name: string }
-        let currentYtAdsenseTab = 1;
+        let currentYtAdsenseTab = 'combined';
         let youtubeNotesUnsub = null;
         let allYouTubeNotes = [];
+        let combinedYoutubeUnsubs = [];
 
         // Default tabs (used when no config exists in Firestore)
         const defaultYtAdsenseTabs = [
@@ -4278,15 +4279,17 @@
 
         // --- Firestore paths per tab ---
         const ytChannelCollectionName = (tabId) => {
+            const idNum = parseInt(tabId, 10);
             // Tab 1 uses legacy collection for backward compatibility
-            if (tabId === 1) return 'youtube_channels';
-            return `youtube_channels_adsense_${tabId}`;
+            if (idNum === 1) return 'youtube_channels';
+            return `youtube_channels_adsense_${idNum}`;
         };
 
         const ytNotesPath = (tabId) => {
+            const idNum = parseInt(tabId, 10);
             // Tab 1 uses legacy path for backward compatibility
-            if (tabId === 1) return ['hubs', 'youtube', 'notes'];
-            return ['hubs', `youtube_adsense_${tabId}`, 'notes'];
+            if (idNum === 1) return ['hubs', 'youtube', 'notes'];
+            return ['hubs', `youtube_adsense_${idNum}`, 'notes'];
         };
 
         // --- Load/Save Tabs Config ---
@@ -4318,6 +4321,18 @@
             const tabBar = document.getElementById('yt-adsense-tab-bar');
             if (!tabBar) return;
             tabBar.innerHTML = '';
+
+            // Add Adsense Gabungan tab
+            const combinedBtn = document.createElement('button');
+            combinedBtn.className = `yt-adsense-tab ${currentYtAdsenseTab === 'combined' ? 'active' : ''}`;
+            combinedBtn.dataset.tabId = 'combined';
+            combinedBtn.innerHTML = '<span class="tab-name">Adsense Gabungan</span>';
+            combinedBtn.addEventListener('click', () => {
+                if (currentYtAdsenseTab !== 'combined') {
+                    switchYtAdsenseTab('combined');
+                }
+            });
+            tabBar.appendChild(combinedBtn);
 
             ytAdsenseTabs.forEach(tab => {
                 const btn = document.createElement('button');
@@ -4381,8 +4396,18 @@
 
             // Update tab bar active state
             document.querySelectorAll('.yt-adsense-tab').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.dataset.tabId) === tabId);
+                btn.classList.toggle('active', btn.dataset.tabId == tabId);
             });
+
+            // Update Add Channel button visibility
+            const addBtn = document.getElementById('add-channel-btn');
+            if (addBtn) {
+                if (tabId === 'combined') {
+                    addBtn.style.display = 'none';
+                } else {
+                    addBtn.style.display = '';
+                }
+            }
 
             // Re-listen channels and notes for this tab
             listenYouTubeChannels();
@@ -4391,7 +4416,20 @@
 
         // --- YouTube Notes (per tab) ---
         const listenYouTubeNotes = () => {
-            if (youtubeNotesUnsub) youtubeNotesUnsub();
+            if (youtubeNotesUnsub) {
+                youtubeNotesUnsub();
+                youtubeNotesUnsub = null;
+            }
+            if (currentYtAdsenseTab === 'combined') {
+                allYouTubeNotes = [];
+                renderYouTubeNotes();
+                const notesSection = document.getElementById('youtube-notes-section');
+                if (notesSection) notesSection.classList.add('hidden');
+                return;
+            } else {
+                const notesSection = document.getElementById('youtube-notes-section');
+                if (notesSection) notesSection.classList.remove('hidden');
+            }
             const pathParts = ytNotesPath(currentYtAdsenseTab);
             const q = query(collection(db, ...pathParts), orderBy('createdAt', 'desc'));
             youtubeNotesUnsub = onSnapshot(q, (snapshot) => {
@@ -6043,12 +6081,44 @@
         const youtubeCollectionPath = () => collection(db, ytChannelCollectionName(currentYtAdsenseTab));
 
         const listenYouTubeChannels = () => {
-            if (youtubeUnsub) youtubeUnsub();
-            const q = query(youtubeCollectionPath(), orderBy('name'));
-            youtubeUnsub = onSnapshot(q, (snapshot) => {
-                const channels = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderYouTubeChannels(channels);
-            });
+            if (youtubeUnsub) { youtubeUnsub(); youtubeUnsub = null; }
+            if (combinedYoutubeUnsubs) {
+                combinedYoutubeUnsubs.forEach(unsub => unsub());
+                combinedYoutubeUnsubs = [];
+            }
+
+            if (currentYtAdsenseTab === 'combined') {
+                let allChannels = {};
+                ytAdsenseTabs.forEach(tab => {
+                    const q = query(collection(db, ytChannelCollectionName(tab.id)), orderBy('name'));
+                    const unsub = onSnapshot(q, (snapshot) => {
+                        const channels = snapshot.docs.map(d => ({ 
+                            id: d.id, 
+                            sourceAdsenseId: tab.id, 
+                            sourceAdsenseName: tab.name,
+                            ...d.data() 
+                        }));
+                        allChannels[tab.id] = channels.filter(c => c.isCombinedAdsense);
+                        
+                        // Combine all arrays
+                        const combinedChannels = Object.values(allChannels).flat();
+                        renderYouTubeChannels(combinedChannels);
+                    });
+                    combinedYoutubeUnsubs.push(unsub);
+                });
+            } else {
+                const q = query(youtubeCollectionPath(), orderBy('name'));
+                youtubeUnsub = onSnapshot(q, (snapshot) => {
+                    const tabName = ytAdsenseTabs.find(t => t.id === currentYtAdsenseTab)?.name;
+                    const channels = snapshot.docs.map(d => ({ 
+                        id: d.id, 
+                        sourceAdsenseId: currentYtAdsenseTab,
+                        sourceAdsenseName: tabName,
+                        ...d.data() 
+                    }));
+                    renderYouTubeChannels(channels);
+                });
+            }
         };
 
         // --- Subscriber Count Fetching (via YouTube Page Scraping) ---
@@ -6285,6 +6355,7 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-2">
+                        ${channel.sourceAdsenseName && currentYtAdsenseTab === 'combined' ? `<span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"><i class="fas fa-folder mr-1"></i> ${channel.sourceAdsenseName}</span>` : ''}
                         <span class="px-2 py-1 rounded text-xs font-medium ${badgeColor}">
                             ${channel.monetization}
                         </span>
@@ -6338,13 +6409,19 @@
 
                     ${calendarHtml}
 
-                    <div class="pt-4 border-t ${isMonetized ? 'border-yellow-200 dark:border-yellow-800' : 'dark:border-gray-700'} flex justify-end gap-2 mt-auto">
-                        <button class="edit-channel-btn text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="delete-channel-btn text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <div class="pt-4 border-t ${isMonetized ? 'border-yellow-200 dark:border-yellow-800' : 'dark:border-gray-700'} flex justify-between items-center gap-2 mt-auto">
+                        <label class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer" title="Centang untuk menampilkan channel ini di tab Adsense Gabungan">
+                            <input type="checkbox" class="yt-combined-toggle rounded text-red-500 focus:ring-red-500 w-4 h-4 cursor-pointer" data-id="${channel.id}" data-source-id="${channel.sourceAdsenseId}" ${channel.isCombinedAdsense ? 'checked' : ''}>
+                            <span>Adsense Gabungan</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <button class="edit-channel-btn text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-channel-btn text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${channel.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
                 return card;
@@ -6405,6 +6482,32 @@
                 });
             });
 
+            container.querySelectorAll('.yt-combined-toggle').forEach(chk => {
+                chk.addEventListener('change', async (e) => {
+                    const channelId = e.target.dataset.id;
+                    let sourceId = e.target.dataset.sourceId;
+                    if (!sourceId || sourceId === 'undefined' || sourceId === 'null') {
+                        sourceId = currentYtAdsenseTab;
+                    }
+                    if (sourceId === 'combined') {
+                        showNotification('Gagal: Channel tidak valid', true);
+                        e.target.checked = !e.target.checked;
+                        return;
+                    }
+                    const isChecked = e.target.checked;
+                    try {
+                        const colName = ytChannelCollectionName(sourceId);
+                        // Using setDoc with merge: true for maximum safety against non-existent doc errors
+                        await setDoc(doc(db, colName, channelId), { isCombinedAdsense: isChecked, updatedAt: Date.now() }, { merge: true });
+                        showNotification(isChecked ? 'Channel ditambahkan ke Adsense Gabungan' : 'Channel dihapus dari Adsense Gabungan');
+                    } catch (err) {
+                        console.error('Failed to update combined adsense status:', err);
+                        e.target.checked = !isChecked;
+                        showNotification('Gagal: ' + (err.message || 'Unknown error'), true);
+                    }
+                });
+            });
+
             // Upload Tracker checkbox
             container.querySelectorAll('.yt-upload-checkbox').forEach(chk => {
                 chk.addEventListener('change', async (e) => {
@@ -6416,7 +6519,8 @@
                         const uploads = channel.uploads || {};
                         uploads[dateStr] = isChecked;
                         try {
-                            const colName = ytChannelCollectionName(currentYtAdsenseTab);
+                            const actualSourceId = channel.sourceAdsenseId || currentYtAdsenseTab;
+                            const colName = ytChannelCollectionName(actualSourceId);
                             await updateDoc(doc(db, colName, channelId), { uploads });
                         } catch (err) {
                             console.error('Failed to update upload status:', err);
@@ -6438,7 +6542,8 @@
                         const readyVideos = channel.readyVideos || {};
                         readyVideos[dateStr] = isChecked;
                         try {
-                            const colName = ytChannelCollectionName(currentYtAdsenseTab);
+                            const actualSourceId = channel.sourceAdsenseId || currentYtAdsenseTab;
+                            const colName = ytChannelCollectionName(actualSourceId);
                             await updateDoc(doc(db, colName, channelId), { readyVideos });
                         } catch (err) {
                             console.error('Failed to update ready-video status:', err);
@@ -6474,7 +6579,8 @@
                                 const obj = ch[field] || {};
                                 obj[dateStr] = isChecked;
                                 try {
-                                    await updateDoc(doc(db, ytChannelCollectionName(currentYtAdsenseTab), chId), { [field]: obj });
+                                    const actualSourceId = ch.sourceAdsenseId || currentYtAdsenseTab;
+                                    await updateDoc(doc(db, ytChannelCollectionName(actualSourceId), chId), { [field]: obj });
                                 } catch (err) {
                                     e.target.checked = !isChecked;
                                     showNotification('Gagal menyimpan status', true);
@@ -6570,7 +6676,8 @@
                     }
                     // Save to Firestore
                     try {
-                        await updateDoc(doc(db, ytChannelCollectionName(currentYtAdsenseTab), channelId), { calendarEnabled: enabled });
+                        const actualSourceId = channel ? (channel.sourceAdsenseId || currentYtAdsenseTab) : currentYtAdsenseTab;
+                        await updateDoc(doc(db, ytChannelCollectionName(actualSourceId), channelId), { calendarEnabled: enabled });
                         // Update local channel data
                         if (channel) channel.calendarEnabled = enabled;
                     } catch (err) {
