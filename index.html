@@ -6110,7 +6110,7 @@
         const getYtCalMonth = (channelId, type) => {
             if (!ytCalendarMonths[channelId]) {
                 const now = new Date();
-                ytCalendarMonths[channelId] = { uploadYear: now.getFullYear(), uploadMonth: now.getMonth(), readyYear: now.getFullYear(), readyMonth: now.getMonth() };
+                ytCalendarMonths[channelId] = { uploadYear: now.getFullYear(), uploadMonth: now.getMonth(), readyYear: now.getFullYear(), readyMonth: now.getMonth(), scheduleYear: now.getFullYear(), scheduleMonth: now.getMonth() };
             }
             return { year: ytCalendarMonths[channelId][type + 'Year'], month: ytCalendarMonths[channelId][type + 'Month'] };
         };
@@ -6128,10 +6128,15 @@
             const today = new Date();
             const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
 
-            const dataField = type === 'upload' ? 'uploads' : 'readyVideos';
-            const cbClass = type === 'upload'
-                ? (isMonetized ? 'yt-upload-checkbox text-yellow-600 focus:ring-yellow-500' : 'yt-upload-checkbox text-green-600 focus:ring-green-500')
-                : 'yt-ready-checkbox text-blue-600 focus:ring-blue-500';
+            const dataField = type === 'upload' ? 'uploads' : type === 'schedule' ? 'uploadSchedules' : 'readyVideos';
+            let cbClass = '';
+            if (type === 'upload') {
+                cbClass = isMonetized ? 'yt-upload-checkbox text-yellow-600 focus:ring-yellow-500' : 'yt-upload-checkbox text-green-600 focus:ring-green-500';
+            } else if (type === 'schedule') {
+                cbClass = 'yt-schedule-checkbox text-purple-600 focus:ring-purple-500';
+            } else {
+                cbClass = 'yt-ready-checkbox text-blue-600 focus:ring-blue-500';
+            }
 
             let daysHtml = '';
             const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -6146,13 +6151,21 @@
                 if (isCurrentMonth && i === today.getDate()) {
                     if (type === 'upload') {
                         todayClass = isMonetized ? 'bg-yellow-100 dark:bg-yellow-900/30 rounded ring-1 ring-yellow-400' : 'bg-green-100 dark:bg-green-900/30 rounded ring-1 ring-green-400';
+                    } else if (type === 'schedule') {
+                        todayClass = 'bg-purple-100 dark:bg-purple-900/30 rounded ring-1 ring-purple-400';
                     } else {
                         todayClass = 'bg-blue-100 dark:bg-blue-900/30 rounded ring-1 ring-blue-400';
                     }
                 }
+                
+                let numberHtml = `<span class="text-[10px] text-gray-600 dark:text-gray-400 select-none">${i}</span>`;
+                if (type === 'upload' && channel.uploadSchedules && channel.uploadSchedules[dateStr]) {
+                    numberHtml = `<span class="text-[10px] font-bold text-white bg-red-500 rounded-full w-4 h-4 flex items-center justify-center select-none shadow-sm">${i}</span>`;
+                }
+
                 daysHtml += `
-                    <div class="flex flex-col items-center p-1 ${todayClass} hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors" title="${dateStr}">
-                        <span class="text-[10px] text-gray-600 dark:text-gray-400 select-none">${i}</span>
+                    <div class="flex flex-col items-center p-1 ${todayClass} hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors relative" title="${dateStr}">
+                        ${numberHtml}
                         <input type="checkbox" class="${cbClass} w-3.5 h-3.5 bg-white border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 mt-0.5 cursor-pointer"
                                data-channel-id="${channel.id}" data-date="${dateStr}" data-type="${type}" ${isChecked}>
                     </div>
@@ -6161,12 +6174,14 @@
 
             const trackerBorder = type === 'upload'
                 ? (isMonetized ? 'border-yellow-200 dark:border-yellow-800/50' : 'border-green-200 dark:border-green-800/50')
+                : type === 'schedule' ? 'border-purple-200 dark:border-purple-800/50'
                 : 'border-blue-200 dark:border-blue-800/50';
             const trackerIconColor = type === 'upload'
                 ? (isMonetized ? 'text-yellow-600' : 'text-green-600')
+                : type === 'schedule' ? 'text-purple-600'
                 : 'text-blue-600';
-            const trackerIcon = type === 'upload' ? 'far fa-calendar-check' : 'far fa-calendar-plus';
-            const trackerLabel = type === 'upload' ? 'Upload Tracker' : 'Video Ready to Upload';
+            const trackerIcon = type === 'upload' ? 'far fa-calendar-check' : type === 'schedule' ? 'far fa-calendar-alt' : 'far fa-calendar-plus';
+            const trackerLabel = type === 'upload' ? 'Upload Tracker' : type === 'schedule' ? 'Jadwal Upload' : 'Video Ready to Upload';
             const dataTypeAttr = `data-cal-type="${type}" data-channel-id="${channel.id}"`;
 
             return `
@@ -6420,9 +6435,18 @@
                 let calendarHtml = '';
                 if (channel.contentStatus === 'Sudah Dikerjakan') {
                     const upCal = getYtCalMonth(channel.id, 'upload');
+                    const schCal = getYtCalMonth(channel.id, 'schedule');
                     const rdCal = getYtCalMonth(channel.id, 'ready');
                     const calGrids = calEnabled ? `
                         ${buildYtCalendarGrid(channel, isMonetized, 'upload', upCal.year, upCal.month)}
+                        <div class="mt-2 flex justify-end">
+                            <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}">
+                                <i class="fas fa-eye"></i> <span>Tampilkan Jadwal Upload</span>
+                            </button>
+                        </div>
+                        <div class="yt-schedule-wrapper hidden" data-channel-id="${channel.id}">
+                            ${buildYtCalendarGrid(channel, isMonetized, 'schedule', schCal.year, schCal.month)}
+                        </div>
                         ${buildYtCalendarGrid(channel, isMonetized, 'ready', rdCal.year, rdCal.month)}
                     ` : '';
                     calendarHtml = `
@@ -6671,6 +6695,31 @@
                 });
             });
 
+            // Schedule checkbox
+            container.querySelectorAll('.yt-schedule-checkbox').forEach(chk => {
+                chk.addEventListener('change', async (e) => {
+                    const channelId = e.target.dataset.channelId;
+                    const dateStr = e.target.dataset.date;
+                    const isChecked = e.target.checked;
+                    const channel = channels.find(c => c.id === channelId);
+                    if (channel) {
+                        const uploadSchedules = channel.uploadSchedules || {};
+                        uploadSchedules[dateStr] = isChecked;
+                        try {
+                            const actualSourceId = channel.sourceAdsenseId || currentYtAdsenseTab;
+                            const colName = ytChannelCollectionName(actualSourceId);
+                            await updateDoc(doc(db, colName, channelId), { uploadSchedules });
+                            const card = e.target.closest('[data-channel-card]') || e.target.closest('.bg-white, .bg-gradient-to-br');
+                            if (card) rebuildCalendarInCard(channelId, 'upload', card);
+                        } catch (err) {
+                            console.error('Failed to update schedule status:', err);
+                            e.target.checked = !isChecked;
+                            showNotification('Failed to update schedule status', true);
+                        }
+                    }
+                });
+            });
+
             // Calendar month navigation (prev/next)
             const rebuildCalendarInCard = (channelId, type, card) => {
                 const channel = channels.find(c => c.id === channelId);
@@ -6685,19 +6734,23 @@
                     const newEl = wrapper.firstElementChild;
                     existingCal.replaceWith(newEl);
                     // Re-attach checkbox listeners on rebuilt grid
-                    newEl.querySelectorAll('.yt-upload-checkbox, .yt-ready-checkbox').forEach(chk => {
+                    newEl.querySelectorAll('.yt-upload-checkbox, .yt-ready-checkbox, .yt-schedule-checkbox').forEach(chk => {
                         chk.addEventListener('change', async (e) => {
                             const chId = e.target.dataset.channelId;
                             const dateStr = e.target.dataset.date;
                             const isChecked = e.target.checked;
                             const ch = channels.find(c => c.id === chId);
                             if (ch) {
-                                const field = e.target.classList.contains('yt-ready-checkbox') ? 'readyVideos' : 'uploads';
+                                let field = 'uploads';
+                                if (e.target.classList.contains('yt-ready-checkbox')) field = 'readyVideos';
+                                else if (e.target.classList.contains('yt-schedule-checkbox')) field = 'uploadSchedules';
+                                
                                 const obj = ch[field] || {};
                                 obj[dateStr] = isChecked;
                                 try {
                                     const actualSourceId = ch.sourceAdsenseId || currentYtAdsenseTab;
                                     await updateDoc(doc(db, ytChannelCollectionName(actualSourceId), chId), { [field]: obj });
+                                    if (field === 'uploadSchedules') rebuildCalendarInCard(chId, 'upload', card);
                                 } catch (err) {
                                     e.target.checked = !isChecked;
                                     showNotification('Gagal menyimpan status', true);
@@ -6762,22 +6815,38 @@
                             // Build grids if empty
                             if (!grids.innerHTML.trim() && channel) {
                                 const upCal = getYtCalMonth(channelId, 'upload');
+                                const schCal = getYtCalMonth(channelId, 'schedule');
                                 const rdCal = getYtCalMonth(channelId, 'ready');
                                 const isMonetizedCh = channel.monetization === 'Monetized';
                                 grids.innerHTML = buildYtCalendarGrid(channel, isMonetizedCh, 'upload', upCal.year, upCal.month) +
+                                    `<div class="mt-2 flex justify-end">
+                                        <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}">
+                                            <i class="fas fa-eye"></i> <span>Tampilkan Jadwal Upload</span>
+                                        </button>
+                                    </div>
+                                    <div class="yt-schedule-wrapper hidden" data-channel-id="${channel.id}">` +
+                                    buildYtCalendarGrid(channel, isMonetizedCh, 'schedule', schCal.year, schCal.month) +
+                                    `</div>` +
                                     buildYtCalendarGrid(channel, isMonetizedCh, 'ready', rdCal.year, rdCal.month);
                                 // Re-attach all listeners in rebuilt grids
-                                grids.querySelectorAll('.yt-upload-checkbox, .yt-ready-checkbox').forEach(chk => {
+                                grids.querySelectorAll('.yt-upload-checkbox, .yt-ready-checkbox, .yt-schedule-checkbox').forEach(chk => {
                                     chk.addEventListener('change', async (ev) => {
                                         const chId = ev.target.dataset.channelId;
                                         const dateStr = ev.target.dataset.date;
                                         const isChecked = ev.target.checked;
                                         const ch = channels.find(c => c.id === chId);
                                         if (ch) {
-                                            const field = ev.target.classList.contains('yt-ready-checkbox') ? 'readyVideos' : 'uploads';
+                                            let field = 'uploads';
+                                            if (ev.target.classList.contains('yt-ready-checkbox')) field = 'readyVideos';
+                                            else if (ev.target.classList.contains('yt-schedule-checkbox')) field = 'uploadSchedules';
+
                                             const obj = ch[field] || {};
                                             obj[dateStr] = isChecked;
-                                            try { await updateDoc(doc(db, ytChannelCollectionName(currentYtAdsenseTab), chId), { [field]: obj }); }
+                                            try { 
+                                                const actualSourceId = ch.sourceAdsenseId || currentYtAdsenseTab;
+                                                await updateDoc(doc(db, ytChannelCollectionName(actualSourceId), chId), { [field]: obj }); 
+                                                if (field === 'uploadSchedules') rebuildCalendarInCard(chId, 'upload', card);
+                                            }
                                             catch (err) { ev.target.checked = !isChecked; showNotification('Gagal menyimpan status', true); }
                                         }
                                     });
@@ -6785,6 +6854,7 @@
                                 grids.querySelectorAll('[data-calendar]').forEach(calEl => {
                                     attachCalNavListeners(calEl, card, channelId);
                                 });
+                                attachScheduleToggleListeners(grids);
                             }
                             grids.style.display = '';
                         } else {
@@ -6803,6 +6873,33 @@
                     }
                 });
             });
+
+            // Schedule calendar visibility toggle
+            function attachScheduleToggleListeners(scope) {
+                scope.querySelectorAll('.yt-toggle-schedule-btn').forEach(btn => {
+                    if (btn.dataset.hasListener) return;
+                    btn.dataset.hasListener = 'true';
+                    btn.addEventListener('click', () => {
+                        const channelId = btn.dataset.channelId;
+                        const wrapper = btn.closest('.yt-cal-grids').querySelector(`.yt-schedule-wrapper[data-channel-id="${channelId}"]`);
+                        if (wrapper) {
+                            wrapper.classList.toggle('hidden');
+                            const span = btn.querySelector('span');
+                            const icon = btn.querySelector('i');
+                            if (wrapper.classList.contains('hidden')) {
+                                span.textContent = 'Tampilkan Jadwal Upload';
+                                icon.className = 'fas fa-eye';
+                            } else {
+                                span.textContent = 'Sembunyikan Jadwal Upload';
+                                icon.className = 'fas fa-eye-slash';
+                            }
+                        }
+                    });
+                });
+            };
+            
+            // Attach initially
+            attachScheduleToggleListeners(container);
 
             // --- Viral Song Tag: click to show URL popover ---
             container.querySelectorAll('.yt-viral-tag').forEach(btn => {
