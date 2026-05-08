@@ -6139,43 +6139,60 @@
             }
 
             let daysHtml = '';
-            const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            const weekdays = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
             weekdays.forEach(wd => {
-                daysHtml += `<div class="text-center text-[10px] font-bold text-gray-400 py-1">${wd}</div>`;
+                daysHtml += `<div class="text-center text-[9px] font-bold text-gray-400 py-1 uppercase tracking-wider">${wd}</div>`;
             });
             for (let i = 0; i < firstDay; i++) { daysHtml += `<div></div>`; }
             for (let i = 1; i <= daysInMonth; i++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 const isChecked = channel[dataField] && channel[dataField][dateStr] ? 'checked' : '';
+                
                 let todayClass = '';
                 if (isCurrentMonth && i === today.getDate()) {
                     if (type === 'upload') {
-                        todayClass = isMonetized ? 'bg-yellow-100 dark:bg-yellow-900/30 rounded ring-1 ring-yellow-400' : 'bg-green-100 dark:bg-green-900/30 rounded ring-1 ring-green-400';
+                        todayClass = isMonetized ? 'ring-2 ring-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-700' : 'ring-2 ring-green-400 bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700';
                     } else if (type === 'schedule') {
-                        todayClass = 'bg-purple-100 dark:bg-purple-900/30 rounded ring-1 ring-purple-400';
+                        todayClass = 'ring-2 ring-purple-400 bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700';
                     } else {
-                        todayClass = 'bg-blue-100 dark:bg-blue-900/30 rounded ring-1 ring-blue-400';
+                        todayClass = 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700';
                     }
+                } else {
+                    todayClass = 'bg-white dark:bg-gray-800/90 border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md';
                 }
                 
-                let numberHtml = `<span class="text-[10px] text-gray-600 dark:text-gray-400 select-none">${i}</span>`;
+                let numberHtml = `<span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium select-none">${i}</span>`;
                 if (type === 'upload' && channel.uploadSchedules && channel.uploadSchedules[dateStr]) {
                     numberHtml = `<span class="text-[10px] font-bold text-white bg-red-500 rounded-full w-4 h-4 flex items-center justify-center select-none shadow-sm">${i}</span>`;
                 }
 
+                let readyMarkHtml = '';
+                if (type === 'upload' && channel.readyVideos && channel.readyVideos[dateStr]) {
+                    readyMarkHtml = `<span class="text-[9px] font-bold text-white bg-blue-500 rounded-full w-3.5 h-3.5 flex items-center justify-center select-none shadow-sm mt-1">u</span>`;
+                } else {
+                    readyMarkHtml = `<div class="h-3.5 mt-1"></div>`; // Maintain vertical spacing
+                }
+
                 daysHtml += `
-                    <div class="flex flex-col items-center p-1 ${todayClass} hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors relative" title="${dateStr}">
+                    <div class="flex flex-col items-center justify-between py-1.5 px-0.5 rounded-lg border shadow-sm transition-all duration-200 relative min-h-[56px] hover:-translate-y-0.5 ${todayClass}" title="${dateStr}">
                         ${numberHtml}
-                        <input type="checkbox" class="${cbClass} w-3.5 h-3.5 bg-white border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 mt-0.5 cursor-pointer"
-                               data-channel-id="${channel.id}" data-date="${dateStr}" data-type="${type}" ${isChecked}>
+                        <div class="flex flex-col items-center justify-center flex-1 w-full mt-0.5">
+                            <input type="checkbox" class="${cbClass} w-3.5 h-3.5 bg-white border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer transition-transform hover:scale-110 shadow-sm"
+                                   data-channel-id="${channel.id}" data-date="${dateStr}" data-type="${type}" ${isChecked}>
+                            ${readyMarkHtml}
+                        </div>
                     </div>
                 `;
             }
 
             const trackerBorder = type === 'upload'
-                ? (isMonetized ? 'border-yellow-200 dark:border-yellow-800/50' : 'border-green-200 dark:border-green-800/50')
-                : type === 'schedule' ? 'border-purple-200 dark:border-purple-800/50'
-                : 'border-blue-200 dark:border-blue-800/50';
+                ? (isMonetized ? 'border-yellow-200/60 dark:border-yellow-800/50' : 'border-green-200/60 dark:border-green-800/50')
+                : type === 'schedule' ? 'border-purple-200/60 dark:border-purple-800/50'
+                : 'border-blue-200/60 dark:border-blue-800/50';
+            const trackerBg = type === 'upload'
+                ? (isMonetized ? 'bg-yellow-50/40 dark:bg-yellow-900/10' : 'bg-green-50/40 dark:bg-green-900/10')
+                : type === 'schedule' ? 'bg-purple-50/40 dark:bg-purple-900/10'
+                : 'bg-blue-50/40 dark:bg-blue-900/10';
             const trackerIconColor = type === 'upload'
                 ? (isMonetized ? 'text-yellow-600' : 'text-green-600')
                 : type === 'schedule' ? 'text-purple-600'
@@ -6185,23 +6202,23 @@
             const dataTypeAttr = `data-cal-type="${type}" data-channel-id="${channel.id}"`;
 
             return `
-                <div class="mt-3 pt-3 border-t ${trackerBorder}" data-calendar="${type}" data-channel="${channel.id}">
-                    <div class="flex flex-col gap-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                                <i class="${trackerIcon} ${trackerIconColor}"></i> ${trackerLabel}
+                <div class="mt-3 border ${trackerBorder} ${trackerBg} rounded-xl p-3 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md" data-calendar="${type}" data-channel="${channel.id}">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-[11px] font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1.5 uppercase tracking-wide">
+                                <i class="${trackerIcon} ${trackerIconColor} text-sm drop-shadow-sm"></i> ${trackerLabel}
                             </span>
-                            <div class="flex items-center gap-1">
-                                <button type="button" class="yt-cal-prev p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan sebelumnya">
+                            <div class="flex items-center gap-1 bg-white dark:bg-gray-800 p-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                <button type="button" class="yt-cal-prev p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan sebelumnya">
                                     <i class="fas fa-chevron-left text-[10px]"></i>
                                 </button>
-                                <span class="text-xs font-semibold text-gray-600 dark:text-gray-300 min-w-[80px] text-center">${monthName} ${year}</span>
-                                <button type="button" class="yt-cal-next p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan selanjutnya">
+                                <span class="text-[10px] font-bold text-gray-700 dark:text-gray-300 min-w-[80px] text-center tracking-wide">${monthName} ${year}</span>
+                                <button type="button" class="yt-cal-next p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan selanjutnya">
                                     <i class="fas fa-chevron-right text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-7 gap-0.5 bg-white/50 dark:bg-gray-900/30 p-2 rounded-lg border border-gray-100 dark:border-gray-700 shadow-inner">
+                        <div class="grid grid-cols-7 gap-1.5 bg-gray-50/60 dark:bg-gray-900/30 p-2.5 rounded-xl border border-gray-200/60 dark:border-gray-700/50 shadow-inner">
                             ${daysHtml}
                         </div>
                     </div>
@@ -6437,17 +6454,25 @@
                     const upCal = getYtCalMonth(channel.id, 'upload');
                     const schCal = getYtCalMonth(channel.id, 'schedule');
                     const rdCal = getYtCalMonth(channel.id, 'ready');
+                    window.visibleYtCalendars = window.visibleYtCalendars || new Set();
+                    const isSchVisible = window.visibleYtCalendars.has(`${channel.id}-schedule`);
+                    const isRdyVisible = window.visibleYtCalendars.has(`${channel.id}-ready`);
                     const calGrids = calEnabled ? `
                         ${buildYtCalendarGrid(channel, isMonetized, 'upload', upCal.year, upCal.month)}
-                        <div class="mt-2 flex justify-end">
-                            <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}">
-                                <i class="fas fa-eye"></i> <span>Tampilkan Jadwal Upload</span>
+                        <div class="mt-2 flex justify-end gap-2">
+                            <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}" data-type="schedule">
+                                <i class="${isSchVisible ? 'fas fa-eye-slash' : 'fas fa-eye'}"></i> <span>${isSchVisible ? 'Sembunyikan Jadwal' : 'Tampilkan Jadwal'}</span>
+                            </button>
+                            <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}" data-type="ready">
+                                <i class="${isRdyVisible ? 'fas fa-eye-slash' : 'fas fa-eye'}"></i> <span>${isRdyVisible ? 'Sembunyikan Video Ready' : 'Tampilkan Video Ready'}</span>
                             </button>
                         </div>
-                        <div class="yt-schedule-wrapper hidden" data-channel-id="${channel.id}">
+                        <div class="yt-schedule-wrapper ${isSchVisible ? '' : 'hidden'}" data-channel-id="${channel.id}" data-type="schedule">
                             ${buildYtCalendarGrid(channel, isMonetized, 'schedule', schCal.year, schCal.month)}
                         </div>
-                        ${buildYtCalendarGrid(channel, isMonetized, 'ready', rdCal.year, rdCal.month)}
+                        <div class="yt-schedule-wrapper ${isRdyVisible ? '' : 'hidden'}" data-channel-id="${channel.id}" data-type="ready">
+                            ${buildYtCalendarGrid(channel, isMonetized, 'ready', rdCal.year, rdCal.month)}
+                        </div>
                     ` : '';
                     calendarHtml = `
                         <div class="mt-4 pt-4">
@@ -6818,16 +6843,24 @@
                                 const schCal = getYtCalMonth(channelId, 'schedule');
                                 const rdCal = getYtCalMonth(channelId, 'ready');
                                 const isMonetizedCh = channel.monetization === 'Monetized';
+                                window.visibleYtCalendars = window.visibleYtCalendars || new Set();
+                                const isSchVisible = window.visibleYtCalendars.has(`${channel.id}-schedule`);
+                                const isRdyVisible = window.visibleYtCalendars.has(`${channel.id}-ready`);
                                 grids.innerHTML = buildYtCalendarGrid(channel, isMonetizedCh, 'upload', upCal.year, upCal.month) +
-                                    `<div class="mt-2 flex justify-end">
-                                        <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}">
-                                            <i class="fas fa-eye"></i> <span>Tampilkan Jadwal Upload</span>
+                                    `<div class="mt-2 flex justify-end gap-2">
+                                        <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}" data-type="schedule">
+                                            <i class="${isSchVisible ? 'fas fa-eye-slash' : 'fas fa-eye'}"></i> <span>${isSchVisible ? 'Sembunyikan Jadwal' : 'Tampilkan Jadwal'}</span>
+                                        </button>
+                                        <button type="button" class="yt-toggle-schedule-btn flex items-center gap-1 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded transition-colors" data-channel-id="${channel.id}" data-type="ready">
+                                            <i class="${isRdyVisible ? 'fas fa-eye-slash' : 'fas fa-eye'}"></i> <span>${isRdyVisible ? 'Sembunyikan Video Ready' : 'Tampilkan Video Ready'}</span>
                                         </button>
                                     </div>
-                                    <div class="yt-schedule-wrapper hidden" data-channel-id="${channel.id}">` +
+                                    <div class="yt-schedule-wrapper ${isSchVisible ? '' : 'hidden'}" data-channel-id="${channel.id}" data-type="schedule">` +
                                     buildYtCalendarGrid(channel, isMonetizedCh, 'schedule', schCal.year, schCal.month) +
-                                    `</div>` +
-                                    buildYtCalendarGrid(channel, isMonetizedCh, 'ready', rdCal.year, rdCal.month);
+                                    `</div>
+                                    <div class="yt-schedule-wrapper ${isRdyVisible ? '' : 'hidden'}" data-channel-id="${channel.id}" data-type="ready">` +
+                                    buildYtCalendarGrid(channel, isMonetizedCh, 'ready', rdCal.year, rdCal.month) +
+                                    `</div>`;
                                 // Re-attach all listeners in rebuilt grids
                                 grids.querySelectorAll('.yt-upload-checkbox, .yt-ready-checkbox, .yt-schedule-checkbox').forEach(chk => {
                                     chk.addEventListener('change', async (ev) => {
@@ -6881,16 +6914,24 @@
                     btn.dataset.hasListener = 'true';
                     btn.addEventListener('click', () => {
                         const channelId = btn.dataset.channelId;
-                        const wrapper = btn.closest('.yt-cal-grids').querySelector(`.yt-schedule-wrapper[data-channel-id="${channelId}"]`);
+                        const type = btn.dataset.type || 'schedule';
+                        const wrapper = btn.closest('.yt-cal-grids').querySelector(`.yt-schedule-wrapper[data-channel-id="${channelId}"][data-type="${type}"]`);
                         if (wrapper) {
                             wrapper.classList.toggle('hidden');
+                            const isHidden = wrapper.classList.contains('hidden');
                             const span = btn.querySelector('span');
                             const icon = btn.querySelector('i');
-                            if (wrapper.classList.contains('hidden')) {
-                                span.textContent = 'Tampilkan Jadwal Upload';
+                            
+                            window.visibleYtCalendars = window.visibleYtCalendars || new Set();
+                            const key = `${channelId}-${type}`;
+                            
+                            if (isHidden) {
+                                window.visibleYtCalendars.delete(key);
+                                span.textContent = type === 'schedule' ? 'Tampilkan Jadwal' : 'Tampilkan Video Ready';
                                 icon.className = 'fas fa-eye';
                             } else {
-                                span.textContent = 'Sembunyikan Jadwal Upload';
+                                window.visibleYtCalendars.add(key);
+                                span.textContent = type === 'schedule' ? 'Sembunyikan Jadwal' : 'Sembunyikan Video Ready';
                                 icon.className = 'fas fa-eye-slash';
                             }
                         }
