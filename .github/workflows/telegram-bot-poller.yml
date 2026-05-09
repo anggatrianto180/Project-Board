@@ -1,0 +1,42 @@
+name: Telegram Bot Poller
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Poll every 5 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  poll-and-respond:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Telegram for /jadwal command
+        id: check
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/telegram-bot-poller.mjs
+
+      - name: Setup Node.js
+        if: steps.check.outputs.triggered == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.check.outputs.triggered == 'true'
+        run: npm install firebase
+
+      - name: Run notification script
+        if: steps.check.outputs.triggered == 'true'
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_EMAIL: ${{ secrets.FIREBASE_EMAIL }}
+          FIREBASE_PASSWORD: ${{ secrets.FIREBASE_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ steps.check.outputs.chat_id || secrets.TELEGRAM_CHAT_ID }}
+        run: node scripts/notify-youtube-upload.mjs

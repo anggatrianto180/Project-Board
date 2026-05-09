@@ -70,47 +70,88 @@ async function main() {
             tabs = configSnap.data().tabs;
         }
 
+        // --- Calculate today & tomorrow in GMT+7 (Jakarta) ---
         const now = new Date();
-        // Convert to GMT+7 (Jakarta) by adding 7 hours to UTC, then add 24 hours for tomorrow
-        const tomorrowJakarta = new Date(now.getTime() + (7 * 60 * 60 * 1000) + (24 * 60 * 60 * 1000));
-        
-        const yyyy = tomorrowJakarta.getUTCFullYear();
-        const mm = String(tomorrowJakarta.getUTCMonth() + 1).padStart(2, '0');
-        const dd = String(tomorrowJakarta.getUTCDate()).padStart(2, '0');
-        const tomorrowStr = `${yyyy}-${mm}-${dd}`;
-        
-        console.log(`Checking upload schedules for tomorrow: ${tomorrowStr}`);
+        const jakartaOffset = 7 * 60 * 60 * 1000; // +7 hours in ms
 
-        let notificationMessages = [];
+        const todayJakarta = new Date(now.getTime() + jakartaOffset);
+        const tomorrowJakarta = new Date(now.getTime() + jakartaOffset + (24 * 60 * 60 * 1000));
+
+        const formatDate = (d) => {
+            const y = d.getUTCFullYear();
+            const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(d.getUTCDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        };
+        const formatDateLabel = (d) => {
+            const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            return `${days[d.getUTCDay()]}, ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+        };
+
+        const todayStr = formatDate(todayJakarta);
+        const tomorrowStr = formatDate(tomorrowJakarta);
+        const todayLabel = formatDateLabel(todayJakarta);
+        const tomorrowLabel = formatDateLabel(tomorrowJakarta);
+
+        console.log(`Checking schedules — Hari ini: ${todayStr}, Besok: ${tomorrowStr}`);
+
+        let todayMessages = [];
+        let tomorrowMessages = [];
 
         for (const tab of tabs) {
             const colName = ytChannelCollectionName(tab.id);
             const snapshot = await getDocs(collection(db, colName));
-            
+
             snapshot.forEach(docSnap => {
                 const channel = docSnap.data();
-                
+
                 // Only process channels in "adsense gabungan"
-                if (channel.isCombinedAdsense) {
-                    const hasSchedule = channel.uploadSchedules && channel.uploadSchedules[tomorrowStr];
-                    const isUploaded = channel.uploads && channel.uploads[tomorrowStr];
-                    const isReady = channel.readyVideos && channel.readyVideos[tomorrowStr];
-                    
-                    if (hasSchedule && !isUploaded) {
-                        const statusStr = isReady ? "Tinggal upload" : "Perlu dibuat video dan upload";
-                        notificationMessages.push(`- *${channel.name || docSnap.id}*: ${statusStr}`);
-                    }
+                if (!channel.isCombinedAdsense) return;
+
+                // Check TODAY
+                const hasTodaySchedule = channel.uploadSchedules && channel.uploadSchedules[todayStr];
+                const isTodayUploaded = channel.uploads && channel.uploads[todayStr];
+                const isTodayReady = channel.readyVideos && channel.readyVideos[todayStr];
+
+                if (hasTodaySchedule && !isTodayUploaded) {
+                    const status = isTodayReady
+                        ? "✅ Video sudah ready — tinggal upload"
+                        : "🎬 Perlu dibuat video dan upload";
+                    todayMessages.push(`  • *${channel.name || docSnap.id}* — ${status}`);
+                }
+
+                // Check TOMORROW
+                const hasTomorrowSchedule = channel.uploadSchedules && channel.uploadSchedules[tomorrowStr];
+                const isTomorrowUploaded = channel.uploads && channel.uploads[tomorrowStr];
+                const isTomorrowReady = channel.readyVideos && channel.readyVideos[tomorrowStr];
+
+                if (hasTomorrowSchedule && !isTomorrowUploaded) {
+                    const status = isTomorrowReady
+                        ? "✅ Video sudah ready — tinggal upload"
+                        : "🎬 Perlu dibuat video dan upload";
+                    tomorrowMessages.push(`  • *${channel.name || docSnap.id}* — ${status}`);
                 }
             });
         }
 
-        if (notificationMessages.length > 0) {
-            const finalMessage = `🔔 *Pengingat Jadwal Upload YouTube (H-1)*\nTanggal: ${tomorrowStr}\n\n${notificationMessages.join('\n')}`;
+        // Build final message
+        let sections = [];
+
+        if (todayMessages.length > 0) {
+            sections.push(`📌 *HARI INI — ${todayLabel}*\n${todayMessages.join('\n')}`);
+        }
+        if (tomorrowMessages.length > 0) {
+            sections.push(`⏰ *BESOK — ${tomorrowLabel}*\n${tomorrowMessages.join('\n')}`);
+        }
+
+        if (sections.length > 0) {
+            const finalMessage = `🔔 *Jadwal Upload YouTube*\n\n${sections.join('\n\n')}`;
             console.log("Sending notifications...");
             await sendTelegramMessage(finalMessage);
             console.log("Notifications sent successfully.");
         } else {
-            console.log("No pending uploads for tomorrow in combined adsense channels.");
+            console.log("No pending uploads for today or tomorrow in combined adsense channels.");
         }
 
         process.exit(0);
