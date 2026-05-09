@@ -70,11 +70,13 @@ async function main() {
             tabs = configSnap.data().tabs;
         }
 
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const yyyy = tomorrow.getFullYear();
-        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-        const dd = String(tomorrow.getDate()).padStart(2, '0');
+        const now = new Date();
+        // Convert to GMT+7 (Jakarta) by adding 7 hours to UTC, then add 24 hours for tomorrow
+        const tomorrowJakarta = new Date(now.getTime() + (7 * 60 * 60 * 1000) + (24 * 60 * 60 * 1000));
+        
+        const yyyy = tomorrowJakarta.getUTCFullYear();
+        const mm = String(tomorrowJakarta.getUTCMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrowJakarta.getUTCDate()).padStart(2, '0');
         const tomorrowStr = `${yyyy}-${mm}-${dd}`;
         
         console.log(`Checking upload schedules for tomorrow: ${tomorrowStr}`);
