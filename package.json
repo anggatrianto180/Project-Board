@@ -16,5 +16,8 @@
     "url": "https://github.com/anggatrianto180/Project-Board/issues"
   },
   "homepage": "https://github.com/anggatrianto180/Project-Board#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "firebase": "^12.13.0"
+  }
 }
