@@ -2,7 +2,7 @@ name: Telegram Bot Poller
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # Poll every 5 minutes
+    - cron: '*/30 * * * *' # Poll every 5 minutes
   workflow_dispatch: # Allow manual trigger
 
 jobs:
