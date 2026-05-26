@@ -1710,6 +1710,11 @@
                 </button>
             </div>
 
+            <!-- Upload Summary Card (like Telegram notification) -->
+            <div id="yt-upload-summary" class="mb-6 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hidden">
+                <!-- Summary rendered dynamically by JS -->
+            </div>
+
             <!-- Adsense Tab Bar -->
             <div id="yt-adsense-tab-bar" class="yt-adsense-tab-bar mb-6">
                 <!-- Tabs rendered dynamically by JS -->
@@ -6366,6 +6371,186 @@
             }
         };
 
+        // --- YouTube Upload Summary (like Telegram notification) ---
+        const renderYtUploadSummary = (channels) => {
+            const summaryEl = document.getElementById('yt-upload-summary');
+            if (!summaryEl) return;
+
+            if (!channels || channels.length === 0) {
+                summaryEl.classList.add('hidden');
+                return;
+            }
+
+            // --- Date helpers (mirroring notify-youtube-upload.mjs exactly) ---
+            const now = new Date();
+            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const formatDateLabel = (d) => {
+                const days   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+            };
+            const today    = new Date(now);
+            const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+            const todayStr    = toDateStr(today);
+            const tomorrowStr = toDateStr(tomorrow);
+            const todayLabel    = formatDateLabel(today);
+            const tomorrowLabel = formatDateLabel(tomorrow);
+
+            // Stats pills (all channels)
+            const totalChannels  = channels.length;
+            const monetizedCount = channels.filter(c => c.monetization === 'Monetized').length;
+            const activeChannels = channels.filter(c => (c.contentStatus || 'Belum Dikerjakan') === 'Sudah Dikerjakan');
+            const planChannels   = channels.filter(c => (c.contentStatus || 'Belum Dikerjakan') === 'Plan');
+            const belumChannels  = channels.filter(c => (c.contentStatus || 'Belum Dikerjakan') === 'Belum Dikerjakan');
+
+            // --- Filter: only isCombinedAdsense (same as Telegram bot) ---
+            const combinedChannels = channels.filter(c => c.isCombinedAdsense === true);
+            const combinedCount    = combinedChannels.length;
+
+            // Build list for a date: show only if scheduled AND not yet uploaded
+            const buildDayList = (dateStr) => {
+                const items = [];
+                combinedChannels.forEach(c => {
+                    const hasSchedule = c.uploadSchedules && c.uploadSchedules[dateStr];
+                    const isUploaded  = c.uploads && c.uploads[dateStr];
+                    const isReady     = c.readyVideos && c.readyVideos[dateStr]; // date-specific check
+
+                    if (hasSchedule && !isUploaded) {
+                        const isMonetized = c.monetization === 'Monetized';
+                        const monetizeBadge = isMonetized
+                            ? `<span class="ml-1 text-[10px] bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 px-1.5 py-0.5 rounded-full font-bold">💰</span>`
+                            : '';
+                        let statusIcon, statusText, statusClass;
+                        if (isReady) {
+                            statusIcon  = '✅';
+                            statusText  = 'Video sudah ready — tinggal upload';
+                            statusClass = 'text-green-600 dark:text-green-400';
+                        } else {
+                            statusIcon  = '🎬';
+                            statusText  = 'Perlu dibuat video dan upload';
+                            statusClass = 'text-orange-600 dark:text-orange-400';
+                        }
+                        items.push(`
+                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0">
+                                <span class="mt-0.5 text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center flex-wrap gap-1">
+                                        <span class="font-semibold text-gray-900 dark:text-white text-sm leading-tight">${c.name || c.id}</span>${monetizeBadge}
+                                    </div>
+                                    <span class="text-xs ${statusClass} mt-0.5 leading-tight block">— ${statusText}</span>
+                                </div>
+                            </div>`);
+                    }
+                });
+                return items;
+            };
+
+            const todayItems    = buildDayList(todayStr);
+            const tomorrowItems = buildDayList(tomorrowStr);
+
+            // Header stats (combined channels only)
+            const uploadedTodayCount  = combinedChannels.filter(c => c.uploads && c.uploads[todayStr]).length;
+            const scheduledTodayCount = combinedChannels.filter(c => c.uploadSchedules && c.uploadSchedules[todayStr]).length;
+            const monthStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+            let totalMonthUploads = 0;
+            combinedChannels.forEach(c => {
+                const ups = c.uploads || {};
+                Object.keys(ups).forEach(k => { if (k.startsWith(monthStr) && ups[k]) totalMonthUploads++; });
+            });
+            const uploadRate = scheduledTodayCount > 0
+                ? Math.round((uploadedTodayCount / scheduledTodayCount) * 100)
+                : (combinedChannels.length > 0 ? 100 : 0);
+            const progressBarColor = uploadRate === 100 ? 'bg-green-500' : uploadRate >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+
+            const hasTodayPending    = todayItems.length > 0;
+            const hasTomorrowPending = tomorrowItems.length > 0;
+            const todayEmptyHtml    = `<p class="text-sm text-gray-400 dark:text-gray-500 italic py-1">${scheduledTodayCount > 0 ? '🎉 Semua jadwal hari ini sudah diupload!' : 'Tidak ada jadwal upload hari ini.'}</p>`;
+            const tomorrowEmptyHtml = `<p class="text-sm text-gray-400 dark:text-gray-500 italic py-1">Tidak ada jadwal upload besok.</p>`;
+
+            summaryEl.innerHTML = `
+                <!-- Telegram-style Header — same logic as notify-youtube-upload.mjs -->
+                <div class="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 dark:from-red-800 dark:via-red-700 dark:to-rose-800 px-5 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fab fa-youtube text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold text-base leading-tight">🔔 Jadwal Upload YouTube</p>
+                            <p class="text-red-100 text-xs mt-0.5">${uploadedTodayCount}/${scheduledTodayCount} terjadwal sudah upload hari ini · ${totalMonthUploads}× bulan ini</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-white font-extrabold text-2xl leading-none">${uploadRate}%</span>
+                        </div>
+                        <div class="w-20 h-1.5 bg-white/30 rounded-full overflow-hidden">
+                            <div class="${progressBarColor} h-full rounded-full transition-all duration-700" style="width:${uploadRate}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Pills -->
+                <div class="flex flex-wrap gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-900/60 border-b border-gray-200 dark:border-gray-700">
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-2.5 py-1 rounded-full shadow-sm">
+                        <i class="fab fa-youtube text-red-500 text-[10px]"></i> ${totalChannels} Channel
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-2.5 py-1 rounded-full shadow-sm">
+                        🔗 ${combinedCount} Adsense Gabungan
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300 px-2.5 py-1 rounded-full shadow-sm">
+                        💰 ${monetizedCount} Monetized
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300 px-2.5 py-1 rounded-full shadow-sm">
+                        ✅ ${activeChannels.length} Aktif
+                    </span>
+                    ${planChannels.length > 0 ? `<span class="inline-flex items-center gap-1 text-xs font-semibold bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-600 dark:text-yellow-400 px-2.5 py-1 rounded-full shadow-sm">📋 ${planChannels.length} Plan</span>` : ''}
+                    ${belumChannels.length > 0 ? `<span class="inline-flex items-center gap-1 text-xs font-semibold bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 px-2.5 py-1 rounded-full shadow-sm">⬜ ${belumChannels.length} Belum Dikerjakan</span>` : ''}
+                </div>
+
+                <!-- Two-column body: Today | Tomorrow -->
+                <div class="bg-white dark:bg-gray-800 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
+
+                    <!-- HARI INI -->
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                                <i class="fas fa-calendar-day text-[10px]"></i> 📌 HARI INI
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">${todayLabel}</span>
+                        </div>
+                        ${hasTodayPending
+                            ? `<div>${todayItems.join('')}</div>`
+                            : todayEmptyHtml
+                        }
+                    </div>
+
+                    <!-- BESOK -->
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                                <i class="fas fa-calendar-plus text-[10px]"></i> ⏰ BESOK
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">${tomorrowLabel}</span>
+                        </div>
+                        ${hasTomorrowPending
+                            ? `<div>${tomorrowItems.join('')}</div>`
+                            : tomorrowEmptyHtml
+                        }
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 px-4 py-2 flex flex-wrap gap-x-4 gap-y-1">
+                    <span class="text-xs text-gray-400 dark:text-gray-500">✅ Video sudah ready — tinggal upload</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">🎬 Perlu dibuat video dan upload</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">💰 Monetized</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500 ml-auto italic">Hanya channel Adsense Gabungan</span>
+                </div>
+            `;
+            summaryEl.classList.remove('hidden');
+        };
+
+
         const renderYouTubeChannels = (channels) => {
             const container = document.getElementById('youtube-channels-list');
             const emptyState = document.getElementById('youtube-empty-state');
@@ -6374,9 +6559,11 @@
             container.innerHTML = '';
             if (channels.length === 0) {
                 if (emptyState) emptyState.classList.remove('hidden');
+                renderYtUploadSummary([]);
                 return;
             }
             if (emptyState) emptyState.classList.add('hidden');
+            renderYtUploadSummary(channels);
 
             // --- Separate monetized channels from others ---
             const monetizedChannels = channels.filter(c => c.monetization === 'Monetized');
