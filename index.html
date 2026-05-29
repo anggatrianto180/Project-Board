@@ -6430,14 +6430,48 @@
                             statusText  = 'Perlu dibuat video dan upload';
                             statusClass = 'text-orange-600 dark:text-orange-400';
                         }
+                        // Inline checklist buttons (Buat Video + Upload)
+                        const sourceId = c.sourceAdsenseId || currentYtAdsenseTab;
+                        const buatVideoChk = !isReady ? `
+                            <label class="yt-summary-checklist-item inline-flex items-center gap-1.5 cursor-pointer select-none group" title="Tandai video sudah dibuat/ready">
+                                <span class="relative flex-shrink-0">
+                                    <input type="checkbox" class="yt-summary-ready-chk peer sr-only"
+                                        data-channel-id="${c.id}"
+                                        data-date="${dateStr}"
+                                        data-source-id="${sourceId}"
+                                        ${isReady ? 'checked' : ''}>
+                                    <span class="flex w-[18px] h-[18px] rounded-[4px] border-2 border-orange-400 dark:border-orange-500 bg-white dark:bg-gray-700 peer-checked:bg-orange-500 peer-checked:border-orange-500 transition-all items-center justify-center">
+                                        <i class="fas fa-film text-[8px] text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                    </span>
+                                </span>
+                                <span class="text-[10px] font-semibold text-orange-600 dark:text-orange-400 group-hover:text-orange-700 leading-none whitespace-nowrap">Buat Video</span>
+                            </label>` : '';
+                        const uploadChk = `
+                            <label class="yt-summary-checklist-item inline-flex items-center gap-1.5 cursor-pointer select-none group" title="Tandai sudah diupload">
+                                <span class="relative flex-shrink-0">
+                                    <input type="checkbox" class="yt-summary-upload-chk peer sr-only"
+                                        data-channel-id="${c.id}"
+                                        data-date="${dateStr}"
+                                        data-source-id="${sourceId}"
+                                        ${isUploaded ? 'checked' : ''}>
+                                    <span class="flex w-[18px] h-[18px] rounded-[4px] border-2 border-green-400 dark:border-green-500 bg-white dark:bg-gray-700 peer-checked:bg-green-500 peer-checked:border-green-500 transition-all items-center justify-center">
+                                        <i class="fas fa-upload text-[8px] text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                    </span>
+                                </span>
+                                <span class="text-[10px] font-semibold text-green-600 dark:text-green-400 group-hover:text-green-700 leading-none whitespace-nowrap">Upload</span>
+                            </label>`;
                         items.push(`
-                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0">
-                                <span class="mt-0.5 text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
+                            <div class="flex items-center gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0">
+                                <span class="text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center flex-wrap gap-1">
                                         <span class="font-semibold text-gray-900 dark:text-white text-sm leading-tight">${c.name || c.id}</span>${monetizeBadge}
                                     </div>
                                     <span class="text-xs ${statusClass} mt-0.5 leading-tight block">— ${statusText}</span>
+                                </div>
+                                <div class="flex items-center gap-2 flex-shrink-0 ml-auto">
+                                    ${buatVideoChk}
+                                    ${uploadChk}
                                 </div>
                             </div>`);
                     }
@@ -6548,6 +6582,55 @@
                 </div>
             `;
             summaryEl.classList.remove('hidden');
+
+            // --- Attach checklist listeners in the summary card ---
+            summaryEl.querySelectorAll('.yt-summary-ready-chk').forEach(chk => {
+                chk.addEventListener('change', async (e) => {
+                    const channelId  = e.target.dataset.channelId;
+                    const dateStr    = e.target.dataset.date;
+                    const isChecked  = e.target.checked;
+                    let   sourceId   = e.target.dataset.sourceId;
+                    if (!sourceId || sourceId === 'undefined' || sourceId === 'null') sourceId = currentYtAdsenseTab;
+                    const channel = channels.find(c => c.id === channelId);
+                    if (!channel) return;
+                    const readyVideos = channel.readyVideos || {};
+                    readyVideos[dateStr] = isChecked;
+                    channel.readyVideos = readyVideos;
+                    try {
+                        await updateDoc(doc(db, ytChannelCollectionName(sourceId), channelId), { readyVideos });
+                        renderYtUploadSummary(channels);
+                    } catch (err) {
+                        console.error('Failed to update ready-video status:', err);
+                        e.target.checked = !isChecked;
+                        channel.readyVideos[dateStr] = !isChecked;
+                        showNotification('Gagal menyimpan status video ready', true);
+                    }
+                });
+            });
+
+            summaryEl.querySelectorAll('.yt-summary-upload-chk').forEach(chk => {
+                chk.addEventListener('change', async (e) => {
+                    const channelId  = e.target.dataset.channelId;
+                    const dateStr    = e.target.dataset.date;
+                    const isChecked  = e.target.checked;
+                    let   sourceId   = e.target.dataset.sourceId;
+                    if (!sourceId || sourceId === 'undefined' || sourceId === 'null') sourceId = currentYtAdsenseTab;
+                    const channel = channels.find(c => c.id === channelId);
+                    if (!channel) return;
+                    const uploads = channel.uploads || {};
+                    uploads[dateStr] = isChecked;
+                    channel.uploads = uploads;
+                    try {
+                        await updateDoc(doc(db, ytChannelCollectionName(sourceId), channelId), { uploads });
+                        renderYtUploadSummary(channels);
+                    } catch (err) {
+                        console.error('Failed to update upload status:', err);
+                        e.target.checked = !isChecked;
+                        channel.uploads[dateStr] = !isChecked;
+                        showNotification('Gagal menyimpan status upload', true);
+                    }
+                });
+            });
         };
 
 
