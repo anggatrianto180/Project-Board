@@ -7450,18 +7450,24 @@
             return `
                 <div class="mt-3 border ${trackerBorder} ${trackerBg} rounded-xl p-3 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md" data-calendar="${type}" data-channel="${channel.id}">
                     <div class="flex flex-col gap-3">
-                        <div class="flex justify-between items-center px-1">
+                        <div class="flex justify-between items-center px-1 flex-wrap gap-1">
                             <span class="text-[11px] font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1.5 uppercase tracking-wide">
                                 <i class="${trackerIcon} ${trackerIconColor} text-sm drop-shadow-sm"></i> ${trackerLabel}
                             </span>
-                            <div class="flex items-center gap-1 bg-white dark:bg-gray-800 p-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-                                <button type="button" class="yt-cal-prev p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan sebelumnya">
-                                    <i class="fas fa-chevron-left text-[10px]"></i>
-                                </button>
-                                <span class="text-[10px] font-bold text-gray-700 dark:text-gray-300 min-w-[80px] text-center tracking-wide">${monthName} ${year}</span>
-                                <button type="button" class="yt-cal-next p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan selanjutnya">
-                                    <i class="fas fa-chevron-right text-[10px]"></i>
-                                </button>
+                            <div class="flex items-center gap-1.5">
+                                ${type === 'schedule' ? `<button type="button" class="yt-cal-copy-prev flex items-center gap-1 text-[9px] font-bold px-2 py-1 rounded-md border transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700 hover:bg-purple-100 dark:hover:bg-purple-800/40"
+                                    ${dataTypeAttr} title="Salin pola dari bulan sebelumnya ke bulan ini">
+                                    <i class="fas fa-copy text-[9px]"></i> Salin Bulan Lalu
+                                </button>` : ''}
+                                <div class="flex items-center gap-1 bg-white dark:bg-gray-800 p-0.5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                    <button type="button" class="yt-cal-prev p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan sebelumnya">
+                                        <i class="fas fa-chevron-left text-[10px]"></i>
+                                    </button>
+                                    <span class="text-[10px] font-bold text-gray-700 dark:text-gray-300 min-w-[80px] text-center tracking-wide">${monthName} ${year}</span>
+                                    <button type="button" class="yt-cal-next p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors" ${dataTypeAttr} title="Bulan selanjutnya">
+                                        <i class="fas fa-chevron-right text-[10px]"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-7 gap-1.5 bg-gray-50/60 dark:bg-gray-900/30 p-2.5 rounded-xl border border-gray-200/60 dark:border-gray-700/50 shadow-inner">
@@ -8316,6 +8322,72 @@
                         }
                         setYtCalMonth(chId, type, year, month);
                         rebuildCalendarInCard(chId, type, card);
+                    });
+                });
+
+                // "Copy from previous month" button
+                scope.querySelectorAll('.yt-cal-copy-prev').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const type = btn.dataset.calType;
+                        const chId = btn.dataset.channelId;
+                        const channel = channels.find(c => c.id === chId);
+                        if (!channel) return;
+
+                        const cal = getYtCalMonth(chId, type);
+                        let { year, month } = cal;
+
+                        // Compute previous month
+                        let prevMonth = month - 1;
+                        let prevYear = year;
+                        if (prevMonth < 0) { prevMonth = 11; prevYear--; }
+
+                        const dataField = type === 'upload' ? 'uploads' : type === 'schedule' ? 'uploadSchedules' : 'readyVideos';
+                        const prevData = channel[dataField] || {};
+
+                        // Collect dates checked in the previous month
+                        const prevMonthStr = `${prevYear}-${String(prevMonth + 1).padStart(2, '0')}`;
+                        const checkedDays = [];
+                        Object.entries(prevData).forEach(([dateStr, val]) => {
+                            if (val && dateStr.startsWith(prevMonthStr + '-')) {
+                                const day = parseInt(dateStr.split('-')[2], 10);
+                                if (day >= 1) checkedDays.push(day);
+                            }
+                        });
+
+                        if (checkedDays.length === 0) {
+                            showNotification('Tidak ada data di bulan sebelumnya untuk disalin.', false);
+                            return;
+                        }
+
+                        const prevMonthName = new Date(prevYear, prevMonth, 1).toLocaleString('default', { month: 'long' });
+                        const curMonthName = new Date(year, month, 1).toLocaleString('default', { month: 'long' });
+                        const daysInCurMonth = new Date(year, month + 1, 0).getDate();
+
+                        const confirmed = await showConfirmModal(
+                            `Salin pola jadwal dari ${prevMonthName} ${prevYear} ke ${curMonthName} ${year}?\n\n` +
+                            `Tanggal yang akan disalin: ${checkedDays.join(', ')} (jika ada di bulan ini).\n` +
+                            `Data yang sudah ada di bulan ini akan digabung (tidak dihapus).`
+                        );
+                        if (!confirmed) return;
+
+                        // Build new object: merge existing current month data + copied days
+                        const currentData = { ...(channel[dataField] || {}) };
+                        checkedDays.forEach(day => {
+                            if (day <= daysInCurMonth) {
+                                const newDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                                currentData[newDateStr] = true;
+                            }
+                        });
+
+                        try {
+                            const actualSourceId = channel.sourceAdsenseId || currentYtAdsenseTab;
+                            await updateDoc(doc(db, ytChannelCollectionName(actualSourceId), chId), { [dataField]: currentData });
+                            showNotification(`Berhasil menyalin ${checkedDays.filter(d => d <= daysInCurMonth).length} tanggal dari ${prevMonthName} ke ${curMonthName}! 📋`);
+                        } catch (err) {
+                            console.error('Failed to copy calendar data:', err);
+                            showNotification('Gagal menyalin data kalender.', true);
+                        }
                     });
                 });
             };
