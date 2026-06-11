@@ -2605,6 +2605,27 @@
                         class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
                 </div>
 
+                <!-- Stock Music Section -->
+                <div class="border border-orange-200 dark:border-orange-800 rounded-xl p-4 bg-orange-50 dark:bg-orange-900/10">
+                    <p class="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-3 flex items-center gap-2">
+                        <i class="fas fa-music"></i> Informasi Stock Music
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="yt-stock-music-original-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">🎶 Lagu Asli (Licensed) — Berlaku Sampai</label>
+                            <input id="yt-stock-music-original-input" type="date"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <p class="text-xs text-gray-500 mt-1">Tanggal berakhir lisensi musik asli/licensed.</p>
+                        </div>
+                        <div>
+                            <label for="yt-stock-music-own-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">🎵 Lagu Ciptaan Sendiri — Berlaku Sampai</label>
+                            <input id="yt-stock-music-own-input" type="date"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <p class="text-xs text-gray-500 mt-1">Tanggal berakhir lisensi musik ciptaan sendiri.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="yt-email-input" class="block text-sm font-medium text-gray-700 mb-1">Main Email
@@ -7351,6 +7372,7 @@
         // --- YouTube Inventory Logic ---
         let youtubeUnsub = null;
         let editingChannelId = null;
+        let editingChannelSourceId = null; // tracks actual sourceAdsenseId when editing from combined tab
         // Per-channel calendar month state: { [channelId]: { uploadYear, uploadMonth, readyYear, readyMonth } }
         const ytCalendarMonths = {};
         const getYtCalMonth = (channelId, type) => {
@@ -8052,6 +8074,25 @@
                         ${channel.channelId ? `<span class="px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">ID: ${channel.channelId}</span>` : ''}
                     </div>
                     
+                    ${(() => {
+                        const formatDate = (d) => { if (!d) return null; try { const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); } catch(e){ return d; } };
+                        const today = new Date(); today.setHours(0,0,0,0);
+                        const getStatus = (d) => { if (!d) return null; const dt = new Date(d + 'T00:00:00'); const diff = Math.ceil((dt - today) / (1000*60*60*24)); if (diff < 0) return { label: 'Expired', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: '❌' }; if (diff <= 30) return { label: `${diff} hari lagi`, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: '⚠️' }; return { label: `${diff} hari lagi`, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: '✅' }; };
+                        const smOrig = channel.stockMusicOriginal;
+                        const smOwn = channel.stockMusicOwn;
+                        if (!smOrig && !smOwn) return '';
+                        const origStatus = getStatus(smOrig);
+                        const ownStatus = getStatus(smOwn);
+                        return `
+                        <div class="mt-1 mb-2 p-2.5 rounded-lg bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/50">
+                            <p class="text-xs font-bold text-orange-600 dark:text-orange-400 mb-1.5 flex items-center gap-1"><i class="fas fa-music"></i> Stock Music</p>
+                            <div class="space-y-1">
+                                ${smOrig ? `<div class="flex items-center justify-between gap-2"><span class="text-xs text-gray-600 dark:text-gray-400">🎶 Lagu Asli</span><div class="flex items-center gap-1"><span class="text-xs text-gray-500 dark:text-gray-400">${formatDate(smOrig)}</span><span class="text-xs font-semibold px-1.5 py-0.5 rounded-full ${origStatus.color}">${origStatus.icon} ${origStatus.label}</span></div></div>` : ''}
+                                ${smOwn ? `<div class="flex items-center justify-between gap-2"><span class="text-xs text-gray-600 dark:text-gray-400">🎵 Lagu Ciptaan</span><div class="flex items-center gap-1"><span class="text-xs text-gray-500 dark:text-gray-400">${formatDate(smOwn)}</span><span class="text-xs font-semibold px-1.5 py-0.5 rounded-full ${ownStatus.color}">${ownStatus.icon} ${ownStatus.label}</span></div></div>` : ''}
+                            </div>
+                        </div>`;
+                    })()}
+
                     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-envelope text-gray-400 dark:text-gray-500 w-4"></i>
@@ -8159,8 +8200,10 @@
             container.querySelectorAll('.delete-channel-btn').forEach(btn => {
                 btn.addEventListener('click', async () => {
                     const id = btn.dataset.id;
+                    const channel = channels.find(c => c.id === id);
+                    const sourceId = channel ? (channel.sourceAdsenseId || currentYtAdsenseTab) : currentYtAdsenseTab;
                     if (confirm('Delete this YouTube channel inventory item?')) {
-                        await deleteYouTubeChannel(id);
+                        await deleteYouTubeChannel(id, sourceId);
                     }
                 });
             });
@@ -8629,7 +8672,16 @@
 
         const updateYouTubeChannel = async (id, data) => {
             try {
-                const colName = ytChannelCollectionName(currentYtAdsenseTab);
+                // Use the channel's actual source adsense tab, not the currently viewed tab
+                // (important when editing from the combined view)
+                const sourceId = (editingChannelSourceId && editingChannelSourceId !== 'combined')
+                    ? editingChannelSourceId
+                    : currentYtAdsenseTab;
+                if (sourceId === 'combined') {
+                    showNotification('Gagal: tidak dapat menyimpan dari tab Adsense Gabungan. Coba lagi.', true);
+                    return;
+                }
+                const colName = ytChannelCollectionName(sourceId);
                 await updateDoc(doc(db, colName, id), { ...data, updatedAt: Date.now() });
                 showNotification('Channel updated successfully.');
             } catch (err) {
@@ -8638,9 +8690,17 @@
             }
         };
 
-        const deleteYouTubeChannel = async (id) => {
+        const deleteYouTubeChannel = async (id, sourceAdsenseId = null) => {
             try {
-                const colName = ytChannelCollectionName(currentYtAdsenseTab);
+                // Use provided sourceAdsenseId (from card data) or fall back to current tab
+                const sourceId = (sourceAdsenseId && sourceAdsenseId !== 'combined')
+                    ? sourceAdsenseId
+                    : currentYtAdsenseTab;
+                if (sourceId === 'combined') {
+                    showNotification('Gagal: tidak dapat menghapus dari tab Adsense Gabungan.', true);
+                    return;
+                }
+                const colName = ytChannelCollectionName(sourceId);
                 await deleteDoc(doc(db, colName, id));
                 showNotification('Channel deleted.');
             } catch (err) {
@@ -8651,6 +8711,8 @@
 
         const openYouTubeModal = (channel = null) => {
             editingChannelId = channel ? channel.id : null;
+            // Remember the channel's actual source adsense tab for correct update/delete
+            editingChannelSourceId = channel ? (channel.sourceAdsenseId || currentYtAdsenseTab) : null;
             document.getElementById('youtube-modal-title').textContent = channel ? 'Edit Channel' : 'Add New Channel';
 
             // Set values
@@ -8668,6 +8730,8 @@
             document.getElementById('yt-content-status-select').value = channel ? (channel.contentStatus || 'Belum Dikerjakan') : 'Belum Dikerjakan';
             document.getElementById('yt-asset-input').value = channel ? channel.assetLink : '';
             document.getElementById('yt-competitor-input').value = channel ? (channel.competitorRefs || '') : '';
+            document.getElementById('yt-stock-music-original-input').value = channel ? (channel.stockMusicOriginal || '') : '';
+            document.getElementById('yt-stock-music-own-input').value = channel ? (channel.stockMusicOwn || '') : '';
 
             // Load viral songs
             const viralList = document.getElementById('yt-viral-songs-list');
@@ -8744,6 +8808,8 @@
                 contentStatus: document.getElementById('yt-content-status-select').value,
                 assetLink: document.getElementById('yt-asset-input').value.trim(),
                 competitorRefs: document.getElementById('yt-competitor-input').value.trim(),
+                stockMusicOriginal: document.getElementById('yt-stock-music-original-input').value.trim(),
+                stockMusicOwn: document.getElementById('yt-stock-music-own-input').value.trim(),
                 viralSongs: Array.from(document.querySelectorAll('#yt-viral-songs-list [data-song-title]')).map(el => ({ title: el.dataset.songTitle, url: el.dataset.songUrl || '' })).filter(el => el.title)
             };
 
