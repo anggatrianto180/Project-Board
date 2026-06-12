@@ -2251,7 +2251,22 @@
 
                 <hr class="my-8 border-gray-200 dark:border-gray-700">
 
-                <!-- YouTube Notes Section -->
+                <!-- YouTube Combined Notes Section (shown only on Adsense Gabungan tab) -->
+                <div id="youtube-combined-notes-section" class="hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Notes — Adsense Gabungan</h3>
+                        <button id="youtube-combined-add-note-btn"
+                            class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
+                            <i class="fas fa-plus"></i> Add Note
+                        </button>
+                    </div>
+                    <!-- YouTube Combined Notes List -->
+                    <div id="youtube-combined-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Notes rendered here -->
+                    </div>
+                </div>
+
+                <!-- YouTube Notes Section (shown on individual Adsense tabs) -->
                 <div id="youtube-notes-section">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Notes</h3>
@@ -4849,6 +4864,7 @@
             editButton.onclick = () => {
                 if (target === 'trade') editTradeNote(note.id, item);
                 else if (target === 'youtube') editYouTubeNote(note.id, item);
+                else if (target === 'youtube_combined') editYouTubeCombinedNote(note.id);
                 else if (target === 'tiktok') editTikTokNote(note.id);
                 else editNote(note.id, item);
             };
@@ -4859,6 +4875,7 @@
             deleteButton.onclick = () => {
                 if (target === 'trade') deleteTradeNote(note.id);
                 else if (target === 'youtube') deleteYouTubeNote(note.id);
+                else if (target === 'youtube_combined') deleteYouTubeCombinedNote(note.id);
                 else if (target === 'tiktok') deleteTikTokNote(note.id);
                 else deleteNote(note.id);
             };
@@ -4940,7 +4957,9 @@
         let ytAdsenseTabs = []; // Array of { id: number, name: string }
         let currentYtAdsenseTab = 'combined';
         let youtubeNotesUnsub = null;
+        let youtubeNotesGabunganUnsub = null;
         let allYouTubeNotes = [];
+        let allYouTubeCombinedNotes = [];
         let combinedYoutubeUnsubs = [];
 
         // Default tabs (used when no config exists in Firestore)
@@ -5099,10 +5118,20 @@
                 renderYouTubeNotes();
                 const notesSection = document.getElementById('youtube-notes-section');
                 if (notesSection) notesSection.classList.add('hidden');
+                // Show combined notes section and listen to it
+                listenYouTubeCombinedNotes();
                 return;
             } else {
                 const notesSection = document.getElementById('youtube-notes-section');
                 if (notesSection) notesSection.classList.remove('hidden');
+                // Hide combined notes section
+                const combinedNotesSection = document.getElementById('youtube-combined-notes-section');
+                if (combinedNotesSection) combinedNotesSection.classList.add('hidden');
+                // Stop listening to combined notes
+                if (youtubeNotesGabunganUnsub) {
+                    youtubeNotesGabunganUnsub();
+                    youtubeNotesGabunganUnsub = null;
+                }
             }
             const pathParts = ytNotesPath(currentYtAdsenseTab);
             const q = query(collection(db, ...pathParts), orderBy('createdAt', 'desc'));
@@ -5110,6 +5139,88 @@
                 allYouTubeNotes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderYouTubeNotes();
             });
+        };
+
+        // --- YouTube Combined Notes (for Adsense Gabungan tab) ---
+        const ytCombinedNotesPath = () => ['hubs', 'youtube_adsense_combined', 'notes'];
+
+        const listenYouTubeCombinedNotes = () => {
+            if (youtubeNotesGabunganUnsub) {
+                youtubeNotesGabunganUnsub();
+                youtubeNotesGabunganUnsub = null;
+            }
+            const combinedNotesSection = document.getElementById('youtube-combined-notes-section');
+            if (combinedNotesSection) combinedNotesSection.classList.remove('hidden');
+            const pathParts = ytCombinedNotesPath();
+            const q = query(collection(db, ...pathParts), orderBy('createdAt', 'desc'));
+            youtubeNotesGabunganUnsub = onSnapshot(q, (snapshot) => {
+                allYouTubeCombinedNotes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderYouTubeCombinedNotes();
+            });
+            wireYtCombinedNoteButton();
+        };
+
+        const renderYouTubeCombinedNotes = () => {
+            const container = document.getElementById('youtube-combined-notes-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (allYouTubeCombinedNotes.length === 0) {
+                container.innerHTML = `<div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-8 text-gray-500">No notes yet.</div>`;
+                return;
+            }
+
+            allYouTubeCombinedNotes.forEach(note => {
+                const el = createNoteElement(note, 'youtube_combined');
+                el.classList.remove('bg-yellow-50');
+                el.classList.add('bg-white', 'border', 'border-gray-200');
+                container.appendChild(el);
+            });
+        };
+
+        const openAddYouTubeCombinedNote = () => {
+            editingNoteId = null;
+            noteModalTarget = 'youtube_combined';
+            document.getElementById('note-modal-title-input').value = '';
+            document.getElementById('note-modal-input').value = '';
+            document.getElementById('note-modal-title').textContent = 'Add Note — Adsense Gabungan';
+            if (document.getElementById('note-modal-folder-select')) document.getElementById('note-modal-folder-select').value = '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        const editYouTubeCombinedNote = (id) => {
+            const noteFn = allYouTubeCombinedNotes.find(n => n.id === id);
+            if (!noteFn) return;
+            editingNoteId = id;
+            noteModalTarget = 'youtube_combined';
+            document.getElementById('note-modal-title-input').value = noteFn.title || '';
+            document.getElementById('note-modal-input').value = noteFn.text || '';
+            document.getElementById('note-modal-title').textContent = 'Edit Note — Adsense Gabungan';
+            if (document.getElementById('note-modal-folder-select')) document.getElementById('note-modal-folder-select').value = '';
+            const m = document.getElementById('note-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+        };
+
+        const deleteYouTubeCombinedNote = async (id) => {
+            const confirmed = await showConfirmModal('Delete this note?');
+            if (!confirmed) return;
+            try {
+                const pathParts = ytCombinedNotesPath();
+                await deleteDoc(doc(db, ...pathParts, id));
+                showNotification('Note deleted.');
+            } catch (e) {
+                console.error(e);
+                showNotification('Failed to delete note.', true);
+            }
+        };
+
+        // Wire up combined notes button
+        const wireYtCombinedNoteButton = () => {
+            const btn = document.getElementById('youtube-combined-add-note-btn');
+            if (btn) {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', openAddYouTubeCombinedNote);
+            }
         };
 
         const renderYouTubeNotes = () => {
@@ -8897,6 +9008,18 @@
                 } else if (noteModalTarget === 'youtube') {
                     // operate on youtube notes for the active adsense tab
                     const notePath = ytNotesPath(currentYtAdsenseTab);
+                    if (editingNoteId) {
+                        await updateDoc(doc(db, ...notePath, editingNoteId), { title: title || null, text: txt, updatedAt: Date.now() });
+                        showNotification('Note updated.');
+                    } else {
+                        await addDoc(collection(db, ...notePath), { title: title || null, text: txt, createdAt: Date.now() });
+                        showNotification('Note added.');
+                    }
+                    document.getElementById('note-modal').classList.add('hidden');
+                    document.getElementById('note-modal').classList.remove('flex');
+                } else if (noteModalTarget === 'youtube_combined') {
+                    // operate on youtube combined adsense notes
+                    const notePath = ytCombinedNotesPath();
                     if (editingNoteId) {
                         await updateDoc(doc(db, ...notePath, editingNoteId), { title: title || null, text: txt, updatedAt: Date.now() });
                         showNotification('Note updated.');
