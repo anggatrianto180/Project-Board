@@ -1909,10 +1909,13 @@
 
                             <div>
                                 <div class="flex items-center justify-between mb-1">
-                                    <label class="block text-xs font-semibold text-gray-600">Harga Beli per Koin <span class="text-red-500">*</span></label>
+                                    <label class="block text-xs font-semibold text-gray-600">Harga Beli per Koin <span
+                                            class="text-red-500">*</span></label>
                                     <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-md p-0.5">
-                                        <button type="button" id="spot-dca-currency-idr" class="px-2 py-0.5 text-[10px] font-bold rounded bg-white dark:bg-gray-800 shadow-sm text-gray-800 dark:text-gray-100 transition-colors">IDR</button>
-                                        <button type="button" id="spot-dca-currency-usd" class="px-2 py-0.5 text-[10px] font-bold rounded text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">USD</button>
+                                        <button type="button" id="spot-dca-currency-idr"
+                                            class="px-2 py-0.5 text-[10px] font-bold rounded bg-white dark:bg-gray-800 shadow-sm text-gray-800 dark:text-gray-100 transition-colors">IDR</button>
+                                        <button type="button" id="spot-dca-currency-usd"
+                                            class="px-2 py-0.5 text-[10px] font-bold rounded text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">USD</button>
                                     </div>
                                 </div>
                                 <div class="relative">
@@ -2205,7 +2208,8 @@
 
         <!-- YouTube Inventory Section -->
         <div id="youtube-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
-            <!-- Header -->
+
+            <!-- Header — paling atas -->
             <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white">YouTube Channel Inventory</h2>
@@ -2218,6 +2222,61 @@
                     <span>Add New Channel</span>
                 </button>
             </div>
+
+            <!-- ===== YouTube Project Board ===== -->
+            <div id="yt-project-board-panel"
+                class="mb-8 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-th-large text-red-500 text-sm"></i>
+                        <h3 class="text-base font-bold text-gray-800 dark:text-white">Project Board</h3>
+                    </div>
+                    <div class="flex items-center gap-2 relative">
+                        <button id="yt-board-settings-btn" title="Board size settings"
+                            class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center">
+                            <i class="fas fa-sliders-h"></i>
+                        </button>
+                        <!-- Settings popover -->
+                        <div id="yt-board-settings-popover"
+                            class="hidden absolute top-9 right-0 z-30 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl p-4 w-64">
+                            <p class="text-xs font-bold text-gray-700 dark:text-gray-200 mb-3">Board Size Settings</p>
+                            <div class="mb-3">
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-xs text-gray-500 dark:text-gray-400">Column Width</label>
+                                    <span id="yt-col-width-val" class="text-xs font-semibold text-red-500">176px</span>
+                                </div>
+                                <input id="yt-col-width-slider" type="range" min="120" max="320" step="8" value="176"
+                                    class="w-full accent-red-500 cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
+                                    <span>Narrow</span><span>Wide</span>
+                                </div>
+                            </div>
+                            <div class="mb-1">
+                                <div class="flex justify-between mb-1">
+                                    <label class="text-xs text-gray-500 dark:text-gray-400">Task List Height</label>
+                                    <span id="yt-col-height-val" class="text-xs font-semibold text-red-500">192px</span>
+                                </div>
+                                <input id="yt-col-height-slider" type="range" min="80" max="600" step="8" value="192"
+                                    class="w-full accent-red-500 cursor-pointer">
+                                <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
+                                    <span>Short</span><span>Tall</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="yt-add-column-btn"
+                            class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center gap-1.5">
+                            <i class="fas fa-plus text-[10px]"></i> Add Column
+                        </button>
+                        <button id="yt-add-task-btn"
+                            class="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-all flex items-center gap-1.5">
+                            <i class="fas fa-plus text-[10px]"></i> Add Task
+                        </button>
+                    </div>
+                </div>
+                <!-- Board columns rendered by JS -->
+                <div id="yt-board" class="flex gap-3 overflow-x-auto pb-2"></div>
+            </div>
+
 
             <!-- Upload Summary Card (like Telegram notification) -->
             <div id="yt-upload-summary"
@@ -2621,19 +2680,24 @@
                 </div>
 
                 <!-- Stock Music Section -->
-                <div class="border border-orange-200 dark:border-orange-800 rounded-xl p-4 bg-orange-50 dark:bg-orange-900/10">
+                <div
+                    class="border border-orange-200 dark:border-orange-800 rounded-xl p-4 bg-orange-50 dark:bg-orange-900/10">
                     <p class="text-sm font-semibold text-orange-700 dark:text-orange-400 mb-3 flex items-center gap-2">
                         <i class="fas fa-music"></i> Informasi Stock Music
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="yt-stock-music-original-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">🎶 Lagu Asli (Licensed) — Berlaku Sampai</label>
+                            <label for="yt-stock-music-original-input"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">🎶 Lagu Asli
+                                (Licensed) — Berlaku Sampai</label>
                             <input id="yt-stock-music-original-input" type="date"
                                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <p class="text-xs text-gray-500 mt-1">Tanggal berakhir lisensi musik asli/licensed.</p>
                         </div>
                         <div>
-                            <label for="yt-stock-music-own-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">🎵 Lagu Ciptaan Sendiri — Berlaku Sampai</label>
+                            <label for="yt-stock-music-own-input"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">🎵 Lagu Ciptaan
+                                Sendiri — Berlaku Sampai</label>
                             <input id="yt-stock-music-own-input" type="date"
                                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                             <p class="text-xs text-gray-500 mt-1">Tanggal berakhir lisensi musik ciptaan sendiri.</p>
@@ -6693,7 +6757,7 @@
         const updateDcaKoinResult = () => {
             const idr = parseFloat(document.getElementById('spot-dca-idr')?.value) || 0;
             let price = parseFloat(document.getElementById('spot-dca-price')?.value) || 0;
-            
+
             if (_spotDcaCurrency === 'USD') {
                 price = price * _spotUsdIdr;
             }
@@ -6733,7 +6797,7 @@
         // ---- Open Add/Edit Modal ----
         const openSpotAssetModal = (asset = null) => {
             _spotEditingId = asset ? asset.id : null;
-            
+
             _spotDcaCurrency = 'IDR';
             if (typeof updateSpotDcaCurrencyUI === 'function') updateSpotDcaCurrencyUI();
 
@@ -6808,7 +6872,7 @@
             const dcaDateVal = document.getElementById('spot-dca-date').value;
             const jumlahRupiah = parseFloat(document.getElementById('spot-dca-idr').value) || 0;
             let hargaPerBtc = parseFloat(document.getElementById('spot-dca-price').value) || 0;
-            
+
             if (_spotDcaCurrency === 'USD') {
                 hargaPerBtc = hargaPerBtc * _spotUsdIdr;
             }
@@ -8186,9 +8250,9 @@
                     </div>
                     
                     ${(() => {
-                        const formatDate = (d) => { if (!d) return null; try { const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); } catch(e){ return d; } };
-                        const today = new Date(); today.setHours(0,0,0,0);
-                        const getStatus = (d) => { if (!d) return null; const dt = new Date(d + 'T00:00:00'); const diff = Math.ceil((dt - today) / (1000*60*60*24)); if (diff < 0) return { label: 'Expired', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: '❌' }; if (diff <= 30) return { label: `${diff} hari lagi`, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: '⚠️' }; return { label: `${diff} hari lagi`, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: '✅' }; };
+                        const formatDate = (d) => { if (!d) return null; try { const dt = new Date(d + 'T00:00:00'); return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (e) { return d; } };
+                        const today = new Date(); today.setHours(0, 0, 0, 0);
+                        const getStatus = (d) => { if (!d) return null; const dt = new Date(d + 'T00:00:00'); const diff = Math.ceil((dt - today) / (1000 * 60 * 60 * 24)); if (diff < 0) return { label: 'Expired', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: '❌' }; if (diff <= 30) return { label: `${diff} hari lagi`, color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400', icon: '⚠️' }; return { label: `${diff} hari lagi`, color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: '✅' }; };
                         const smOrig = channel.stockMusicOriginal;
                         const smOwn = channel.stockMusicOwn;
                         if (!smOrig && !smOwn) return '';
@@ -9914,6 +9978,411 @@
             wireTtNoteButton();
         };
         initTtHpTabs();
+
+        // =====================================================================
+        // YouTube Project Board
+        // Uses Firestore collection: hubs/youtube/tasks & hubs/youtube/board_columns
+        // =====================================================================
+        let ytBoardColumns = [];
+        let ytBoardTasks = [];
+        let ytBoardListeners = [];
+        let ytBoardInitialized = false;
+
+        const initYtBoard = () => {
+            if (ytBoardInitialized) return;
+            ytBoardInitialized = true;
+
+            // Listen to columns
+            const colListener = onSnapshot(
+                query(collection(db, 'hubs', 'youtube', 'board_columns'), orderBy('order')),
+                (snap) => {
+                    ytBoardColumns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Seed default columns on first load
+                    if (ytBoardColumns.length === 0) {
+                        seedYtBoardColumns();
+                    } else {
+                        renderYtBoard();
+                    }
+                }
+            );
+            // Listen to tasks
+            const taskListener = onSnapshot(
+                query(collection(db, 'hubs', 'youtube', 'tasks')),
+                (snap) => {
+                    ytBoardTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    renderYtBoard();
+                }
+            );
+            ytBoardListeners.push(colListener, taskListener);
+        };
+
+        const seedYtBoardColumns = async () => {
+            const defaults = [
+                { name: 'Plan', color: 'blue', order: 1 },
+                { name: 'In Progress', color: 'yellow', order: 2 },
+                { name: 'Done', color: 'green', order: 3 },
+            ];
+            for (const col of defaults) {
+                await addDoc(collection(db, 'hubs', 'youtube', 'board_columns'), { ...col, createdAt: Date.now() });
+            }
+        };
+
+        const createYtTaskElement = (task) => {
+            const card = document.createElement('div');
+            card.className = 'task-card text-xs text-gray-700 dark:text-gray-200 cursor-grab active:cursor-grabbing relative group';
+            card.draggable = true;
+            card.dataset.id = task.id;
+
+            const textEl = document.createElement('span');
+            textEl.className = 'task-text flex-1 text-xs';
+            textEl.textContent = task.text;
+
+            const delBtn = document.createElement('i');
+            delBtn.className = 'fas fa-times task-actions delete-btn text-[10px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0';
+            delBtn.title = 'Delete task';
+            delBtn.onclick = async (e) => {
+                e.stopPropagation();
+                const confirmed = await showConfirmModal('Delete this task?');
+                if (!confirmed) return;
+                try { await deleteDoc(doc(db, 'hubs', 'youtube', 'tasks', task.id)); } catch (err) { console.warn(err); }
+            };
+
+            card.appendChild(textEl);
+            card.appendChild(delBtn);
+
+            card.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('yt-task-id', task.id);
+                card.classList.add('dragging');
+            });
+            card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+            return card;
+        };
+
+        const renderYtBoard = () => {
+            const container = document.getElementById('yt-board');
+            if (!container) return;
+            if (ytBoardColumns.length === 0) return; // guard: wait until columns are loaded
+            container.innerHTML = '';
+
+            // Read size settings from localStorage
+            const colWidth = parseInt(localStorage.getItem('ytBoardColWidth') || '176', 10);
+            const colHeight = parseInt(localStorage.getItem('ytBoardColHeight') || '192', 10);
+
+            ytBoardColumns.forEach(col => {
+                const tasks = ytBoardTasks.filter(t => t.columnId === col.id).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                // Color map
+                const borderMap = { red: 'border-red-500', blue: 'border-blue-500', green: 'border-green-500', yellow: 'border-yellow-400', purple: 'border-purple-500' };
+                const borderCls = borderMap[col.color] || 'border-gray-300';
+
+                const colEl = document.createElement('div');
+                colEl.className = 'flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 flex flex-col';
+                colEl.style.width = colWidth + 'px';
+                colEl.style.minWidth = colWidth + 'px';
+                colEl.dataset.ytColId = col.id;
+
+                // Header
+                colEl.innerHTML = `
+                    <div class="kanban-column-header px-3 py-2 border-b-2 ${borderCls} flex items-center justify-between group/col">
+                        <span class="text-xs font-semibold text-gray-700 dark:text-gray-200 truncate flex-1">${col.name}</span>
+                        <div class="flex items-center gap-1.5 ml-1">
+                            <span class="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full px-1.5 py-0.5">${tasks.length}</span>
+                            <button class="yt-delete-col-btn column-actions delete-btn opacity-0 group-hover/col:opacity-100 transition-opacity text-[10px] text-gray-400 hover:text-red-500" title="Delete column" data-col-id="${col.id}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="yt-task-list flex flex-col gap-1.5 p-2 overflow-y-auto" style="min-height:80px;max-height:${colHeight}px" data-yt-col-id="${col.id}"></div>
+                `;
+
+                // Wire delete button
+                colEl.querySelector('.yt-delete-col-btn')?.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteYtColumn(col.id);
+                });
+
+                const taskList = colEl.querySelector('.yt-task-list');
+
+                tasks.forEach(task => {
+                    const card = createYtTaskElement(task);
+                    taskList.appendChild(card);
+                });
+
+                // Drag-over for drop target
+                taskList.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    taskList.classList.add('bg-red-50', 'dark:bg-red-900/20');
+                });
+                taskList.addEventListener('dragleave', () => {
+                    taskList.classList.remove('bg-red-50', 'dark:bg-red-900/20');
+                });
+                taskList.addEventListener('drop', async e => {
+                    e.preventDefault();
+                    taskList.classList.remove('bg-red-50', 'dark:bg-red-900/20');
+                    const taskId = e.dataTransfer.getData('yt-task-id');
+                    if (!taskId) return;
+                    const targetColId = col.id;
+                    try {
+                        await updateDoc(doc(db, 'hubs', 'youtube', 'tasks', taskId), { columnId: targetColId });
+                    } catch (err) { console.warn(err); }
+                });
+
+                container.appendChild(colEl);
+            });
+        };
+
+        // Add Task Modal for YouTube Board
+        const openYtAddTaskModal = () => {
+            if (ytBoardColumns.length === 0) { showNotification('No columns yet. Please wait...', true); return; }
+            // Build a simple inline prompt via existing confirm modal pattern, or use a quick inline input
+            const colOptions = ytBoardColumns.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            const modalHtml = `
+                <div id="yt-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="modal-panel bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-sm">
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Add Task — Project Board</h3>
+                        <form id="yt-task-form" class="flex flex-col gap-3">
+                            <input id="yt-task-text-input" type="text" placeholder="Task description..." required
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 dark:bg-gray-700 dark:text-white" />
+                            <select id="yt-task-col-select" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white">
+                                ${colOptions}
+                            </select>
+                            <div class="flex gap-2 justify-end mt-1">
+                                <button type="button" id="yt-task-cancel-btn"
+                                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</button>
+                                <button type="submit"
+                                    class="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700">Add Task</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = document.getElementById('yt-task-modal');
+            document.getElementById('yt-task-cancel-btn').onclick = () => modal.remove();
+            document.getElementById('yt-task-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const text = document.getElementById('yt-task-text-input').value.trim();
+                const colId = document.getElementById('yt-task-col-select').value;
+                if (!text || !colId) return;
+                try {
+                    const order = ytBoardTasks.filter(t => t.columnId === colId).length + 1;
+                    await addDoc(collection(db, 'hubs', 'youtube', 'tasks'), { text, columnId: colId, order, createdAt: Date.now() });
+                    modal.remove();
+                    showNotification('Task added!');
+                } catch (err) { showNotification('Failed to add task.', true); }
+            };
+        };
+
+        document.getElementById('yt-add-task-btn')?.addEventListener('click', openYtAddTaskModal);
+
+        // ---- Add Column for YouTube Board ----
+        const openYtAddColumnModal = () => {
+            // Remove existing modal if any
+            document.getElementById('yt-col-modal')?.remove();
+
+            const colors = [
+                { val: 'blue', cls: 'bg-blue-500' },
+                { val: 'yellow', cls: 'bg-yellow-400' },
+                { val: 'green', cls: 'bg-green-500' },
+                { val: 'red', cls: 'bg-red-500' },
+                { val: 'purple', cls: 'bg-purple-500' },
+                { val: 'gray', cls: 'bg-gray-400' },
+            ];
+
+            // Build modal DOM
+            const overlay = document.createElement('div');
+            overlay.id = 'yt-col-modal';
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+
+            const panel = document.createElement('div');
+            panel.className = 'modal-panel bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-sm';
+
+            const title = document.createElement('h3');
+            title.className = 'text-lg font-bold text-gray-800 dark:text-white mb-4';
+            title.textContent = 'Add Column';
+
+            const form = document.createElement('form');
+            form.id = 'yt-col-form';
+            form.className = 'flex flex-col gap-3';
+
+            // Name input
+            const nameInput = document.createElement('input');
+            nameInput.id = 'yt-col-name-input';
+            nameInput.type = 'text';
+            nameInput.placeholder = 'Column name...';
+            nameInput.required = true;
+            nameInput.className = 'w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 dark:bg-gray-700 dark:text-white';
+
+            // Color picker
+            const colorWrap = document.createElement('div');
+            const colorLabel = document.createElement('p');
+            colorLabel.className = 'text-xs text-gray-500 dark:text-gray-400 mb-2';
+            colorLabel.textContent = 'Column color';
+            const swatchRow = document.createElement('div');
+            swatchRow.className = 'flex gap-2 flex-wrap';
+
+            let selectedColor = 'blue';
+            colors.forEach(c => {
+                const lbl = document.createElement('label');
+                lbl.className = 'cursor-pointer';
+                lbl.title = c.val;
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'yt-col-color';
+                radio.value = c.val;
+                radio.className = 'sr-only';
+                if (c.val === 'blue') radio.checked = true;
+
+                const swatch = document.createElement('span');
+                swatch.className = 'block w-7 h-7 rounded-full ' + c.cls + ' transition-all hover:scale-110 border-2 border-transparent';
+                if (c.val === 'blue') swatch.style.outline = '2px solid #1e293b';
+
+                radio.addEventListener('change', () => {
+                    selectedColor = c.val;
+                    swatchRow.querySelectorAll('span').forEach(s => s.style.outline = '');
+                    swatch.style.outline = '2px solid #1e293b';
+                });
+
+                lbl.appendChild(radio);
+                lbl.appendChild(swatch);
+                swatchRow.appendChild(lbl);
+            });
+            colorWrap.appendChild(colorLabel);
+            colorWrap.appendChild(swatchRow);
+
+            // Buttons row
+            const btnRow = document.createElement('div');
+            btnRow.className = 'flex gap-2 justify-end mt-1';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'px-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700';
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.onclick = () => overlay.remove();
+
+            const submitBtn = document.createElement('button');
+            submitBtn.type = 'submit';
+            submitBtn.className = 'px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700';
+            submitBtn.textContent = 'Add Column';
+
+            btnRow.appendChild(cancelBtn);
+            btnRow.appendChild(submitBtn);
+
+            form.appendChild(nameInput);
+            form.appendChild(colorWrap);
+            form.appendChild(btnRow);
+
+            panel.appendChild(title);
+            panel.appendChild(form);
+            overlay.appendChild(panel);
+            document.body.appendChild(overlay);
+
+            // Focus name input
+            setTimeout(() => nameInput.focus(), 50);
+
+            // Close on overlay click
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+            // Submit
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = nameInput.value.trim();
+                if (!name) return;
+                const color = selectedColor || 'blue';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Adding...';
+                try {
+                    const order = ytBoardColumns.length > 0
+                        ? Math.max(...ytBoardColumns.map(c => c.order || 0)) + 1
+                        : 1;
+                    await addDoc(collection(db, 'hubs', 'youtube', 'board_columns'), {
+                        name, color, order, createdAt: Date.now()
+                    });
+                    overlay.remove();
+                    showNotification('Column added!');
+                } catch (err) {
+                    console.error('Add column error:', err);
+                    showNotification('Failed to add column: ' + (err.message || err), true);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Add Column';
+                }
+            });
+        };
+
+        const deleteYtColumn = async (colId) => {
+            const confirmed = await showConfirmModal('Delete this column and all its tasks?');
+            if (!confirmed) return;
+            try {
+                // Delete all tasks in this column
+                const tasksInCol = ytBoardTasks.filter(t => t.columnId === colId);
+                for (const t of tasksInCol) {
+                    await deleteDoc(doc(db, 'hubs', 'youtube', 'tasks', t.id));
+                }
+                await deleteDoc(doc(db, 'hubs', 'youtube', 'board_columns', colId));
+                showNotification('Column deleted.');
+            } catch (err) { showNotification('Failed to delete column.', true); }
+        };
+
+        document.getElementById('yt-add-column-btn')?.addEventListener('click', openYtAddColumnModal);
+
+        // ---- Board Size Settings ----
+        const initYtBoardSettings = () => {
+            const btn = document.getElementById('yt-board-settings-btn');
+            const popover = document.getElementById('yt-board-settings-popover');
+            const widthSlider = document.getElementById('yt-col-width-slider');
+            const heightSlider = document.getElementById('yt-col-height-slider');
+            const widthVal = document.getElementById('yt-col-width-val');
+            const heightVal = document.getElementById('yt-col-height-val');
+            if (!btn || !popover || !widthSlider || !heightSlider) return;
+
+            // Restore saved values
+            const savedW = localStorage.getItem('ytBoardColWidth');
+            const savedH = localStorage.getItem('ytBoardColHeight');
+            if (savedW) { widthSlider.value = savedW; widthVal.textContent = savedW + 'px'; }
+            if (savedH) { heightSlider.value = savedH; heightVal.textContent = savedH + 'px'; }
+
+            // Toggle popover
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                popover.classList.toggle('hidden');
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!popover.contains(e.target) && e.target !== btn) {
+                    popover.classList.add('hidden');
+                }
+            });
+
+            // Width slider
+            widthSlider.addEventListener('input', () => {
+                const val = widthSlider.value;
+                widthVal.textContent = val + 'px';
+                localStorage.setItem('ytBoardColWidth', val);
+                // Apply live to all columns without full re-render
+                document.querySelectorAll('#yt-board > div[data-yt-col-id]').forEach(col => {
+                    col.style.width = val + 'px';
+                    col.style.minWidth = val + 'px';
+                });
+            });
+
+            // Height slider
+            heightSlider.addEventListener('input', () => {
+                const val = heightSlider.value;
+                heightVal.textContent = val + 'px';
+                localStorage.setItem('ytBoardColHeight', val);
+                // Apply live to all task lists without full re-render
+                document.querySelectorAll('#yt-board .yt-task-list').forEach(list => {
+                    list.style.maxHeight = val + 'px';
+                });
+            });
+        };
+
+        // Initialize YouTube board when the YouTube nav button is clicked
+        document.getElementById('youtube-btn')?.addEventListener('click', () => {
+            setTimeout(() => { initYtBoard(); initYtBoardSettings(); }, 100);
+        }, true);
 
     </script>
 </body>
