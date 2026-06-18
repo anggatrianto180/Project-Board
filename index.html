@@ -2243,9 +2243,9 @@
                             <div class="mb-3">
                                 <div class="flex justify-between mb-1">
                                     <label class="text-xs text-gray-500 dark:text-gray-400">Column Width</label>
-                                    <span id="yt-col-width-val" class="text-xs font-semibold text-red-500">176px</span>
+                                    <span id="yt-col-width-val" class="text-xs font-semibold text-red-500">248px</span>
                                 </div>
-                                <input id="yt-col-width-slider" type="range" min="120" max="320" step="8" value="176"
+                                <input id="yt-col-width-slider" type="range" min="120" max="400" step="8" value="248"
                                     class="w-full accent-red-500 cursor-pointer">
                                 <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
                                     <span>Narrow</span><span>Wide</span>
@@ -2254,9 +2254,9 @@
                             <div class="mb-1">
                                 <div class="flex justify-between mb-1">
                                     <label class="text-xs text-gray-500 dark:text-gray-400">Task List Height</label>
-                                    <span id="yt-col-height-val" class="text-xs font-semibold text-red-500">192px</span>
+                                    <span id="yt-col-height-val" class="text-xs font-semibold text-red-500">280px</span>
                                 </div>
-                                <input id="yt-col-height-slider" type="range" min="80" max="600" step="8" value="192"
+                                <input id="yt-col-height-slider" type="range" min="80" max="700" step="8" value="280"
                                     class="w-full accent-red-500 cursor-pointer">
                                 <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
                                     <span>Short</span><span>Tall</span>
@@ -5475,6 +5475,8 @@
                 if (el) { el.classList.remove('hidden'); }
                 document.getElementById('youtube-btn')?.classList.add('active');
                 document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'true');
+                // Ensure YouTube board is initialized whenever the section becomes visible
+                setTimeout(() => { try { initYtBoard(); initYtBoardSettings(); } catch(e) {} }, 120);
             } else if (target === 'tiktok' || target === sections.tiktok) {
                 // Show tiktok section
                 const el = document.getElementById(sections.tiktok);
@@ -9987,22 +9989,39 @@
         let ytBoardTasks = [];
         let ytBoardListeners = [];
         let ytBoardInitialized = false;
+        let ytBoardColumnsReady = false;  // tracks if columns snapshot arrived
+        let ytBoardTasksReady = false;    // tracks if tasks snapshot arrived
 
         const initYtBoard = () => {
-            if (ytBoardInitialized) return;
+            if (ytBoardInitialized) {
+                // Already initialized — just re-render if data is ready
+                if (ytBoardColumnsReady) renderYtBoard();
+                return;
+            }
             ytBoardInitialized = true;
+            ytBoardColumnsReady = false;
+            ytBoardTasksReady = false;
+
+            // Show a loading placeholder so user knows it's working
+            const boardContainer = document.getElementById('yt-board');
+            if (boardContainer && boardContainer.innerHTML === '') {
+                boardContainer.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:16px;color:#9ca3af;font-size:0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading board…</div>';
+            }
 
             // Listen to columns
             const colListener = onSnapshot(
                 query(collection(db, 'hubs', 'youtube', 'board_columns'), orderBy('order')),
                 (snap) => {
                     ytBoardColumns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    ytBoardColumnsReady = true;
                     // Seed default columns on first load
                     if (ytBoardColumns.length === 0) {
                         seedYtBoardColumns();
-                    } else {
+                    } else if (ytBoardTasksReady) {
+                        // Both snapshots arrived — safe to render
                         renderYtBoard();
                     }
+                    // If tasks haven't arrived yet, render will be called by taskListener
                 }
             );
             // Listen to tasks
@@ -10010,7 +10029,12 @@
                 query(collection(db, 'hubs', 'youtube', 'tasks')),
                 (snap) => {
                     ytBoardTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    renderYtBoard();
+                    ytBoardTasksReady = true;
+                    if (ytBoardColumnsReady) {
+                        // Columns already arrived — safe to render
+                        renderYtBoard();
+                    }
+                    // else: wait for colListener to trigger render
                 }
             );
             ytBoardListeners.push(colListener, taskListener);
@@ -10027,107 +10051,361 @@
             }
         };
 
+        // ---- Helper: detect dark mode ----
+        const isDark = () => document.documentElement.classList.contains('dark');
+
+        const applyYtCardTheme = (card) => {
+            if (isDark()) {
+                card.style.background = '#1f2937';
+                card.style.border = '1px solid #374151';
+                card.style.color = '#e5e7eb';
+                card.querySelectorAll('[data-yt-text]').forEach(el => el.style.color = '#d1d5db');
+            } else {
+                card.style.background = 'white';
+                card.style.border = '1px solid #e5e7eb';
+                card.style.color = '#374151';
+                card.querySelectorAll('[data-yt-text]').forEach(el => el.style.color = '#374151');
+            }
+        };
+
+        // ---- Open Edit Task Modal ----
+        const openYtEditTaskModal = (task) => {
+            document.getElementById('yt-edit-task-modal')?.remove();
+            const dark = isDark();
+            const overlay = document.createElement('div');
+            overlay.id = 'yt-edit-task-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+            const colOptions = ytBoardColumns.map(c =>
+                `<option value="${c.id}" ${c.id === task.columnId ? 'selected' : ''}>${c.name}</option>`
+            ).join('');
+
+            overlay.innerHTML = `
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:24px;width:100%;max-width:400px;">
+                    <div style="display:flex;align-items:center;justify-content:between;margin-bottom:16px;">
+                        <h3 style="font-size:1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;">Edit Task</h3>
+                        <button id="yt-edit-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;margin-left:auto;">✕</button>
+                    </div>
+                    <form id="yt-edit-task-form" style="display:flex;flex-direction:column;gap:12px;">
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Task</label>
+                            <textarea id="yt-edit-text" rows="3" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;">${task.text || ''}</textarea>
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
+                            <select id="yt-edit-col-sel" style="width:100%;padding:9px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
+                                ${colOptions}
+                            </select>
+                        </div>
+                        <div style="display:flex;gap:8px;justify-content:space-between;margin-top:4px;">
+                            <button type="button" id="yt-edit-delete" style="padding:9px 16px;border-radius:10px;border:2px solid #ef4444;background:none;color:#ef4444;font-size:0.8rem;font-weight:600;cursor:pointer;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>Hapus</button>
+                            <div style="display:flex;gap:8px;">
+                                <button type="button" id="yt-edit-cancel" style="padding:9px 16px;border-radius:10px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};background:none;color:${dark ? '#9ca3af' : '#6b7280'};font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
+                                <button type="submit" style="padding:9px 18px;border-radius:10px;border:none;background:#dc2626;color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Simpan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>`;
+
+            document.body.appendChild(overlay);
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('yt-edit-close').onclick = close;
+            document.getElementById('yt-edit-cancel').onclick = close;
+
+            document.getElementById('yt-edit-delete').onclick = async () => {
+                const confirmed = await showConfirmModal('Hapus task ini?');
+                if (!confirmed) return;
+                try {
+                    await deleteDoc(doc(db, 'hubs', 'youtube', 'tasks', task.id));
+                    close();
+                } catch (err) { showNotification('Gagal hapus task.', true); }
+            };
+
+            document.getElementById('yt-edit-task-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const newText = document.getElementById('yt-edit-text').value.trim();
+                const newColId = document.getElementById('yt-edit-col-sel').value;
+                if (!newText) return;
+                try {
+                    await updateDoc(doc(db, 'hubs', 'youtube', 'tasks', task.id), {
+                        text: newText,
+                        columnId: newColId,
+                        updatedAt: Date.now()
+                    });
+                    close();
+                    showNotification('Task diperbarui!');
+                } catch (err) { showNotification('Gagal menyimpan task.', true); }
+            };
+
+            // Focus textarea
+            setTimeout(() => { const ta = document.getElementById('yt-edit-text'); if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } }, 80);
+        };
+
         const createYtTaskElement = (task) => {
+            const dark = isDark();
             const card = document.createElement('div');
-            card.className = 'task-card text-xs text-gray-700 dark:text-gray-200 cursor-grab active:cursor-grabbing relative group';
+            card.className = 'task-card cursor-pointer relative group';
+            card.style.cssText = `padding:9px 11px;border-radius:9px;background:${dark ? '#1f2937' : 'white'};border:1px solid ${dark ? '#374151' : '#e5e7eb'};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;`;
             card.draggable = true;
             card.dataset.id = task.id;
 
+            // Main row: text + action buttons
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:flex-start;gap:6px;';
+
             const textEl = document.createElement('span');
-            textEl.className = 'task-text flex-1 text-xs';
+            textEl.className = 'task-text flex-1';
+            textEl.setAttribute('data-yt-text', '1');
+            textEl.style.cssText = `font-size:0.75rem;line-height:1.45;color:${dark ? '#d1d5db' : '#374151'};white-space:normal;word-break:break-word;display:block;padding-right:2px;`;
             textEl.textContent = task.text;
 
-            const delBtn = document.createElement('i');
-            delBtn.className = 'fas fa-times task-actions delete-btn text-[10px] ml-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0';
-            delBtn.title = 'Delete task';
+            // Action buttons (visible on hover)
+            const actions = document.createElement('div');
+            actions.style.cssText = 'display:flex;flex-direction:column;gap:3px;opacity:0;transition:opacity 0.15s;flex-shrink:0;';
+            actions.className = 'yt-card-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.innerHTML = '<i class="fas fa-edit" style="font-size:9px;"></i>';
+            editBtn.title = 'Edit task';
+            editBtn.style.cssText = `background:${dark ? '#374151' : '#f3f4f6'};border:none;border-radius:5px;padding:3px 5px;cursor:pointer;color:${dark ? '#93c5fd' : '#4b5563'};line-height:1;`;
+            editBtn.onclick = (e) => { e.stopPropagation(); openYtEditTaskModal(task); };
+
+            const delBtn = document.createElement('button');
+            delBtn.innerHTML = '<i class="fas fa-times" style="font-size:9px;"></i>';
+            delBtn.title = 'Hapus task';
+            delBtn.style.cssText = `background:${dark ? '#374151' : '#f3f4f6'};border:none;border-radius:5px;padding:3px 5px;cursor:pointer;color:${dark ? '#f87171' : '#ef4444'};line-height:1;`;
             delBtn.onclick = async (e) => {
                 e.stopPropagation();
-                const confirmed = await showConfirmModal('Delete this task?');
+                const confirmed = await showConfirmModal('Hapus task ini?');
                 if (!confirmed) return;
                 try { await deleteDoc(doc(db, 'hubs', 'youtube', 'tasks', task.id)); } catch (err) { console.warn(err); }
             };
 
-            card.appendChild(textEl);
-            card.appendChild(delBtn);
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+            row.appendChild(textEl);
+            row.appendChild(actions);
+            card.appendChild(row);
 
+            // Show actions on hover
+            card.addEventListener('mouseenter', () => { actions.style.opacity = '1'; });
+            card.addEventListener('mouseleave', () => { actions.style.opacity = '0'; });
+
+            // Click card = open edit (unless clicking buttons)
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.yt-card-actions')) return;
+                openYtEditTaskModal(task);
+            });
+
+            // Drag
             card.addEventListener('dragstart', e => {
                 e.dataTransfer.setData('yt-task-id', task.id);
-                card.classList.add('dragging');
+                card.style.opacity = '0.5';
             });
-            card.addEventListener('dragend', () => card.classList.remove('dragging'));
+            card.addEventListener('dragend', () => { card.style.opacity = '1'; });
 
             return card;
+        };
+
+        // ---- Move column to a given position (1-based) ----
+        const moveYtColumnTo = async (colId, newPos) => {
+            const total = ytBoardColumns.length;
+            if (newPos < 1 || newPos > total) return;
+            // Build new order array
+            const sorted = [...ytBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
+            const idx = sorted.findIndex(c => c.id === colId);
+            if (idx === -1) return;
+            // Remove from current position and insert at new position
+            const [moved] = sorted.splice(idx, 1);
+            sorted.splice(newPos - 1, 0, moved);
+            // Write updated orders back to Firestore
+            try {
+                const batch = writeBatch(db);
+                sorted.forEach((c, i) => {
+                    batch.update(doc(db, 'hubs', 'youtube', 'board_columns', c.id), { order: i + 1 });
+                });
+                await batch.commit();
+                showNotification('Kolom dipindahkan!');
+            } catch (err) { console.error(err); showNotification('Gagal memindahkan kolom.', true); }
+        };
+
+        // ---- Open column position picker popover ----
+        const openYtColPositionPicker = (colId, anchorEl) => {
+            document.getElementById('yt-col-pos-picker')?.remove();
+            const total = ytBoardColumns.length;
+            const sorted = [...ytBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
+            const currentPos = sorted.findIndex(c => c.id === colId) + 1;
+            const dark = isDark();
+
+            const picker = document.createElement('div');
+            picker.id = 'yt-col-pos-picker';
+            picker.style.cssText = `position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:6px;background:${dark ? '#1f2937' : 'white'};border:1px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.25);padding:12px;z-index:200;min-width:160px;`;
+
+            const label = document.createElement('p');
+            label.textContent = 'Geser ke posisi:';
+            label.style.cssText = `font-size:0.68rem;font-weight:700;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;`;
+            picker.appendChild(label);
+
+            const grid = document.createElement('div');
+            grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;';
+            for (let p = 1; p <= total; p++) {
+                const btn = document.createElement('button');
+                btn.textContent = p;
+                const isCurrent = p === currentPos;
+                btn.style.cssText = `width:32px;height:32px;border-radius:8px;border:2px solid ${isCurrent ? '#dc2626' : (dark ? '#374151' : '#e5e7eb')};background:${isCurrent ? '#dc2626' : 'transparent'};color:${isCurrent ? 'white' : (dark ? '#d1d5db' : '#374151')};font-size:0.8rem;font-weight:${isCurrent ? '700' : '500'};cursor:${isCurrent ? 'default' : 'pointer'};transition:all 0.12s;`;
+                if (!isCurrent) {
+                    btn.onmouseenter = () => { btn.style.background = dark ? '#374151' : '#f3f4f6'; };
+                    btn.onmouseleave = () => { btn.style.background = 'transparent'; };
+                    btn.onclick = () => { picker.remove(); moveYtColumnTo(colId, p); };
+                }
+                grid.appendChild(btn);
+            }
+            picker.appendChild(grid);
+
+            // Position relative to anchor
+            anchorEl.style.position = 'relative';
+            anchorEl.appendChild(picker);
+
+            // Close on outside click
+            const closeHandler = (e) => { if (!picker.contains(e.target)) { picker.remove(); document.removeEventListener('click', closeHandler, true); } };
+            setTimeout(() => document.addEventListener('click', closeHandler, true), 10);
         };
 
         const renderYtBoard = () => {
             const container = document.getElementById('yt-board');
             if (!container) return;
-            if (ytBoardColumns.length === 0) return; // guard: wait until columns are loaded
+            if (!ytBoardColumnsReady) return; // guard: wait until columns are loaded
             container.innerHTML = '';
 
-            // Read size settings from localStorage
-            const colWidth = parseInt(localStorage.getItem('ytBoardColWidth') || '176', 10);
-            const colHeight = parseInt(localStorage.getItem('ytBoardColHeight') || '192', 10);
+            // Read size settings from localStorage (default: wider columns for better readability)
+            const colWidth = parseInt(localStorage.getItem('ytBoardColWidth') || '248', 10);
+            const colHeight = parseInt(localStorage.getItem('ytBoardColHeight') || '280', 10);
+            const dark = isDark();
 
-            ytBoardColumns.forEach(col => {
+            ytBoardColumns.forEach((col, idx) => {
                 const tasks = ytBoardTasks.filter(t => t.columnId === col.id).sort((a, b) => (a.order || 0) - (b.order || 0));
 
                 // Color map
-                const borderMap = { red: 'border-red-500', blue: 'border-blue-500', green: 'border-green-500', yellow: 'border-yellow-400', purple: 'border-purple-500' };
-                const borderCls = borderMap[col.color] || 'border-gray-300';
+                const borderColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#22c55e', yellow: '#facc15', purple: '#a855f7' };
+                const borderColor = borderColorMap[col.color] || (dark ? '#4b5563' : '#d1d5db');
 
                 const colEl = document.createElement('div');
-                colEl.className = 'flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 flex flex-col';
-                colEl.style.width = colWidth + 'px';
-                colEl.style.minWidth = colWidth + 'px';
+                colEl.style.cssText = `flex-shrink:0;width:${colWidth}px;min-width:${colWidth}px;background:${dark ? '#1f2937' : '#f9fafb'};border-radius:12px;border:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;flex-direction:column;overflow:hidden;transition:transform 0.15s;`;
                 colEl.dataset.ytColId = col.id;
 
-                // Header
-                colEl.innerHTML = `
-                    <div class="kanban-column-header px-3 py-2 border-b-2 ${borderCls} flex items-center justify-between group/col">
-                        <span class="text-xs font-semibold text-gray-700 dark:text-gray-200 truncate flex-1">${col.name}</span>
-                        <div class="flex items-center gap-1.5 ml-1">
-                            <span class="text-[10px] bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full px-1.5 py-0.5">${tasks.length}</span>
-                            <button class="yt-delete-col-btn column-actions delete-btn opacity-0 group-hover/col:opacity-100 transition-opacity text-[10px] text-gray-400 hover:text-red-500" title="Delete column" data-col-id="${col.id}">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="yt-task-list flex flex-col gap-1.5 p-2 overflow-y-auto" style="min-height:80px;max-height:${colHeight}px" data-yt-col-id="${col.id}"></div>
-                `;
+                // --- Column Header ---
+                const header = document.createElement('div');
+                header.style.cssText = `padding:10px 12px 9px;border-bottom:2.5px solid ${borderColor};display:flex;align-items:center;gap:6px;`;
 
-                // Wire delete button
-                colEl.querySelector('.yt-delete-col-btn')?.addEventListener('click', (e) => {
+                // Drag handle (for reordering)
+                const dragHandle = document.createElement('span');
+                dragHandle.innerHTML = '<i class="fas fa-grip-vertical" style="font-size:9px;"></i>';
+                dragHandle.title = 'Drag untuk geser kolom';
+                dragHandle.style.cssText = `color:${dark ? '#6b7280' : '#9ca3af'};cursor:grab;flex-shrink:0;padding:2px 1px;`;
+                dragHandle.draggable = true;
+                dragHandle.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('yt-col-id', col.id);
+                    colEl.style.opacity = '0.5';
                     e.stopPropagation();
-                    deleteYtColumn(col.id);
                 });
+                dragHandle.addEventListener('dragend', () => { colEl.style.opacity = '1'; });
 
-                const taskList = colEl.querySelector('.yt-task-list');
+                // Column name
+                const nameEl = document.createElement('span');
+                nameEl.textContent = col.name;
+                nameEl.style.cssText = `font-size:0.75rem;font-weight:700;color:${dark ? '#e5e7eb' : '#1f2937'};flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;`;
+
+                // Task count badge
+                const badge = document.createElement('span');
+                badge.textContent = tasks.length;
+                badge.style.cssText = `font-size:0.65rem;font-weight:600;background:${dark ? '#374151' : '#e5e7eb'};color:${dark ? '#9ca3af' : '#6b7280'};border-radius:999px;padding:1px 7px;flex-shrink:0;`;
+
+                // Position button
+                const posBtn = document.createElement('button');
+                posBtn.innerHTML = `<i class="fas fa-arrows-alt-h" style="font-size:8px;"></i>`;
+                posBtn.title = 'Atur posisi kolom';
+                posBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
+                posBtn.onclick = (e) => { e.stopPropagation(); openYtColPositionPicker(col.id, header); };
+
+                // Delete button
+                const delColBtn = document.createElement('button');
+                delColBtn.innerHTML = '<i class="fas fa-trash-alt" style="font-size:8px;"></i>';
+                delColBtn.title = 'Hapus kolom';
+                delColBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
+                delColBtn.onclick = (e) => { e.stopPropagation(); deleteYtColumn(col.id); };
+
+                // Show buttons on header hover
+                header.addEventListener('mouseenter', () => { posBtn.style.opacity = '1'; delColBtn.style.opacity = '1'; });
+                header.addEventListener('mouseleave', () => { posBtn.style.opacity = '0'; delColBtn.style.opacity = '0'; });
+
+                header.appendChild(dragHandle);
+                header.appendChild(nameEl);
+                header.appendChild(badge);
+                header.appendChild(posBtn);
+                header.appendChild(delColBtn);
+
+                // --- Task List ---
+                const taskList = document.createElement('div');
+                taskList.style.cssText = `display:flex;flex-direction:column;gap:7px;padding:10px;overflow-y:auto;min-height:60px;max-height:${colHeight}px;`;
+                taskList.dataset.ytColId = col.id;
 
                 tasks.forEach(task => {
                     const card = createYtTaskElement(task);
                     taskList.appendChild(card);
                 });
 
-                // Drag-over for drop target
-                taskList.addEventListener('dragover', e => {
+                // Column drag-over (for column reordering)
+                colEl.addEventListener('dragover', e => {
                     e.preventDefault();
-                    taskList.classList.add('bg-red-50', 'dark:bg-red-900/20');
+                    const draggingColId = e.dataTransfer.types.includes('yt-col-id') ? 'col' : null;
+                    const draggingTaskId = !draggingColId;
+                    if (draggingTaskId) {
+                        taskList.style.background = dark ? 'rgba(239,68,68,0.12)' : 'rgba(254,226,226,0.8)';
+                    } else {
+                        colEl.style.outline = `2px dashed ${borderColor}`;
+                    }
                 });
-                taskList.addEventListener('dragleave', () => {
-                    taskList.classList.remove('bg-red-50', 'dark:bg-red-900/20');
+                colEl.addEventListener('dragleave', (e) => {
+                    if (!colEl.contains(e.relatedTarget)) {
+                        taskList.style.background = '';
+                        colEl.style.outline = '';
+                    }
                 });
-                taskList.addEventListener('drop', async e => {
+                colEl.addEventListener('drop', async e => {
                     e.preventDefault();
-                    taskList.classList.remove('bg-red-50', 'dark:bg-red-900/20');
+                    taskList.style.background = '';
+                    colEl.style.outline = '';
+
+                    // Handle column drop (reorder)
+                    const colId = e.dataTransfer.getData('yt-col-id');
+                    if (colId && colId !== col.id) {
+                        const sorted = [...ytBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
+                        const fromIdx = sorted.findIndex(c => c.id === colId);
+                        const toIdx = sorted.findIndex(c => c.id === col.id);
+                        if (fromIdx !== -1 && toIdx !== -1) {
+                            const [moved] = sorted.splice(fromIdx, 1);
+                            sorted.splice(toIdx, 0, moved);
+                            try {
+                                const batch = writeBatch(db);
+                                sorted.forEach((c, i) => batch.update(doc(db, 'hubs', 'youtube', 'board_columns', c.id), { order: i + 1 }));
+                                await batch.commit();
+                            } catch (err) { console.error(err); }
+                        }
+                        return;
+                    }
+
+                    // Handle task drop
                     const taskId = e.dataTransfer.getData('yt-task-id');
                     if (!taskId) return;
-                    const targetColId = col.id;
                     try {
-                        await updateDoc(doc(db, 'hubs', 'youtube', 'tasks', taskId), { columnId: targetColId });
+                        await updateDoc(doc(db, 'hubs', 'youtube', 'tasks', taskId), { columnId: col.id });
                     } catch (err) { console.warn(err); }
                 });
 
+                colEl.appendChild(header);
+                colEl.appendChild(taskList);
                 container.appendChild(colEl);
             });
         };
@@ -10336,11 +10614,11 @@
             const heightVal = document.getElementById('yt-col-height-val');
             if (!btn || !popover || !widthSlider || !heightSlider) return;
 
-            // Restore saved values
-            const savedW = localStorage.getItem('ytBoardColWidth');
-            const savedH = localStorage.getItem('ytBoardColHeight');
-            if (savedW) { widthSlider.value = savedW; widthVal.textContent = savedW + 'px'; }
-            if (savedH) { heightSlider.value = savedH; heightVal.textContent = savedH + 'px'; }
+            // Restore saved values (defaults match new wider defaults)
+            const savedW = localStorage.getItem('ytBoardColWidth') || '248';
+            const savedH = localStorage.getItem('ytBoardColHeight') || '280';
+            widthSlider.value = savedW; widthVal.textContent = savedW + 'px';
+            heightSlider.value = savedH; heightVal.textContent = savedH + 'px';
 
             // Toggle popover
             btn.addEventListener('click', (e) => {
@@ -10379,10 +10657,17 @@
             });
         };
 
-        // Initialize YouTube board when the YouTube nav button is clicked
+        // Initialize YouTube board when the YouTube nav button is clicked (desktop + mobile)
+        // Note: applyNavigationState also calls initYtBoard() when navigating to youtube,
+        // so direct URL loads (e.g. #/youtube) are covered as well.
         document.getElementById('youtube-btn')?.addEventListener('click', () => {
             setTimeout(() => { initYtBoard(); initYtBoardSettings(); }, 100);
         }, true);
+        document.getElementById('mobile-youtube-btn')?.addEventListener('click', () => {
+            setTimeout(() => { initYtBoard(); initYtBoardSettings(); }, 200);
+        }, true);
+        // If page loaded with #/youtube in URL, board is already shown by applyNavigationState;
+        // initYtBoard() will have been called there. No extra action needed here.
 
     </script>
 </body>
