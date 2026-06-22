@@ -10080,22 +10080,35 @@
                 `<option value="${c.id}" ${c.id === task.columnId ? 'selected' : ''}>${c.name}</option>`
             ).join('');
 
+            const hasDesc = !!(task.description && task.description.trim());
+            const descVal = (task.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
             overlay.innerHTML = `
-                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:24px;width:100%;max-width:400px;">
-                    <div style="display:flex;align-items:center;justify-content:between;margin-bottom:16px;">
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:24px;width:100%;max-width:420px;">
+                    <div style="display:flex;align-items:center;margin-bottom:16px;">
                         <h3 style="font-size:1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;">Edit Task</h3>
-                        <button id="yt-edit-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;margin-left:auto;">✕</button>
+                        <button id="yt-edit-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;">✕</button>
                     </div>
                     <form id="yt-edit-task-form" style="display:flex;flex-direction:column;gap:12px;">
                         <div>
-                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Task</label>
-                            <textarea id="yt-edit-text" rows="3" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;">${task.text || ''}</textarea>
+                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task</label>
+                            <input id="yt-edit-text" type="text" value="" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
                         </div>
                         <div>
                             <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
                             <select id="yt-edit-col-sel" style="width:100%;padding:9px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
                                 ${colOptions}
                             </select>
+                        </div>
+                        <div>
+                            <button type="button" id="yt-edit-desc-toggle" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:0.78rem;font-weight:600;color:${dark ? '#60a5fa' : '#3b82f6'};padding:2px 0;">
+                                <i class="fas fa-chevron-right" id="yt-edit-desc-icon" style="font-size:0.65rem;transition:transform 0.2s;transform:${hasDesc ? 'rotate(90deg)' : 'rotate(0deg)'};"></i>
+                                ${hasDesc ? 'Deskripsi' : 'Tambah Deskripsi'}
+                            </button>
+                            <div id="yt-edit-desc-area" style="display:${hasDesc ? 'block' : 'none'};margin-top:8px;">
+                                <textarea id="yt-edit-desc-input" rows="3" placeholder="Deskripsi task (opsional)..."
+                                    style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.82rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;">${descVal}</textarea>
+                            </div>
                         </div>
                         <div style="display:flex;gap:8px;justify-content:space-between;margin-top:4px;">
                             <button type="button" id="yt-edit-delete" style="padding:9px 16px;border-radius:10px;border:2px solid #ef4444;background:none;color:#ef4444;font-size:0.8rem;font-weight:600;cursor:pointer;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>Hapus</button>
@@ -10108,6 +10121,20 @@
                 </div>`;
 
             document.body.appendChild(overlay);
+
+            // Set title value after DOM insert (avoid HTML injection via value attr)
+            const titleInput = document.getElementById('yt-edit-text');
+            if (titleInput) titleInput.value = task.text || '';
+
+            // Toggle description
+            let descOpen = hasDesc;
+            document.getElementById('yt-edit-desc-toggle').onclick = () => {
+                descOpen = !descOpen;
+                const area = document.getElementById('yt-edit-desc-area');
+                const icon = document.getElementById('yt-edit-desc-icon');
+                area.style.display = descOpen ? 'block' : 'none';
+                icon.style.transform = descOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+            };
 
             const close = () => overlay.remove();
             overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
@@ -10127,10 +10154,12 @@
                 e.preventDefault();
                 const newText = document.getElementById('yt-edit-text').value.trim();
                 const newColId = document.getElementById('yt-edit-col-sel').value;
+                const newDesc = (document.getElementById('yt-edit-desc-input')?.value || '').trim();
                 if (!newText) return;
                 try {
                     await updateDoc(doc(db, 'hubs', 'youtube', 'tasks', task.id), {
                         text: newText,
+                        description: newDesc,
                         columnId: newColId,
                         updatedAt: Date.now()
                     });
@@ -10139,8 +10168,8 @@
                 } catch (err) { showNotification('Gagal menyimpan task.', true); }
             };
 
-            // Focus textarea
-            setTimeout(() => { const ta = document.getElementById('yt-edit-text'); if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } }, 80);
+            // Focus title input
+            setTimeout(() => { if (titleInput) { titleInput.focus(); titleInput.setSelectionRange(titleInput.value.length, titleInput.value.length); } }, 80);
         };
 
         const createYtTaskElement = (task) => {
@@ -10151,15 +10180,28 @@
             card.draggable = true;
             card.dataset.id = task.id;
 
-            // Main row: text + action buttons
+            // Main row: title + action buttons (description NOT shown here)
             const row = document.createElement('div');
             row.style.cssText = 'display:flex;align-items:flex-start;gap:6px;';
+
+            // Left side: title + description indicator
+            const contentCol = document.createElement('div');
+            contentCol.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;';
 
             const textEl = document.createElement('span');
             textEl.className = 'task-text flex-1';
             textEl.setAttribute('data-yt-text', '1');
-            textEl.style.cssText = `font-size:0.75rem;line-height:1.45;color:${dark ? '#d1d5db' : '#374151'};white-space:normal;word-break:break-word;display:block;padding-right:2px;`;
+            textEl.style.cssText = `font-size:0.75rem;line-height:1.45;color:${dark ? '#d1d5db' : '#374151'};white-space:normal;word-break:break-word;display:block;padding-right:2px;font-weight:500;`;
             textEl.textContent = task.text;
+            contentCol.appendChild(textEl);
+
+            // Description indicator badge (only if description exists)
+            if (task.description && task.description.trim()) {
+                const descBadge = document.createElement('span');
+                descBadge.style.cssText = `display:inline-flex;align-items:center;gap:3px;font-size:0.65rem;color:${dark ? '#60a5fa' : '#3b82f6'};opacity:0.8;`;
+                descBadge.innerHTML = '<i class="fas fa-align-left" style="font-size:0.6rem;"></i> ada deskripsi';
+                contentCol.appendChild(descBadge);
+            }
 
             // Action buttons (visible on hover)
             const actions = document.createElement('div');
@@ -10185,7 +10227,7 @@
 
             actions.appendChild(editBtn);
             actions.appendChild(delBtn);
-            row.appendChild(textEl);
+            row.appendChild(contentCol);
             row.appendChild(actions);
             card.appendChild(row);
 
@@ -10193,7 +10235,7 @@
             card.addEventListener('mouseenter', () => { actions.style.opacity = '1'; });
             card.addEventListener('mouseleave', () => { actions.style.opacity = '0'; });
 
-            // Click card = open edit (unless clicking buttons)
+            // Click card = open edit modal (shows title + description)
             card.addEventListener('click', (e) => {
                 if (e.target.closest('.yt-card-actions')) return;
                 openYtEditTaskModal(task);
@@ -10413,41 +10455,77 @@
         // Add Task Modal for YouTube Board
         const openYtAddTaskModal = () => {
             if (ytBoardColumns.length === 0) { showNotification('No columns yet. Please wait...', true); return; }
-            // Build a simple inline prompt via existing confirm modal pattern, or use a quick inline input
+            const dark = isDark();
             const colOptions = ytBoardColumns.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            const modalHtml = `
-                <div id="yt-task-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div class="modal-panel bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-sm">
-                        <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Add Task — Project Board</h3>
-                        <form id="yt-task-form" class="flex flex-col gap-3">
-                            <input id="yt-task-text-input" type="text" placeholder="Task description..." required
-                                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 dark:bg-gray-700 dark:text-white" />
-                            <select id="yt-task-col-select" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:bg-gray-700 dark:text-white">
+            const overlay = document.createElement('div');
+            overlay.id = 'yt-task-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+            overlay.innerHTML = `
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:24px;width:100%;max-width:420px;">
+                    <div style="display:flex;align-items:center;margin-bottom:16px;">
+                        <h3 style="font-size:1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;">Add Task — Project Board</h3>
+                        <button id="yt-task-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;">✕</button>
+                    </div>
+                    <form id="yt-task-form" style="display:flex;flex-direction:column;gap:12px;">
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task</label>
+                            <input id="yt-task-text-input" type="text" placeholder="Nama task..." required
+                                style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
+                            <select id="yt-task-col-select" style="width:100%;padding:9px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
                                 ${colOptions}
                             </select>
-                            <div class="flex gap-2 justify-end mt-1">
-                                <button type="button" id="yt-task-cancel-btn"
-                                    class="px-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Cancel</button>
-                                <button type="submit"
-                                    class="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-700">Add Task</button>
+                        </div>
+                        <div>
+                            <button type="button" id="yt-task-desc-toggle" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:0.78rem;font-weight:600;color:${dark ? '#60a5fa' : '#3b82f6'};padding:2px 0;">
+                                <i class="fas fa-chevron-right" id="yt-task-desc-icon" style="font-size:0.65rem;transition:transform 0.2s;"></i>
+                                Tambah Deskripsi
+                            </button>
+                            <div id="yt-task-desc-area" style="display:none;margin-top:8px;">
+                                <textarea id="yt-task-desc-input" rows="3" placeholder="Deskripsi task (opsional)..."
+                                    style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.82rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;"></textarea>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
+                            <button type="button" id="yt-task-cancel-btn" style="padding:9px 16px;border-radius:10px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};background:none;color:${dark ? '#9ca3af' : '#6b7280'};font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
+                            <button type="submit" style="padding:9px 18px;border-radius:10px;border:none;background:#dc2626;color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Add Task</button>
+                        </div>
+                    </form>
                 </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            const modal = document.getElementById('yt-task-modal');
-            document.getElementById('yt-task-cancel-btn').onclick = () => modal.remove();
+            document.body.appendChild(overlay);
+
+            // Toggle description
+            let descOpen = false;
+            document.getElementById('yt-task-desc-toggle').onclick = () => {
+                descOpen = !descOpen;
+                const area = document.getElementById('yt-task-desc-area');
+                const icon = document.getElementById('yt-task-desc-icon');
+                area.style.display = descOpen ? 'block' : 'none';
+                icon.style.transform = descOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+            };
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('yt-task-close').onclick = close;
+            document.getElementById('yt-task-cancel-btn').onclick = close;
+
+            // Focus title input
+            setTimeout(() => { const inp = document.getElementById('yt-task-text-input'); if (inp) inp.focus(); }, 80);
+
             document.getElementById('yt-task-form').onsubmit = async (e) => {
                 e.preventDefault();
                 const text = document.getElementById('yt-task-text-input').value.trim();
                 const colId = document.getElementById('yt-task-col-select').value;
+                const description = (document.getElementById('yt-task-desc-input')?.value || '').trim();
                 if (!text || !colId) return;
                 try {
                     const order = ytBoardTasks.filter(t => t.columnId === colId).length + 1;
-                    await addDoc(collection(db, 'hubs', 'youtube', 'tasks'), { text, columnId: colId, order, createdAt: Date.now() });
-                    modal.remove();
-                    showNotification('Task added!');
-                } catch (err) { showNotification('Failed to add task.', true); }
+                    await addDoc(collection(db, 'hubs', 'youtube', 'tasks'), { text, description, columnId: colId, order, createdAt: Date.now() });
+                    close();
+                    showNotification('Task berhasil ditambahkan!');
+                } catch (err) { showNotification('Gagal menambah task.', true); }
             };
         };
 
