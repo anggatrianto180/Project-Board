@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" style="scroll-behavior: smooth;">
 
 <head>
@@ -24,6 +24,362 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Authentication System -->
     <style>
+        /* ===== YouTube Project Board Enhanced UI ===== */
+        /* Board header branding */
+        #yt-board-header-bar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .yt-brand-logo {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .yt-board-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            letter-spacing: -0.01em;
+        }
+
+        /* Filter dropdown */
+        #yt-filter-dropdown {
+            position: relative;
+        }
+
+        #yt-filter-dropdown-panel {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 500;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            padding: 12px;
+            min-width: 240px;
+        }
+
+        .yt-active-tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            background: rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #93c5fd;
+            cursor: default;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .yt-active-tag-pill .remove-tag {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.15s;
+        }
+
+        .yt-active-tag-pill .remove-tag:hover {
+            opacity: 1;
+        }
+
+        /* Task card enhanced */
+        .yt-task-tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .yt-task-tag-pill:hover {
+            opacity: 0.8;
+        }
+
+        .yt-tag-orange {
+            background: rgba(249, 115, 22, 0.18);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .yt-tag-blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .yt-tag-green {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        .yt-tag-purple {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.25);
+        }
+
+        .yt-tag-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        /* Description indicator tag */
+        .yt-desc-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            background: rgba(34, 197, 94, 0.12);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        /* WIP Limit bar */
+        .yt-wip-bar {
+            padding: 4px 10px;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.04em;
+            animation: wip-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes wip-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Locked task overlay */
+        .yt-task-locked {
+            opacity: 0.4;
+            pointer-events: none;
+            position: relative;
+        }
+
+        /* Archive column indicator */
+        .yt-archive-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 6px 10px;
+            background: rgba(99, 102, 241, 0.08);
+            border-top: 1px solid rgba(99, 102, 241, 0.15);
+            font-size: 0.65rem;
+            color: #a5b4fc;
+            line-height: 1.4;
+        }
+
+        /* Show Archived Cards button */
+        #yt-show-archived-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 12px auto 4px;
+            padding: 6px 18px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            color: #a5b4fc;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #yt-show-archived-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Quick Preview Popover */
+        .yt-quick-preview {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 300;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            padding: 14px;
+            min-width: 240px;
+            max-width: 280px;
+            animation: preview-fade-in 0.15s ease;
+        }
+
+        @keyframes preview-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .yt-preview-section-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .yt-preview-checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 3px 0;
+        }
+
+        .yt-preview-checklist-item input[type="checkbox"] {
+            accent-color: #60a5fa;
+            width: 13px;
+            height: 13px;
+            cursor: pointer;
+        }
+
+        .yt-preview-checklist-item label {
+            font-size: 0.72rem;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+
+        .yt-preview-date-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            padding: 5px 9px;
+            outline: none;
+        }
+
+        .yt-preview-date-input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15);
+        }
+
+        .yt-preview-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: #cbd5e1;
+            font-size: 0.72rem;
+            padding: 6px 9px;
+            resize: vertical;
+            min-height: 56px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .yt-preview-textarea:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15);
+        }
+
+        .yt-ext-resource-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .yt-ext-resource-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+        }
+
+        /* Board container footer */
+        #yt-board-footer {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0 4px;
+        }
+
+        /* Enhanced search bar */
+        #yt-board-search {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            padding: 5px 10px 5px 28px;
+            outline: none;
+            width: 160px;
+            transition: all 0.2s;
+        }
+
+        #yt-board-search::placeholder {
+            color: #475569;
+        }
+
+        #yt-board-search:focus {
+            border-color: rgba(96, 165, 250, 0.5);
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .yt-search-wrap {
+            position: relative;
+        }
+
+        .yt-search-icon {
+            position: absolute;
+            left: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.65rem;
+            color: #475569;
+            pointer-events: none;
+        }
+
         :root {
             --bg: #f8fafc;
             --card: #ffffff;
@@ -2223,58 +2579,148 @@
                 </button>
             </div>
 
-            <!-- ===== YouTube Project Board ===== -->
+            <!-- ===== YouTube Project Board (Enhanced) ===== -->
             <div id="yt-project-board-panel"
-                class="mb-8 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-th-large text-red-500 text-sm"></i>
-                        <h3 class="text-base font-bold text-gray-800 dark:text-white">Project Board</h3>
-                    </div>
-                    <div class="flex items-center gap-2 relative">
-                        <button id="yt-board-settings-btn" title="Board size settings"
-                            class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2.5 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center">
-                            <i class="fas fa-sliders-h"></i>
-                        </button>
-                        <!-- Settings popover -->
-                        <div id="yt-board-settings-popover"
-                            class="hidden absolute top-9 right-0 z-30 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl p-4 w-64">
-                            <p class="text-xs font-bold text-gray-700 dark:text-gray-200 mb-3">Board Size Settings</p>
-                            <div class="mb-3">
-                                <div class="flex justify-between mb-1">
-                                    <label class="text-xs text-gray-500 dark:text-gray-400">Column Width</label>
-                                    <span id="yt-col-width-val" class="text-xs font-semibold text-red-500">248px</span>
+                class="mb-8 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                style="background:#0f172a;">
+
+                <!-- Board Header Bar -->
+                <div id="yt-board-header-bar" class="px-4 py-2.5">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <!-- Brand -->
+                        <div class="flex items-center gap-1.5 mr-2">
+                            <span class="yt-board-title">Project Board</span>
+                        </div>
+
+                        <!-- Filter & Search dropdown -->
+                        <div id="yt-filter-dropdown" class="relative">
+                            <button id="yt-filter-dropdown-btn"
+                                class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;">
+                                <i class="fas fa-filter text-[10px]"></i> Filter &amp; Search
+                                <i class="fas fa-chevron-down text-[9px] transition-transform"
+                                    id="yt-filter-chevron"></i>
+                            </button>
+                            <!-- Filter panel -->
+                            <div id="yt-filter-dropdown-panel" class="hidden">
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2" style="color:#475569;">
+                                    Active Filters</p>
+                                <div id="yt-active-tags" class="flex flex-wrap gap-1.5 mb-3">
+                                    <span class="yt-active-tag-pill" data-tag="due-week">
+                                        Due: This Week
+                                        <span class="remove-tag" onclick="removeYtFilter('due-week')">✕</span>
+                                    </span>
+                                    <span class="yt-active-tag-pill" data-tag="tag-creator">
+                                        Tag: Creator
+                                        <span class="remove-tag" onclick="removeYtFilter('tag-creator')">✕</span>
+                                    </span>
                                 </div>
-                                <input id="yt-col-width-slider" type="range" min="120" max="400" step="8" value="248"
-                                    class="w-full accent-red-500 cursor-pointer">
-                                <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
-                                    <span>Narrow</span><span>Wide</span>
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2" style="color:#475569;">
+                                    Filter by Tag</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="addYtFilter('tag-creator')"
+                                        class="yt-task-tag-pill yt-tag-orange">Creator</button>
+                                    <button onclick="addYtFilter('tag-editor')"
+                                        class="yt-task-tag-pill yt-tag-blue">Editor</button>
+                                    <button onclick="addYtFilter('tag-design')"
+                                        class="yt-task-tag-pill yt-tag-green">Design</button>
+                                    <button onclick="addYtFilter('tag-urgent')"
+                                        class="yt-task-tag-pill yt-tag-red">Urgent</button>
                                 </div>
-                            </div>
-                            <div class="mb-1">
-                                <div class="flex justify-between mb-1">
-                                    <label class="text-xs text-gray-500 dark:text-gray-400">Task List Height</label>
-                                    <span id="yt-col-height-val" class="text-xs font-semibold text-red-500">280px</span>
-                                </div>
-                                <input id="yt-col-height-slider" type="range" min="80" max="700" step="8" value="280"
-                                    class="w-full accent-red-500 cursor-pointer">
-                                <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
-                                    <span>Short</span><span>Tall</span>
+                                <hr style="border-color:rgba(255,255,255,0.07);margin:10px 0;">
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2" style="color:#475569;">
+                                    Due Date</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="addYtFilter('due-week')" class="yt-task-tag-pill yt-tag-blue">This
+                                        Week</button>
+                                    <button onclick="addYtFilter('due-today')"
+                                        class="yt-task-tag-pill yt-tag-red">Today</button>
+                                    <button onclick="addYtFilter('due-month')"
+                                        class="yt-task-tag-pill yt-tag-green">This Month</button>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Search bar -->
+                        <div class="yt-search-wrap">
+                            <i class="fas fa-search yt-search-icon"></i>
+                            <input id="yt-board-search" type="text" placeholder="Search for tasks..."
+                                oninput="filterYtBoard(this.value)">
+                        </div>
+
+                        <!-- Filter icon -->
+                        <button title="Advanced filter"
+                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;transition:all 0.2s;"
+                            onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
+                            <i class="fas fa-sliders-h" style="font-size:11px;"></i>
+                        </button>
+
+                        <!-- Spacer -->
+                        <div class="flex-1"></div>
+
+                        <!-- Settings (size) -->
+                        <div class="relative">
+                            <button id="yt-board-settings-btn" title="Board size settings"
+                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;font-size:11px;transition:all 0.2s;"
+                                onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                            </button>
+                            <!-- Settings popover -->
+                            <div id="yt-board-settings-popover"
+                                class="hidden absolute top-9 right-0 z-30 rounded-xl shadow-xl p-4 w-64"
+                                style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);">
+                                <p class="text-xs font-bold mb-3" style="color:#e2e8f0;">Board Size Settings</p>
+                                <div class="mb-3">
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-xs" style="color:#64748b;">Column Width</label>
+                                        <span id="yt-col-width-val" class="text-xs font-semibold"
+                                            style="color:#ef4444;">248px</span>
+                                    </div>
+                                    <input id="yt-col-width-slider" type="range" min="120" max="400" step="8"
+                                        value="248" class="w-full accent-red-500 cursor-pointer">
+                                </div>
+                                <div class="mb-1">
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-xs" style="color:#64748b;">Task List Height</label>
+                                        <span id="yt-col-height-val" class="text-xs font-semibold"
+                                            style="color:#ef4444;">280px</span>
+                                    </div>
+                                    <input id="yt-col-height-slider" type="range" min="80" max="700" step="8"
+                                        value="280" class="w-full accent-red-500 cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Column button -->
                         <button id="yt-add-column-btn"
-                            class="text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-all flex items-center gap-1.5">
+                            class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;"
+                            onmouseenter="this.style.background='rgba(255,255,255,0.14)'"
+                            onmouseleave="this.style.background='rgba(255,255,255,0.08)'">
                             <i class="fas fa-plus text-[10px]"></i> Add Column
                         </button>
+
+                        <!-- Add Task button -->
                         <button id="yt-add-task-btn"
-                            class="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-all flex items-center gap-1.5">
+                            class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                            style="background:linear-gradient(135deg,#dc2626,#b91c1c);border:none;color:white;box-shadow:0 2px 8px rgba(220,38,38,0.3);"
+                            onmouseenter="this.style.boxShadow='0 4px 16px rgba(220,38,38,0.5)'"
+                            onmouseleave="this.style.boxShadow='0 2px 8px rgba(220,38,38,0.3)'">
                             <i class="fas fa-plus text-[10px]"></i> Add Task
                         </button>
                     </div>
                 </div>
+
                 <!-- Board columns rendered by JS -->
-                <div id="yt-board" class="flex gap-3 overflow-x-auto pb-2"></div>
+                <div id="yt-board" class="flex gap-3 overflow-x-auto pb-2" style="padding:12px;"></div>
+
+                <!-- Show Archived Cards footer -->
+                <div id="yt-board-footer">
+                    <button id="yt-show-archived-btn" onclick="toggleYtArchivedCards()">
+                        <i class="fas fa-archive" style="font-size:0.7rem;"></i>
+                        <span>Show Archived Cards</span>
+                    </button>
+                </div>
             </div>
 
 
@@ -5476,7 +5922,7 @@
                 document.getElementById('youtube-btn')?.classList.add('active');
                 document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'true');
                 // Ensure YouTube board is initialized whenever the section becomes visible
-                setTimeout(() => { try { initYtBoard(); initYtBoardSettings(); } catch(e) {} }, 120);
+                setTimeout(() => { try { initYtBoard(); initYtBoardSettings(); } catch (e) { } }, 120);
             } else if (target === 'tiktok' || target === sections.tiktok) {
                 // Show tiktok section
                 const el = document.getElementById(sections.tiktok);
@@ -10080,61 +10526,144 @@
                 `<option value="${c.id}" ${c.id === task.columnId ? 'selected' : ''}>${c.name}</option>`
             ).join('');
 
-            const hasDesc = !!(task.description && task.description.trim());
             const descVal = (task.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const dueVal = task.dueDate || '';
+            const linkVal = task.driveLink || '';
+            const tagsVal = Array.isArray(task.tags) ? task.tags.join(', ') : '';
+
+            // Checklist state
+            let currentChecklist = Array.isArray(task.checklist) ? [...task.checklist] : [];
 
             overlay.innerHTML = `
-                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:24px;width:100%;max-width:420px;">
-                    <div style="display:flex;align-items:center;margin-bottom:16px;">
-                        <h3 style="font-size:1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;">Edit Task</h3>
-                        <button id="yt-edit-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;">✕</button>
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+                    <!-- Header -->
+                    <div style="padding:20px 24px 16px;border-bottom:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;align-items:center;">
+                        <h3 style="font-size:1.1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Task</h3>
+                        <button id="yt-edit-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;line-height:1;">✕</button>
                     </div>
-                    <form id="yt-edit-task-form" style="display:flex;flex-direction:column;gap:12px;">
-                        <div>
-                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task</label>
-                            <input id="yt-edit-text" type="text" value="" style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
-                            <select id="yt-edit-col-sel" style="width:100%;padding:9px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
-                                ${colOptions}
-                            </select>
-                        </div>
-                        <div>
-                            <button type="button" id="yt-edit-desc-toggle" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:0.78rem;font-weight:600;color:${dark ? '#60a5fa' : '#3b82f6'};padding:2px 0;">
-                                <i class="fas fa-chevron-right" id="yt-edit-desc-icon" style="font-size:0.65rem;transition:transform 0.2s;transform:${hasDesc ? 'rotate(90deg)' : 'rotate(0deg)'};"></i>
-                                ${hasDesc ? 'Deskripsi' : 'Tambah Deskripsi'}
-                            </button>
-                            <div id="yt-edit-desc-area" style="display:${hasDesc ? 'block' : 'none'};margin-top:8px;">
-                                <textarea id="yt-edit-desc-input" rows="3" placeholder="Deskripsi task (opsional)..."
-                                    style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.82rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;">${descVal}</textarea>
+                    
+                    <!-- Scrollable Body -->
+                    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+                        <form id="yt-edit-task-form" style="display:flex;flex-direction:column;gap:16px;">
+                            
+                            <!-- Title & Column -->
+                            <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task *</label>
+                                    <input id="yt-edit-text" type="text" required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
+                                    <select id="yt-edit-col-sel" style="width:100%;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
+                                        ${colOptions}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div style="display:flex;gap:8px;justify-content:space-between;margin-top:4px;">
-                            <button type="button" id="yt-edit-delete" style="padding:9px 16px;border-radius:10px;border:2px solid #ef4444;background:none;color:#ef4444;font-size:0.8rem;font-weight:600;cursor:pointer;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>Hapus</button>
-                            <div style="display:flex;gap:8px;">
-                                <button type="button" id="yt-edit-cancel" style="padding:9px 16px;border-radius:10px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};background:none;color:${dark ? '#9ca3af' : '#6b7280'};font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
-                                <button type="submit" style="padding:9px 18px;border-radius:10px;border:none;background:#dc2626;color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Simpan</button>
+
+                            <!-- Due Date & Link -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="far fa-calendar mr-1"></i>Due Date</label>
+                                    <input id="yt-edit-due-date" type="date" value="${dueVal}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-link mr-1"></i>External Link</label>
+                                    <input id="yt-edit-link" type="url" placeholder="https://..." value="${linkVal}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
                             </div>
+
+                            <!-- Tags -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-tags mr-1"></i>Tags (comma separated)</label>
+                                <input id="yt-edit-tags" type="text" placeholder="creator, urgent, design..." value="${tagsVal}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-align-left mr-1"></i>Description</label>
+                                <textarea id="yt-edit-desc" rows="3" placeholder="Task details..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;">${descVal}</textarea>
+                            </div>
+
+                            <!-- Checklist -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-check-square mr-1"></i>Checklist</label>
+                                <div style="background:${dark ? '#111827' : '#f9fafb'};border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;padding:12px;">
+                                    <div id="yt-edit-checklist-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+                                    <div style="display:flex;gap:8px;">
+                                        <input id="yt-edit-new-chk" type="text" placeholder="Add an item..." style="flex:1;padding:7px 10px;border:1px solid ${dark ? '#4b5563' : '#d1d5db'};border-radius:6px;font-size:0.8rem;background:${dark ? '#1f2937' : 'white'};color:${dark ? '#e5e7eb' : '#374151'};outline:none;" />
+                                        <button type="button" id="yt-edit-add-chk-btn" style="padding:7px 14px;background:#3b82f6;color:white;border:none;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="padding:16px 24px;border-top:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;justify-content:space-between;background:${dark ? '#1f2937' : '#f9fafb'};">
+                        <button type="button" id="yt-edit-delete" style="padding:9px 16px;border-radius:8px;border:1.5px solid #ef4444;background:none;color:#ef4444;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+                        <div style="display:flex;gap:12px;">
+                            <button type="button" id="yt-edit-cancel" style="padding:9px 16px;border-radius:8px;border:1.5px solid ${dark ? '#4b5563' : '#d1d5db'};background:none;color:${dark ? '#9ca3af' : '#4b5563'};font-size:0.85rem;font-weight:600;cursor:pointer;">Cancel</button>
+                            <button type="button" id="yt-edit-save-btn" style="padding:9px 24px;border-radius:8px;border:none;background:#2563eb;color:white;font-size:0.85rem;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(37,99,235,0.3);">Save Changes</button>
                         </div>
-                    </form>
+                    </div>
                 </div>`;
 
             document.body.appendChild(overlay);
 
-            // Set title value after DOM insert (avoid HTML injection via value attr)
+            // Set title value
             const titleInput = document.getElementById('yt-edit-text');
             if (titleInput) titleInput.value = task.text || '';
 
-            // Toggle description
-            let descOpen = hasDesc;
-            document.getElementById('yt-edit-desc-toggle').onclick = () => {
-                descOpen = !descOpen;
-                const area = document.getElementById('yt-edit-desc-area');
-                const icon = document.getElementById('yt-edit-desc-icon');
-                area.style.display = descOpen ? 'block' : 'none';
-                icon.style.transform = descOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+            // Render Checklist Function
+            const renderChecklist = () => {
+                const container = document.getElementById('yt-edit-checklist-container');
+                if (!container) return;
+                container.innerHTML = '';
+                if (currentChecklist.length === 0) {
+                    container.innerHTML = `<span style="font-size:0.75rem;color:${dark ? '#6b7280' : '#9ca3af'};">No checklist items yet.</span>`;
+                    return;
+                }
+                currentChecklist.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+                    row.innerHTML = `
+                        <input type="checkbox" id="edit-chk-${idx}" ${item.done ? 'checked' : ''} style="width:14px;height:14px;accent-color:#3b82f6;cursor:pointer;">
+                        <label for="edit-chk-${idx}" style="flex:1;font-size:0.8rem;color:${item.done ? (dark ? '#6b7280' : '#9ca3af') : (dark ? '#d1d5db' : '#374151')};text-decoration:${item.done ? 'line-through' : 'none'};cursor:pointer;word-break:break-word;">${item.text}</label>
+                        <button type="button" class="edit-chk-del-btn" data-idx="${idx}" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:2px 4px;opacity:0.6;"><i class="fas fa-times"></i></button>
+                    `;
+                    container.appendChild(row);
+
+                    // Toggle done
+                    row.querySelector('input').addEventListener('change', (e) => {
+                        currentChecklist[idx].done = e.target.checked;
+                        renderChecklist();
+                    });
+                    // Delete item
+                    row.querySelector('.edit-chk-del-btn').addEventListener('click', () => {
+                        currentChecklist.splice(idx, 1);
+                        renderChecklist();
+                    });
+                });
             };
+            renderChecklist();
+
+            // Add new checklist item
+            document.getElementById('yt-edit-add-chk-btn').addEventListener('click', () => {
+                const input = document.getElementById('yt-edit-new-chk');
+                const val = input.value.trim();
+                if (val) {
+                    currentChecklist.push({ id: 'c_' + Date.now(), text: val, done: false });
+                    input.value = '';
+                    renderChecklist();
+                }
+            });
+            document.getElementById('yt-edit-new-chk').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('yt-edit-add-chk-btn').click();
+                }
+            });
 
             const close = () => overlay.remove();
             overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
@@ -10150,17 +10679,27 @@
                 } catch (err) { showNotification('Gagal hapus task.', true); }
             };
 
-            document.getElementById('yt-edit-task-form').onsubmit = async (e) => {
-                e.preventDefault();
+            document.getElementById('yt-edit-save-btn').onclick = async () => {
                 const newText = document.getElementById('yt-edit-text').value.trim();
+                if (!newText) { showNotification('Judul task wajib diisi!', true); return; }
+
                 const newColId = document.getElementById('yt-edit-col-sel').value;
-                const newDesc = (document.getElementById('yt-edit-desc-input')?.value || '').trim();
-                if (!newText) return;
+                const newDesc = document.getElementById('yt-edit-desc').value.trim();
+                const newDue = document.getElementById('yt-edit-due-date').value;
+                const newLink = document.getElementById('yt-edit-link').value.trim();
+                const tagsStr = document.getElementById('yt-edit-tags').value;
+
+                const newTags = tagsStr ? tagsStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s) : [];
+
                 try {
                     await updateDoc(doc(db, 'hubs', 'youtube', 'tasks', task.id), {
                         text: newText,
-                        description: newDesc,
                         columnId: newColId,
+                        description: newDesc,
+                        dueDate: newDue,
+                        driveLink: newLink,
+                        tags: newTags,
+                        checklist: currentChecklist,
                         updatedAt: Date.now()
                     });
                     close();
@@ -10172,47 +10711,76 @@
             setTimeout(() => { if (titleInput) { titleInput.focus(); titleInput.setSelectionRange(titleInput.value.length, titleInput.value.length); } }, 80);
         };
 
-        const createYtTaskElement = (task) => {
+        const createYtTaskElement = (task, isLocked) => {
             const dark = isDark();
             const card = document.createElement('div');
-            card.className = 'task-card cursor-pointer relative group';
-            card.style.cssText = `padding:9px 11px;border-radius:9px;background:${dark ? '#1f2937' : 'white'};border:1px solid ${dark ? '#374151' : '#e5e7eb'};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;`;
-            card.draggable = true;
+            card.className = 'task-card cursor-pointer relative group' + (isLocked ? ' yt-task-locked' : '');
+            card.style.cssText = `padding:9px 11px;border-radius:9px;background:${dark ? '#1f2937' : 'white'};border:1px solid ${dark ? '#374151' : '#e5e7eb'};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;`;
+            card.draggable = !isLocked;
             card.dataset.id = task.id;
 
-            // Main row: title + action buttons (description NOT shown here)
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:flex-start;gap:6px;';
-
-            // Left side: title + description indicator
-            const contentCol = document.createElement('div');
-            contentCol.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;';
-
+            // --- Title ---
             const textEl = document.createElement('span');
-            textEl.className = 'task-text flex-1';
+            textEl.className = 'task-text';
             textEl.setAttribute('data-yt-text', '1');
-            textEl.style.cssText = `font-size:0.75rem;line-height:1.45;color:${dark ? '#d1d5db' : '#374151'};white-space:normal;word-break:break-word;display:block;padding-right:2px;font-weight:500;`;
+            textEl.style.cssText = `font-size:0.75rem;line-height:1.45;color:${dark ? '#d1d5db' : '#374151'};white-space:normal;word-break:break-word;display:block;padding-right:40px;font-weight:500;width:100%;`;
             textEl.textContent = task.text;
-            contentCol.appendChild(textEl);
 
-            // Description indicator badge (only if description exists)
-            if (task.description && task.description.trim()) {
-                const descBadge = document.createElement('span');
-                descBadge.style.cssText = `display:inline-flex;align-items:center;gap:3px;font-size:0.65rem;color:${dark ? '#60a5fa' : '#3b82f6'};opacity:0.8;`;
-                descBadge.innerHTML = '<i class="fas fa-align-left" style="font-size:0.6rem;"></i> ada deskripsi';
-                contentCol.appendChild(descBadge);
+            // Lock icon overlay
+            if (isLocked) {
+                const lockIcon = document.createElement('span');
+                lockIcon.innerHTML = '<i class="fas fa-lock" style="font-size:10px;color:#6b7280;position:absolute;right:8px;top:8px;"></i>';
+                card.appendChild(lockIcon);
             }
 
-            // Action buttons (visible on hover)
+            card.appendChild(textEl);
+
+            // --- Tags & Due Date row (below title) ---
+            const tagRow = document.createElement('div');
+            tagRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center;width:100%;';
+
+            // 1. Due Date badge
+            if (task.dueDate) {
+                const dDate = new Date(task.dueDate);
+                const dateStr = isNaN(dDate.getTime()) ? task.dueDate : dDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                const dueBadge = document.createElement('span');
+                dueBadge.className = 'yt-desc-tag';
+                dueBadge.style.background = dark ? 'rgba(148,163,184,0.1)' : 'rgba(100,116,139,0.08)';
+                dueBadge.style.color = dark ? '#94a3b8' : '#64748b';
+                dueBadge.style.borderColor = dark ? 'rgba(148,163,184,0.2)' : 'rgba(100,116,139,0.2)';
+                dueBadge.style.whiteSpace = 'nowrap';
+                dueBadge.innerHTML = `<i class="far fa-calendar-alt" style="font-size:0.55rem;"></i> ` + dateStr;
+                tagRow.appendChild(dueBadge);
+            }
+
+            // 2. Tag pills from task.tags array
+            const tags = Array.isArray(task.tags) ? task.tags : [];
+            const tagColorMap = {
+                creator: 'yt-tag-orange', editor: 'yt-tag-blue', design: 'yt-tag-green',
+                urgent: 'yt-tag-red', production: 'yt-tag-purple'
+            };
+            tags.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = `yt-task-tag-pill ${tagColorMap[tag] || 'yt-tag-blue'}`;
+                pill.style.whiteSpace = 'nowrap';
+                pill.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+                tagRow.appendChild(pill);
+            });
+
+            if (tagRow.children.length > 0) {
+                card.appendChild(tagRow);
+            }
+
+            // --- Action buttons (hover) ---
             const actions = document.createElement('div');
-            actions.style.cssText = 'display:flex;flex-direction:column;gap:3px;opacity:0;transition:opacity 0.15s;flex-shrink:0;';
+            actions.style.cssText = 'position:absolute;top:6px;right:6px;display:flex;flex-direction:row;gap:4px;opacity:0;transition:opacity 0.15s;';
             actions.className = 'yt-card-actions';
 
             const editBtn = document.createElement('button');
             editBtn.innerHTML = '<i class="fas fa-edit" style="font-size:9px;"></i>';
             editBtn.title = 'Edit task';
             editBtn.style.cssText = `background:${dark ? '#374151' : '#f3f4f6'};border:none;border-radius:5px;padding:3px 5px;cursor:pointer;color:${dark ? '#93c5fd' : '#4b5563'};line-height:1;`;
-            editBtn.onclick = (e) => { e.stopPropagation(); openYtEditTaskModal(task); };
+            editBtn.onclick = (e) => { e.stopPropagation(); closeYtQuickPreview(); openYtEditTaskModal(task); };
 
             const delBtn = document.createElement('button');
             delBtn.innerHTML = '<i class="fas fa-times" style="font-size:9px;"></i>';
@@ -10227,29 +10795,31 @@
 
             actions.appendChild(editBtn);
             actions.appendChild(delBtn);
-            row.appendChild(contentCol);
-            row.appendChild(actions);
-            card.appendChild(row);
+            card.appendChild(actions);
 
-            // Show actions on hover
-            card.addEventListener('mouseenter', () => { actions.style.opacity = '1'; });
+            // Show/hide actions on hover
+            card.addEventListener('mouseenter', () => { if (!isLocked) actions.style.opacity = '1'; });
             card.addEventListener('mouseleave', () => { actions.style.opacity = '0'; });
 
-            // Click card = open edit modal (shows title + description)
+            // --- Click: open quick preview popover ---
             card.addEventListener('click', (e) => {
                 if (e.target.closest('.yt-card-actions')) return;
+                if (isLocked) return;
                 openYtEditTaskModal(task);
             });
 
             // Drag
-            card.addEventListener('dragstart', e => {
-                e.dataTransfer.setData('yt-task-id', task.id);
-                card.style.opacity = '0.5';
-            });
-            card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+            if (!isLocked) {
+                card.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('yt-task-id', task.id);
+                    card.style.opacity = '0.5';
+                });
+                card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+            }
 
             return card;
         };
+
 
         // ---- Move column to a given position (1-based) ----
         const moveYtColumnTo = async (colId, newPos) => {
@@ -10318,16 +10888,28 @@
         const renderYtBoard = () => {
             const container = document.getElementById('yt-board');
             if (!container) return;
-            if (!ytBoardColumnsReady) return; // guard: wait until columns are loaded
+            if (!ytBoardColumnsReady) return;
             container.innerHTML = '';
 
-            // Read size settings from localStorage (default: wider columns for better readability)
+            // Read size settings
             const colWidth = parseInt(localStorage.getItem('ytBoardColWidth') || '248', 10);
             const colHeight = parseInt(localStorage.getItem('ytBoardColHeight') || '280', 10);
             const dark = isDark();
 
-            ytBoardColumns.forEach((col, idx) => {
+            // WIP limit config (per-column name)
+            const WIP_LIMITS = { 'In Progress': 2 };
+            // Archive column name
+            const ARCHIVE_COL_NAMES = ['close', 'done', 'closed', 'archive'];
+
+            ytBoardColumns.forEach((col) => {
                 const tasks = ytBoardTasks.filter(t => t.columnId === col.id).sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                // WIP limit check
+                const wipLimit = WIP_LIMITS[col.name] || null;
+                const wipReached = wipLimit !== null && tasks.length >= wipLimit;
+
+                // Archive column check
+                const isArchiveCol = ARCHIVE_COL_NAMES.includes((col.name || '').toLowerCase());
 
                 // Color map
                 const borderColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#22c55e', yellow: '#facc15', purple: '#a855f7' };
@@ -10337,11 +10919,19 @@
                 colEl.style.cssText = `flex-shrink:0;width:${colWidth}px;min-width:${colWidth}px;background:${dark ? '#1f2937' : '#f9fafb'};border-radius:12px;border:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;flex-direction:column;overflow:hidden;transition:transform 0.15s;`;
                 colEl.dataset.ytColId = col.id;
 
+                // --- WIP Limit Bar (top of column, before header) ---
+                if (wipReached) {
+                    const wipBar = document.createElement('div');
+                    wipBar.className = 'yt-wip-bar';
+                    wipBar.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right:4px;"></i>WIP Limit (${tasks.length}/${wipLimit})`;
+                    colEl.appendChild(wipBar);
+                }
+
                 // --- Column Header ---
                 const header = document.createElement('div');
                 header.style.cssText = `padding:10px 12px 9px;border-bottom:2.5px solid ${borderColor};display:flex;align-items:center;gap:6px;`;
 
-                // Drag handle (for reordering)
+                // Drag handle
                 const dragHandle = document.createElement('span');
                 dragHandle.innerHTML = '<i class="fas fa-grip-vertical" style="font-size:9px;"></i>';
                 dragHandle.title = 'Drag untuk geser kolom';
@@ -10359,51 +10949,64 @@
                 nameEl.textContent = col.name;
                 nameEl.style.cssText = `font-size:0.75rem;font-weight:700;color:${dark ? '#e5e7eb' : '#1f2937'};flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;`;
 
-                // Task count badge
-                const badge = document.createElement('span');
-                badge.textContent = tasks.length;
-                badge.style.cssText = `font-size:0.65rem;font-weight:600;background:${dark ? '#374151' : '#e5e7eb'};color:${dark ? '#9ca3af' : '#6b7280'};border-radius:999px;padding:1px 7px;flex-shrink:0;`;
+                // Archive gear icon
+                if (isArchiveCol) {
+                    const gearIcon = document.createElement('span');
+                    gearIcon.innerHTML = '<i class="fas fa-cog" style="font-size:10px;"></i>';
+                    gearIcon.style.cssText = `color:${dark ? '#6b7280' : '#9ca3af'};margin-right:2px;`;
+                    header.appendChild(dragHandle);
+                    header.appendChild(nameEl);
+                    header.appendChild(gearIcon);
+                } else {
+                    // Task count badge
+                    const badge = document.createElement('span');
+                    badge.textContent = tasks.length;
+                    badge.style.cssText = `font-size:0.65rem;font-weight:600;background:${dark ? '#374151' : '#e5e7eb'};color:${dark ? '#9ca3af' : '#6b7280'};border-radius:999px;padding:1px 7px;flex-shrink:0;`;
+                    // WIP badge color
+                    if (wipReached) { badge.style.background = '#dc2626'; badge.style.color = 'white'; }
 
-                // Position button
-                const posBtn = document.createElement('button');
-                posBtn.innerHTML = `<i class="fas fa-arrows-alt-h" style="font-size:8px;"></i>`;
-                posBtn.title = 'Atur posisi kolom';
-                posBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
-                posBtn.onclick = (e) => { e.stopPropagation(); openYtColPositionPicker(col.id, header); };
+                    // Position button
+                    const posBtn = document.createElement('button');
+                    posBtn.innerHTML = `<i class="fas fa-arrows-alt-h" style="font-size:8px;"></i>`;
+                    posBtn.title = 'Atur posisi kolom';
+                    posBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
+                    posBtn.onclick = (e) => { e.stopPropagation(); openYtColPositionPicker(col.id, header); };
 
-                // Delete button
-                const delColBtn = document.createElement('button');
-                delColBtn.innerHTML = '<i class="fas fa-trash-alt" style="font-size:8px;"></i>';
-                delColBtn.title = 'Hapus kolom';
-                delColBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
-                delColBtn.onclick = (e) => { e.stopPropagation(); deleteYtColumn(col.id); };
+                    // Delete button
+                    const delColBtn = document.createElement('button');
+                    delColBtn.innerHTML = '<i class="fas fa-trash-alt" style="font-size:8px;"></i>';
+                    delColBtn.title = 'Hapus kolom';
+                    delColBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
+                    delColBtn.onclick = (e) => { e.stopPropagation(); deleteYtColumn(col.id); };
 
-                // Show buttons on header hover
-                header.addEventListener('mouseenter', () => { posBtn.style.opacity = '1'; delColBtn.style.opacity = '1'; });
-                header.addEventListener('mouseleave', () => { posBtn.style.opacity = '0'; delColBtn.style.opacity = '0'; });
+                    header.addEventListener('mouseenter', () => { posBtn.style.opacity = '1'; delColBtn.style.opacity = '1'; });
+                    header.addEventListener('mouseleave', () => { posBtn.style.opacity = '0'; delColBtn.style.opacity = '0'; });
 
-                header.appendChild(dragHandle);
-                header.appendChild(nameEl);
-                header.appendChild(badge);
-                header.appendChild(posBtn);
-                header.appendChild(delColBtn);
+                    header.appendChild(dragHandle);
+                    header.appendChild(nameEl);
+                    header.appendChild(badge);
+                    header.appendChild(posBtn);
+                    header.appendChild(delColBtn);
+                }
 
                 // --- Task List ---
                 const taskList = document.createElement('div');
                 taskList.style.cssText = `display:flex;flex-direction:column;gap:7px;padding:10px;overflow-y:auto;min-height:60px;max-height:${colHeight}px;`;
                 taskList.dataset.ytColId = col.id;
+                taskList.className = 'yt-task-list';
 
-                tasks.forEach(task => {
-                    const card = createYtTaskElement(task);
-                    taskList.appendChild(card);
+                tasks.forEach((task, taskIdx) => {
+                    // Lock tasks beyond WIP limit
+                    const shouldLock = wipReached && taskIdx >= wipLimit;
+                    const cardEl = createYtTaskElement(task, shouldLock);
+                    taskList.appendChild(cardEl);
                 });
 
-                // Column drag-over (for column reordering)
+                // Column drag-over
                 colEl.addEventListener('dragover', e => {
                     e.preventDefault();
                     const draggingColId = e.dataTransfer.types.includes('yt-col-id') ? 'col' : null;
-                    const draggingTaskId = !draggingColId;
-                    if (draggingTaskId) {
+                    if (!draggingColId) {
                         taskList.style.background = dark ? 'rgba(239,68,68,0.12)' : 'rgba(254,226,226,0.8)';
                     } else {
                         colEl.style.outline = `2px dashed ${borderColor}`;
@@ -10420,7 +11023,6 @@
                     taskList.style.background = '';
                     colEl.style.outline = '';
 
-                    // Handle column drop (reorder)
                     const colId = e.dataTransfer.getData('yt-col-id');
                     if (colId && colId !== col.id) {
                         const sorted = [...ytBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -10438,7 +11040,6 @@
                         return;
                     }
 
-                    // Handle task drop
                     const taskId = e.dataTransfer.getData('yt-task-id');
                     if (!taskId) return;
                     try {
@@ -10448,6 +11049,15 @@
 
                 colEl.appendChild(header);
                 colEl.appendChild(taskList);
+
+                // --- Archive column footer indicator ---
+                if (isArchiveCol) {
+                    const archiveInfo = document.createElement('div');
+                    archiveInfo.className = 'yt-archive-info';
+                    archiveInfo.innerHTML = `<i class="fas fa-clock" style="font-size:10px;flex-shrink:0;margin-top:1px;"></i><span>Automatically archive cards older than 14 days.</span>`;
+                    colEl.appendChild(archiveInfo);
+                }
+
                 container.appendChild(colEl);
             });
         };
@@ -10457,76 +11067,177 @@
             if (ytBoardColumns.length === 0) { showNotification('No columns yet. Please wait...', true); return; }
             const dark = isDark();
             const colOptions = ytBoardColumns.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            let currentChecklist = [];
+
             const overlay = document.createElement('div');
             overlay.id = 'yt-task-modal';
             overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
             overlay.innerHTML = `
-                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:24px;width:100%;max-width:420px;">
-                    <div style="display:flex;align-items:center;margin-bottom:16px;">
-                        <h3 style="font-size:1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;">Add Task — Project Board</h3>
-                        <button id="yt-task-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;">✕</button>
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+                    <!-- Header -->
+                    <div style="padding:20px 24px 16px;border-bottom:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;align-items:center;">
+                        <h3 style="font-size:1.1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;"><i class="fas fa-plus-circle text-red-500 mr-2"></i>Add New Task</h3>
+                        <button id="yt-task-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;line-height:1;">✕</button>
                     </div>
-                    <form id="yt-task-form" style="display:flex;flex-direction:column;gap:12px;">
-                        <div>
-                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task</label>
-                            <input id="yt-task-text-input" type="text" placeholder="Nama task..." required
-                                style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
-                        </div>
-                        <div>
-                            <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
-                            <select id="yt-task-col-select" style="width:100%;padding:9px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
-                                ${colOptions}
-                            </select>
-                        </div>
-                        <div>
-                            <button type="button" id="yt-task-desc-toggle" style="display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:0.78rem;font-weight:600;color:${dark ? '#60a5fa' : '#3b82f6'};padding:2px 0;">
-                                <i class="fas fa-chevron-right" id="yt-task-desc-icon" style="font-size:0.65rem;transition:transform 0.2s;"></i>
-                                Tambah Deskripsi
-                            </button>
-                            <div id="yt-task-desc-area" style="display:none;margin-top:8px;">
-                                <textarea id="yt-task-desc-input" rows="3" placeholder="Deskripsi task (opsional)..."
-                                    style="width:100%;box-sizing:border-box;padding:10px 12px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:10px;font-size:0.82rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;"></textarea>
+                    
+                    <!-- Scrollable Body -->
+                    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+                        <form id="yt-task-form" style="display:flex;flex-direction:column;gap:16px;">
+                            
+                            <!-- Title & Column -->
+                            <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task *</label>
+                                    <input id="yt-task-text-input" type="text" placeholder="Nama task..." required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
+                                    <select id="yt-task-col-select" style="width:100%;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
+                                        ${colOptions}
+                                    </select>
+                                </div>
                             </div>
+
+                            <!-- Due Date & Link -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="far fa-calendar mr-1"></i>Due Date</label>
+                                    <input id="yt-task-due-date" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-link mr-1"></i>External Link</label>
+                                    <input id="yt-task-link" type="url" placeholder="https://..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                            </div>
+
+                            <!-- Tags -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-tags mr-1"></i>Tags (comma separated)</label>
+                                <input id="yt-task-tags" type="text" placeholder="creator, urgent, design..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                            </div>
+
+                            <!-- Description -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-align-left mr-1"></i>Description</label>
+                                <textarea id="yt-task-desc" rows="3" placeholder="Task details..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;"></textarea>
+                            </div>
+
+                            <!-- Checklist -->
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-check-square mr-1"></i>Checklist</label>
+                                <div style="background:${dark ? '#111827' : '#f9fafb'};border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;padding:12px;">
+                                    <div id="yt-task-checklist-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+                                    <div style="display:flex;gap:8px;">
+                                        <input id="yt-task-new-chk" type="text" placeholder="Add an item..." style="flex:1;padding:7px 10px;border:1px solid ${dark ? '#4b5563' : '#d1d5db'};border-radius:6px;font-size:0.8rem;background:${dark ? '#1f2937' : 'white'};color:${dark ? '#e5e7eb' : '#374151'};outline:none;" />
+                                        <button type="button" id="yt-task-add-chk-btn" style="padding:7px 14px;background:#ef4444;color:white;border:none;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="padding:16px 24px;border-top:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;justify-content:flex-end;background:${dark ? '#1f2937' : '#f9fafb'};">
+                        <div style="display:flex;gap:12px;">
+                            <button type="button" id="yt-task-cancel-btn" style="padding:9px 16px;border-radius:8px;border:1.5px solid ${dark ? '#4b5563' : '#d1d5db'};background:none;color:${dark ? '#9ca3af' : '#4b5563'};font-size:0.85rem;font-weight:600;cursor:pointer;">Cancel</button>
+                            <button type="button" id="yt-task-submit-btn" style="padding:9px 24px;border-radius:8px;border:none;background:#dc2626;color:white;font-size:0.85rem;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(220,38,38,0.3);">Create Task</button>
                         </div>
-                        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
-                            <button type="button" id="yt-task-cancel-btn" style="padding:9px 16px;border-radius:10px;border:2px solid ${dark ? '#374151' : '#e5e7eb'};background:none;color:${dark ? '#9ca3af' : '#6b7280'};font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
-                            <button type="submit" style="padding:9px 18px;border-radius:10px;border:none;background:#dc2626;color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Add Task</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>`;
+
             document.body.appendChild(overlay);
 
-            // Toggle description
-            let descOpen = false;
-            document.getElementById('yt-task-desc-toggle').onclick = () => {
-                descOpen = !descOpen;
-                const area = document.getElementById('yt-task-desc-area');
-                const icon = document.getElementById('yt-task-desc-icon');
-                area.style.display = descOpen ? 'block' : 'none';
-                icon.style.transform = descOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+            // Render Checklist Function
+            const renderChecklist = () => {
+                const container = document.getElementById('yt-task-checklist-container');
+                if (!container) return;
+                container.innerHTML = '';
+                if (currentChecklist.length === 0) {
+                    container.innerHTML = `<span style="font-size:0.75rem;color:${dark ? '#6b7280' : '#9ca3af'};">No checklist items yet.</span>`;
+                    return;
+                }
+                currentChecklist.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+                    row.innerHTML = `
+                        <input type="checkbox" id="task-chk-${idx}" ${item.done ? 'checked' : ''} style="width:14px;height:14px;accent-color:#dc2626;cursor:pointer;">
+                        <label for="task-chk-${idx}" style="flex:1;font-size:0.8rem;color:${item.done ? (dark ? '#6b7280' : '#9ca3af') : (dark ? '#d1d5db' : '#374151')};text-decoration:${item.done ? 'line-through' : 'none'};cursor:pointer;word-break:break-word;">${item.text}</label>
+                        <button type="button" class="task-chk-del-btn" data-idx="${idx}" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:2px 4px;opacity:0.6;"><i class="fas fa-times"></i></button>
+                    `;
+                    container.appendChild(row);
+
+                    // Toggle done
+                    row.querySelector('input').addEventListener('change', (e) => {
+                        currentChecklist[idx].done = e.target.checked;
+                        renderChecklist();
+                    });
+                    // Delete item
+                    row.querySelector('.task-chk-del-btn').addEventListener('click', () => {
+                        currentChecklist.splice(idx, 1);
+                        renderChecklist();
+                    });
+                });
             };
+            renderChecklist();
+
+            // Add new checklist item
+            document.getElementById('yt-task-add-chk-btn').addEventListener('click', () => {
+                const input = document.getElementById('yt-task-new-chk');
+                const val = input.value.trim();
+                if (val) {
+                    currentChecklist.push({ id: 'c_' + Date.now(), text: val, done: false });
+                    input.value = '';
+                    renderChecklist();
+                }
+            });
+            document.getElementById('yt-task-new-chk').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('yt-task-add-chk-btn').click();
+                }
+            });
 
             const close = () => overlay.remove();
             overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
             document.getElementById('yt-task-close').onclick = close;
             document.getElementById('yt-task-cancel-btn').onclick = close;
 
-            // Focus title input
-            setTimeout(() => { const inp = document.getElementById('yt-task-text-input'); if (inp) inp.focus(); }, 80);
-
-            document.getElementById('yt-task-form').onsubmit = async (e) => {
-                e.preventDefault();
+            // Submit handler
+            document.getElementById('yt-task-submit-btn').onclick = async () => {
                 const text = document.getElementById('yt-task-text-input').value.trim();
+                if (!text) { showNotification('Judul task wajib diisi!', true); return; }
+
                 const colId = document.getElementById('yt-task-col-select').value;
-                const description = (document.getElementById('yt-task-desc-input')?.value || '').trim();
-                if (!text || !colId) return;
+                const description = document.getElementById('yt-task-desc').value.trim();
+                const dueDate = document.getElementById('yt-task-due-date').value;
+                const driveLink = document.getElementById('yt-task-link').value.trim();
+                const tagsStr = document.getElementById('yt-task-tags').value;
+
+                const tags = tagsStr ? tagsStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s) : [];
+
                 try {
                     const order = ytBoardTasks.filter(t => t.columnId === colId).length + 1;
-                    await addDoc(collection(db, 'hubs', 'youtube', 'tasks'), { text, description, columnId: colId, order, createdAt: Date.now() });
+                    await addDoc(collection(db, 'hubs', 'youtube', 'tasks'), {
+                        text,
+                        description,
+                        columnId: colId,
+                        order,
+                        dueDate,
+                        driveLink,
+                        tags,
+                        checklist: currentChecklist,
+                        createdAt: Date.now()
+                    });
                     close();
                     showNotification('Task berhasil ditambahkan!');
                 } catch (err) { showNotification('Gagal menambah task.', true); }
             };
+
+            // Focus title input
+            setTimeout(() => { const inp = document.getElementById('yt-task-text-input'); if (inp) inp.focus(); }, 80);
         };
 
         document.getElementById('yt-add-task-btn')?.addEventListener('click', openYtAddTaskModal);
@@ -10746,6 +11457,108 @@
         }, true);
         // If page loaded with #/youtube in URL, board is already shown by applyNavigationState;
         // initYtBoard() will have been called there. No extra action needed here.
+
+        // =============================================
+        // --- YouTube Board: Filter & Search Helpers ---
+        // =============================================
+        let ytActiveFilters = new Set(['due-week', 'tag-creator']); // Initial demo filters
+        let ytShowArchived = false;
+
+        // Wire filter dropdown toggle
+        (() => {
+            const btn = document.getElementById('yt-filter-dropdown-btn');
+            const panel = document.getElementById('yt-filter-dropdown-panel');
+            const chevron = document.getElementById('yt-filter-chevron');
+            if (!btn || !panel) return;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = !panel.classList.contains('hidden');
+                if (isOpen) {
+                    panel.classList.add('hidden');
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    panel.classList.remove('hidden');
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== btn) {
+                    panel.classList.add('hidden');
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                }
+            });
+        })();
+
+        window.addYtFilter = (tag) => {
+            ytActiveFilters.add(tag);
+            renderYtActiveTagPills();
+            filterYtBoardByState();
+        };
+
+        window.removeYtFilter = (tag) => {
+            ytActiveFilters.delete(tag);
+            renderYtActiveTagPills();
+            filterYtBoardByState();
+        };
+
+        const renderYtActiveTagPills = () => {
+            const container = document.getElementById('yt-active-tags');
+            if (!container) return;
+            const tagLabels = {
+                'due-week': 'Due: This Week', 'due-today': 'Due: Today',
+                'due-month': 'Due: This Month', 'tag-creator': 'Tag: Creator',
+                'tag-editor': 'Tag: Editor', 'tag-design': 'Tag: Design',
+                'tag-urgent': 'Tag: Urgent'
+            };
+            container.innerHTML = '';
+            if (ytActiveFilters.size === 0) {
+                container.innerHTML = '<span style="font-size:0.68rem;color:#475569;">No active filters</span>';
+                return;
+            }
+            ytActiveFilters.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = 'yt-active-tag-pill';
+                pill.dataset.tag = tag;
+                pill.innerHTML = `${tagLabels[tag] || tag} <span class="remove-tag" onclick="removeYtFilter('${tag}')">✕</span>`;
+                container.appendChild(pill);
+            });
+        };
+
+        // Search filter
+        window.filterYtBoard = (query) => {
+            const q = (query || '').toLowerCase().trim();
+            document.querySelectorAll('#yt-board .task-card').forEach(card => {
+                const text = (card.querySelector('.task-text')?.textContent || '').toLowerCase();
+                card.style.display = (!q || text.includes(q)) ? '' : 'none';
+            });
+        };
+
+        // Filter board by active filters state (placeholder implementation)
+        const filterYtBoardByState = () => {
+            // Currently a UI-only placeholder; real impl would re-render with filtered tasks
+            // For now, just show all cards when no filters are active
+            if (ytActiveFilters.size === 0) {
+                document.querySelectorAll('#yt-board .task-card').forEach(card => {
+                    card.style.opacity = '1';
+                });
+            }
+        };
+
+        // Toggle archived cards visibility
+        window.toggleYtArchivedCards = () => {
+            ytShowArchived = !ytShowArchived;
+            const btn = document.getElementById('yt-show-archived-btn');
+            if (btn) {
+                btn.innerHTML = ytShowArchived
+                    ? '<i class="fas fa-archive" style="font-size:0.7rem;"></i><span>Hide Archived Cards</span>'
+                    : '<i class="fas fa-archive" style="font-size:0.7rem;"></i><span>Show Archived Cards</span>';
+            }
+            // In a real implementation, this would show/hide archived task cards
+            // For now, just shows a notification
+            if (typeof showNotification === 'function') {
+                showNotification(ytShowArchived ? 'Showing archived cards' : 'Archived cards hidden');
+            }
+        };
 
     </script>
 </body>
