@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" style="scroll-behavior: smooth;">
 
 <head>
@@ -1176,12 +1176,7 @@
             color: #3b82f6;
         }
 
-        .section-divider {
-            border: 0;
-            height: 1px;
-            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
-            margin: 3rem 0;
-        }
+
 
         /* Calendar Styles */
         .calendar-day {
@@ -2034,7 +2029,7 @@
         </div>
     </header>
 
-    <main class="container mx-auto p-4 md:px-8">
+    <main class="container mx-auto p-4 md:px-8 flex flex-col gap-8 md:gap-12 mt-2">
         <!-- Project Board Section -->
         <div id="project-board-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">Project Board</h2>
@@ -2528,7 +2523,7 @@
             </div>
         </div>
 
-        <hr class="section-divider">
+
 
         <!-- Skills Tracking Section -->
         <div id="skills-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8 hidden">
@@ -2560,7 +2555,7 @@
 
         </div>
 
-        <hr class="section-divider">
+
 
         <!-- YouTube Inventory Section -->
         <div id="youtube-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
@@ -2788,7 +2783,7 @@
             </div>
         </div>
 
-        <hr class="section-divider">
+
 
         <!-- TikTok Affiliate Inventory Section -->
         <div id="tiktok-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
@@ -2849,7 +2844,7 @@
             </div>
         </div>
 
-        <hr class="section-divider">
+
 
         <!-- Daily Routine Section -->
         <div id="daily-routine-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
@@ -2894,7 +2889,7 @@
             </div>
         </div>
 
-        <hr class="section-divider">
+
 
         <!-- Important Notes Section -->
         <div id="important-notes-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
@@ -10715,7 +10710,33 @@
             const dark = isDark();
             const card = document.createElement('div');
             card.className = 'task-card cursor-pointer relative group' + (isLocked ? ' yt-task-locked' : '');
-            card.style.cssText = `padding:9px 11px;border-radius:9px;background:${dark ? '#1f2937' : 'white'};border:1px solid ${dark ? '#374151' : '#e5e7eb'};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;`;
+            
+            let isPast = false;
+            let isToday = false;
+            if (task.dueDate) {
+                const dDate = new Date(task.dueDate);
+                if (!isNaN(dDate.getTime())) {
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+                    const taskDate = new Date(dDate);
+                    taskDate.setHours(0,0,0,0);
+                    if (taskDate < today) {
+                        isPast = true;
+                    } else if (taskDate.getTime() === today.getTime()) {
+                        isToday = true;
+                    }
+                }
+            }
+
+            let cardBg = dark ? '#1f2937' : 'white';
+            let cardBorder = dark ? '#374151' : '#e5e7eb';
+            
+            if (isPast || isToday) {
+                cardBg = dark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(254, 226, 226, 0.8)';
+                cardBorder = dark ? 'rgba(239, 68, 68, 0.4)' : '#fca5a5';
+            }
+
+            card.style.cssText = `padding:9px 11px;border-radius:9px;background:${cardBg};border:1px solid ${cardBorder};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;`;
             card.draggable = !isLocked;
             card.dataset.id = task.id;
 
@@ -10745,9 +10766,17 @@
                 const dateStr = isNaN(dDate.getTime()) ? task.dueDate : dDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
                 const dueBadge = document.createElement('span');
                 dueBadge.className = 'yt-desc-tag';
-                dueBadge.style.background = dark ? 'rgba(148,163,184,0.1)' : 'rgba(100,116,139,0.08)';
-                dueBadge.style.color = dark ? '#94a3b8' : '#64748b';
-                dueBadge.style.borderColor = dark ? 'rgba(148,163,184,0.2)' : 'rgba(100,116,139,0.2)';
+                
+                if (isToday || isPast) {
+                    dueBadge.style.background = dark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(254, 226, 226, 1)';
+                    dueBadge.style.color = dark ? '#f87171' : '#ef4444';
+                    dueBadge.style.borderColor = dark ? 'rgba(239, 68, 68, 0.3)' : '#fca5a5';
+                } else {
+                    dueBadge.style.background = dark ? 'rgba(148,163,184,0.1)' : 'rgba(100,116,139,0.08)';
+                    dueBadge.style.color = dark ? '#94a3b8' : '#64748b';
+                    dueBadge.style.borderColor = dark ? 'rgba(148,163,184,0.2)' : 'rgba(100,116,139,0.2)';
+                }
+
                 dueBadge.style.whiteSpace = 'nowrap';
                 dueBadge.innerHTML = `<i class="far fa-calendar-alt" style="font-size:0.55rem;"></i> ` + dateStr;
                 tagRow.appendChild(dueBadge);
