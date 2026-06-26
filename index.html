@@ -10713,6 +10713,7 @@
             
             let isPast = false;
             let isToday = false;
+            let diffDays = Infinity;
             if (task.dueDate) {
                 const dDate = new Date(task.dueDate);
                 if (!isNaN(dDate.getTime())) {
@@ -10720,9 +10721,13 @@
                     today.setHours(0,0,0,0);
                     const taskDate = new Date(dDate);
                     taskDate.setHours(0,0,0,0);
-                    if (taskDate < today) {
+                    
+                    const diffTime = taskDate.getTime() - today.getTime();
+                    diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays < 0) {
                         isPast = true;
-                    } else if (taskDate.getTime() === today.getTime()) {
+                    } else if (diffDays === 0) {
                         isToday = true;
                     }
                 }
@@ -10734,6 +10739,12 @@
             if (isPast || isToday) {
                 cardBg = dark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(254, 226, 226, 0.8)';
                 cardBorder = dark ? 'rgba(239, 68, 68, 0.4)' : '#fca5a5';
+            } else if (diffDays > 0 && diffDays < 3) {
+                cardBg = dark ? 'rgba(234, 179, 8, 0.15)' : 'rgba(254, 249, 195, 0.8)';
+                cardBorder = dark ? 'rgba(234, 179, 8, 0.4)' : '#fde047';
+            } else if (diffDays >= 3 && diffDays < 7) {
+                cardBg = dark ? 'rgba(34, 197, 94, 0.15)' : 'rgba(220, 252, 231, 0.8)';
+                cardBorder = dark ? 'rgba(34, 197, 94, 0.4)' : '#86efac';
             }
 
             card.style.cssText = `padding:9px 11px;border-radius:9px;background:${cardBg};border:1px solid ${cardBorder};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;`;
@@ -10771,6 +10782,14 @@
                     dueBadge.style.background = dark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(254, 226, 226, 1)';
                     dueBadge.style.color = dark ? '#f87171' : '#ef4444';
                     dueBadge.style.borderColor = dark ? 'rgba(239, 68, 68, 0.3)' : '#fca5a5';
+                } else if (diffDays > 0 && diffDays < 3) {
+                    dueBadge.style.background = dark ? 'rgba(234, 179, 8, 0.15)' : 'rgba(254, 249, 195, 1)';
+                    dueBadge.style.color = dark ? '#facc15' : '#ca8a04';
+                    dueBadge.style.borderColor = dark ? 'rgba(234, 179, 8, 0.3)' : '#fde047';
+                } else if (diffDays >= 3 && diffDays < 7) {
+                    dueBadge.style.background = dark ? 'rgba(34, 197, 94, 0.15)' : 'rgba(220, 252, 231, 1)';
+                    dueBadge.style.color = dark ? '#4ade80' : '#16a34a';
+                    dueBadge.style.borderColor = dark ? 'rgba(34, 197, 94, 0.3)' : '#86efac';
                 } else {
                     dueBadge.style.background = dark ? 'rgba(148,163,184,0.1)' : 'rgba(100,116,139,0.08)';
                     dueBadge.style.color = dark ? '#94a3b8' : '#64748b';
