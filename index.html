@@ -3099,10 +3099,11 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="yt-channel-id-input" class="block text-sm font-medium text-gray-700 mb-1">Channel ID
-                            (e.g. UC...)</label>
-                        <input id="yt-channel-id-input" type="text" placeholder="UCxxxxxxxxxxxx"
+                        <label for="yt-channel-id-input" class="block text-sm font-medium text-gray-700 mb-1">YouTube ID
+                            / Handle</label>
+                        <input id="yt-channel-id-input" type="text" placeholder="@handle atau UCxxxx atau URL"
                             class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <p class="text-xs text-gray-500 mt-1">Contoh: @TheOrchestraRoom-z4i, UCxxxx, atau URL channel</p>
                     </div>
                     <div>
                         <label for="yt-name-input" class="block text-sm font-medium text-gray-700 mb-1">Channel Name
@@ -8162,98 +8163,128 @@
             }
         };
 
-        // --- Subscriber Count Fetching (via YouTube Page Scraping) ---
-        const fetchSubscriberCount = async (channelId) => {
+        // --- YouTube Channel Stats (via YouTube Data API v3) ---
+        const YT_API_KEY = 'AIzaSyAQtT3aoD_OV3YHy9qVag3j6e8kd6Nr76Q';
+
+        const formatCompactNumber = (count) => {
+            const num = parseInt(count);
+            if (isNaN(num)) return count;
+            if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+            if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+            if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+            return num.toLocaleString('id-ID');
+        };
+
+        // Parse YouTube input: supports UC channel ID, @handle, or full URL
+        const parseYouTubeInput = (input) => {
+            if (!input) return null;
+            let val = input.trim();
+
+            // Full URL: extract handle or channel ID from URL
+            if (val.includes('youtube.com') || val.includes('youtu.be')) {
+                const handleMatch = val.match(/youtube\.com\/@([\w\-\.]+)/);
+                if (handleMatch) return { type: 'handle', value: handleMatch[1] };
+                const channelMatch = val.match(/youtube\.com\/channel\/([\w\-]+)/);
+                if (channelMatch) return { type: 'id', value: channelMatch[1] };
+            }
+
+            if (val.startsWith('@')) return { type: 'handle', value: val.substring(1) };
+            if (val.startsWith('UC') && val.length > 10) return { type: 'id', value: val };
+            return { type: 'handle', value: val };
+        };
+
+        const fetchChannelStats = async (channelId) => {
             if (!channelId) return null;
-            const cleanId = channelId.trim();
-            const youtubeUrl = `https://www.youtube.com/channel/${cleanId}`;
+            const parsed = parseYouTubeInput(channelId);
+            if (!parsed) return null;
 
-            // CORS proxies to bypass browser restrictions
-            const proxyUrls = [
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(youtubeUrl)}`,
-                `https://corsproxy.io/?${encodeURIComponent(youtubeUrl)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(youtubeUrl)}`
-            ];
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-            for (const proxiedUrl of proxyUrls) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                    const response = await fetch(proxiedUrl, { signal: controller.signal });
-                    clearTimeout(timeoutId);
-
-                    if (!response.ok) continue;
-
-                    const html = await response.text();
-
-                    // Strategy 1: Extract from ytInitialData JSON
-                    const ytDataMatch = html.match(/var\s+ytInitialData\s*=\s*(\{.+?\});/s);
-                    if (ytDataMatch) {
-                        try {
-                            const ytData = JSON.parse(ytDataMatch[1]);
-                            // Navigate to subscriber count in ytInitialData
-                            const header = ytData?.header?.c4TabbedHeaderRenderer || ytData?.header?.pageHeaderRenderer;
-                            if (header) {
-                                const subText = header?.subscriberCountText?.simpleText || '';
-                                if (subText) {
-                                    // Returns something like "1.23K subscribers" or "123 subscribers"
-                                    const cleaned = subText.replace(/\s*subscribers?/i, '').trim();
-                                    if (cleaned) return cleaned;
-                                }
-                            }
-                            // Alternative path through metadata
-                            const meta = ytData?.metadata?.channelMetadataRenderer;
-                            if (meta) {
-                                // Some channels expose this differently
-                                const headerAlt = ytData?.header;
-                                const content = JSON.stringify(headerAlt);
-                                const subMatch = content.match(/"subscriberCountText".*?"simpleText":"([^"]+)"/);
-                                if (subMatch) {
-                                    return subMatch[1].replace(/\s*subscribers?/i, '').trim();
-                                }
-                            }
-                        } catch (parseErr) {
-                            // JSON parse failed, try next strategy
-                        }
-                    }
-
-                    // Strategy 2: Extract from meta tags or structured data
-                    const ogMatch = html.match(/subscriberCountText.*?simpleText.*?["']([^"']+?)["']/);
-                    if (ogMatch) {
-                        return ogMatch[1].replace(/\s*subscribers?/i, '').trim();
-                    }
-
-                    // Strategy 3: Look for interaction count in JSON-LD
-                    const ldMatch = html.match(/"interactionCount"\s*:\s*"?(\d+)"?/);
-                    if (ldMatch) {
-                        const count = parseInt(ldMatch[1]);
-                        if (count > 0) {
-                            return Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(count);
-                        }
-                    }
-
-                } catch (error) {
-                    continue; // Try next proxy
+                let apiUrl;
+                if (parsed.type === 'id') {
+                    apiUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${encodeURIComponent(parsed.value)}&key=${YT_API_KEY}`;
+                } else {
+                    apiUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&forHandle=${encodeURIComponent(parsed.value)}&key=${YT_API_KEY}`;
                 }
+
+                const response = await fetch(apiUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    console.warn(`YouTube API returned ${response.status} for ${parsed.type}: ${parsed.value}`);
+                    return null;
+                }
+
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    const item = data.items[0];
+                    const stats = item.statistics || {};
+                    const snippet = item.snippet || {};
+                    const thumb = snippet.thumbnails;
+                    return {
+                        thumbnail: thumb?.medium?.url || thumb?.default?.url || '',
+                        subscriberCount: stats.subscriberCount || '0',
+                        viewCount: stats.viewCount || '0',
+                        videoCount: stats.videoCount || '0',
+                        hiddenSubscriberCount: stats.hiddenSubscriberCount || false
+                    };
+                }
+            } catch (error) {
+                console.warn('Failed to fetch channel stats via YouTube API:', error);
             }
 
             return null;
         };
 
-        const updateSubscriberCounts = async (channels) => {
+        const updateChannelStats = async (channels) => {
             for (const channel of channels) {
                 if (!channel.channelId) continue;
 
-                // Show loading state if needed, or just wait
-                const count = await fetchSubscriberCount(channel.channelId);
+                const stats = await fetchChannelStats(channel.channelId);
+                if (!stats) continue;
 
-                if (count) {
-                    const el = document.getElementById(`sub-count-${channel.id}`);
-                    if (el) {
-                        el.innerHTML = `<i class="fas fa-signal"></i> ${count} Subs`;
-                        el.classList.remove('hidden');
-                    }
+                // Update profile photo
+                const avatarEl = document.getElementById(`yt-avatar-${channel.id}`);
+                if (avatarEl && stats.thumbnail) {
+                    avatarEl.innerHTML = `<img src="${stats.thumbnail}" alt="${channel.name}" class="w-full h-full object-cover rounded-full" referrerpolicy="no-referrer">`;
+                }
+
+                // Update stats dashboard
+                const statsEl = document.getElementById(`yt-stats-${channel.id}`);
+                if (statsEl) {
+                    statsEl.innerHTML = `
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-users text-[9px] text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <div class="leading-tight">
+                                <p class="text-xs font-bold text-gray-800 dark:text-white">${formatCompactNumber(stats.subscriberCount)}</p>
+                                <p class="text-[9px] text-gray-500 dark:text-gray-400">Subscribers</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-eye text-[9px] text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <div class="leading-tight">
+                                <p class="text-xs font-bold text-gray-800 dark:text-white">${formatCompactNumber(stats.viewCount)}</p>
+                                <p class="text-[9px] text-gray-500 dark:text-gray-400">Total Views</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-video text-[9px] text-purple-500 dark:text-purple-400"></i>
+                            </div>
+                            <div class="leading-tight">
+                                <p class="text-xs font-bold text-gray-800 dark:text-white">${formatCompactNumber(stats.videoCount)}</p>
+                                <p class="text-[9px] text-gray-500 dark:text-gray-400">Videos</p>
+                            </div>
+                        </div>
+                    `;
+                    statsEl.classList.remove('hidden');
                 }
             }
         };
@@ -8660,22 +8691,20 @@
                     card.className = 'bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-4 relative';
                 }
                 card.innerHTML = `
-                    <div id="sub-count-${channel.id}" class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1 hidden">
-                        <!-- Count will be injected here -->
-                    </div>
-                    ${isMonetized ? '<div class="absolute top-3 left-3"><span class="text-lg">💰</span></div>' : ''}
-                    <div class="flex justify-between items-start ${isMonetized ? 'ml-7' : ''}">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full ${isMonetized ? 'bg-yellow-100 dark:bg-yellow-900/30' : 'bg-red-100 dark:bg-red-900/30'} flex items-center justify-center ${isMonetized ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'}">
-                                <i class="fab fa-youtube text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold ${isMonetized ? 'text-yellow-800 dark:text-yellow-200' : 'text-gray-900 dark:text-white'} pr-8">${channel.name}</h3>
-                                <a href="${channel.link}" target="_blank" class="text-xs ${isMonetized ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'} hover:underline flex items-center gap-1">
-                                    Visit Channel <i class="fas fa-external-link-alt"></i>
-                                </a>
-                            </div>
+                    ${isMonetized ? '<div class="absolute top-3 left-3 z-10"><span class="text-lg">💰</span></div>' : ''}
+                    <div class="flex items-start gap-3">
+                        <div id="yt-avatar-${channel.id}" class="w-12 h-12 rounded-full ${isMonetized ? 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-400' : 'bg-red-100 dark:bg-red-900/30 ring-2 ring-red-200 dark:ring-red-800'} flex items-center justify-center ${isMonetized ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'} flex-shrink-0 overflow-hidden">
+                            <i class="fab fa-youtube text-lg"></i>
                         </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-semibold ${isMonetized ? 'text-yellow-800 dark:text-yellow-200' : 'text-gray-900 dark:text-white'} truncate">${channel.name}</h3>
+                            <a href="${channel.link}" target="_blank" class="text-xs ${isMonetized ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'} hover:underline flex items-center gap-1">
+                                ${channel.channelId || ''} <i class="fas fa-external-link-alt text-[9px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="yt-stats-${channel.id}" class="hidden grid grid-cols-3 gap-2 p-2.5 rounded-lg ${isMonetized ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800' : 'bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600'}">
+                        <!-- Stats will be injected by updateChannelStats -->
                     </div>
                     <div class="flex flex-wrap gap-2">
                         ${channel.sourceAdsenseName && currentYtAdsenseTab === 'combined' ? `<span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"><i class="fas fa-folder mr-1"></i> ${channel.sourceAdsenseName}</span>` : ''}
@@ -8804,7 +8833,7 @@
             }
 
             // Start fetching subs
-            updateSubscriberCounts(channels);
+            updateChannelStats(channels);
 
             // Attach listeners to new buttons (re-query needed after innerHTML replacement)
             container.querySelectorAll('.edit-channel-btn').forEach(btn => {
