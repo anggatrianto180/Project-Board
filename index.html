@@ -1478,6 +1478,269 @@
             border-color: #4ade80;
         }
 
+        /* ===== YouTube Mode Tab Bar (Reguler / Live) ===== */
+        .yt-mode-tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .dark .yt-mode-tab-bar {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .yt-mode-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            letter-spacing: -0.01em;
+        }
+        .yt-mode-tab:hover { color: #334155; background: rgba(0,0,0,0.04); }
+        .dark .yt-mode-tab { color: #94a3b8; }
+        .dark .yt-mode-tab:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
+        .yt-mode-tab.active {
+            background: white;
+            color: #0f172a;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .dark .yt-mode-tab.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+        }
+        .yt-mode-tab.active.live-tab {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            box-shadow: 0 4px 16px rgba(220,38,38,0.4);
+        }
+        .dark .yt-mode-tab.active.live-tab {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+        .yt-live-pulse {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            display: inline-block;
+            animation: ytLivePulse 1.4s ease-in-out infinite;
+        }
+        .yt-mode-tab.active.live-tab .yt-live-pulse { background: white; }
+        @keyframes ytLivePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.75); }
+        }
+
+        /* ===== Live Panel Styles ===== */
+        .yt-live-section-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .dark .yt-live-section-card {
+            background: #1e293b;
+            border-color: rgba(255,255,255,0.08);
+        }
+        .yt-live-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dark .yt-live-section-title { color: #f1f5f9; }
+        .yt-live-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+        }
+        .yt-live-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .dark .yt-live-field label { color: #94a3b8; }
+        .yt-live-field input[type="number"],
+        .yt-live-field textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            background: #f8fafc;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            font-family: inherit;
+        }
+        .dark .yt-live-field input[type="number"],
+        .dark .yt-live-field textarea {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+            color: #f1f5f9;
+        }
+        .yt-live-field input[type="number"]:focus,
+        .yt-live-field textarea:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+        }
+        .yt-live-field textarea { resize: vertical; min-height: 100px; }
+        .yt-live-action-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .dark .yt-live-action-bar { border-top-color: rgba(255,255,255,0.08); }
+        .yt-live-btn-generate {
+            display: flex; align-items: center; gap: 8px;
+            padding: 11px 22px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            border: none; border-radius: 10px;
+            font-weight: 700; font-size: 0.875rem;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(220,38,38,0.3);
+            transition: all 0.2s;
+        }
+        .yt-live-btn-generate:hover { box-shadow: 0 6px 20px rgba(220,38,38,0.45); transform: translateY(-1px); }
+        .yt-live-btn-secondary {
+            display: flex; align-items: center; gap: 8px;
+            padding: 11px 18px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1.5px solid #e2e8f0; border-radius: 10px;
+            font-weight: 600; font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dark .yt-live-btn-secondary {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.1);
+            color: #94a3b8;
+        }
+        .yt-live-btn-secondary:hover { background: #e2e8f0; color: #0f172a; }
+        .dark .yt-live-btn-secondary:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+        /* Schedule display */
+        .yt-live-schedule-empty {
+            text-align: center;
+            padding: 48px 24px;
+            color: #94a3b8;
+        }
+        .yt-live-day-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .dark .yt-live-day-card {
+            background: #1e293b;
+            border-color: rgba(255,255,255,0.08);
+        }
+        .yt-live-day-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+        }
+        .yt-live-day-title {
+            font-weight: 700; font-size: 0.95rem; color: #f1f5f9;
+        }
+        .yt-live-day-total {
+            font-size: 0.78rem; font-weight: 600;
+            background: rgba(239,68,68,0.2);
+            color: #fca5a5;
+            padding: 3px 10px; border-radius: 99px;
+            border: 1px solid rgba(239,68,68,0.3);
+        }
+        .yt-live-slots-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .yt-live-slots-table th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .dark .yt-live-slots-table th {
+            background: rgba(255,255,255,0.03);
+            color: #64748b;
+            border-bottom-color: rgba(255,255,255,0.07);
+        }
+        .yt-live-slots-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+        .dark .yt-live-slots-table td {
+            color: #cbd5e1;
+            border-bottom-color: rgba(255,255,255,0.05);
+        }
+        .yt-live-slots-table tr:last-child td { border-bottom: none; }
+        .yt-live-slots-table tr:hover td { background: rgba(239,68,68,0.03); }
+        .yt-slot-badge-public {
+            display: inline-block;
+            padding: 2px 8px; border-radius: 99px;
+            font-size: 0.68rem; font-weight: 700;
+            background: rgba(34,197,94,0.12); color: #16a34a;
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+        .dark .yt-slot-badge-public { color: #4ade80; background: rgba(34,197,94,0.1); }
+        .yt-slot-badge-unlisted {
+            display: inline-block;
+            padding: 2px 8px; border-radius: 99px;
+            font-size: 0.68rem; font-weight: 700;
+            background: rgba(99,102,241,0.1); color: #6366f1;
+            border: 1px solid rgba(99,102,241,0.25);
+        }
+        .dark .yt-slot-badge-unlisted { color: #a5b4fc; background: rgba(99,102,241,0.1); }
+        .yt-live-info-bar {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px;
+            background: rgba(239,68,68,0.05);
+            border: 1px solid rgba(239,68,68,0.12);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 0.8rem; color: #64748b;
+        }
+        .dark .yt-live-info-bar { background: rgba(239,68,68,0.06); color: #94a3b8; }
+        .yt-live-info-bar strong { color: #dc2626; }
+
         /* TikTok Tab System */
         .tt-hp-tab-bar {
             display: flex;
@@ -2560,6 +2823,20 @@
         <!-- YouTube Inventory Section -->
         <div id="youtube-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
 
+            <!-- ===== Mode Tab Bar: Reguler / Live ===== -->
+            <div class="yt-mode-tab-bar">
+                <button id="yt-mode-tab-reguler" class="yt-mode-tab active" onclick="switchYtModeTab('reguler')">
+                    <i class="fas fa-tv"></i> Reguler
+                </button>
+                <button id="yt-mode-tab-live" class="yt-mode-tab live-tab" onclick="switchYtModeTab('live')">
+                    <span class="yt-live-pulse"></span>
+                    <i class="fas fa-broadcast-tower"></i> Live
+                </button>
+            </div>
+
+            <!-- ===== PANEL: REGULER (semua konten lama) ===== -->
+            <div id="yt-reguler-panel">
+
             <!-- Header — paling atas -->
             <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
@@ -2573,6 +2850,7 @@
                     <span>Add New Channel</span>
                 </button>
             </div>
+
 
             <!-- ===== YouTube Project Board (Enhanced) ===== -->
             <div id="yt-project-board-panel"
@@ -2781,6 +3059,100 @@
                     </div>
                 </div>
             </div>
+            </div><!-- /#yt-reguler-panel -->
+
+            <!-- ===== PANEL: LIVE (YouTube Live Schedule Rotator) ===== -->
+            <div id="yt-live-panel" class="hidden">
+
+                <!-- Live Panel Header -->
+                <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+                            <span class="yt-live-pulse" style="width:12px;height:12px;"></span>
+                            YouTube Live Schedule Rotator
+                        </h2>
+                        <p class="text-gray-600 dark:text-gray-300">Kelola rotasi jadwal live musik 24/7 untuk target US &mdash; Zero daily duplicates, WIB&rarr;EST auto-convert.</p>
+                    </div>
+                </div>
+
+                <!-- Config Card -->
+                <div class="yt-live-section-card">
+                    <div class="yt-live-section-title">
+                        <i class="fas fa-sliders-h text-red-500"></i>
+                        Konfigurasi
+                    </div>
+                    <div class="mb-4">
+                        <div class="yt-live-field">
+                            <label for="ytlive-master-videos">Master Video Names <span class="text-red-400">(1 nama per baris)</span></label>
+                            <textarea id="ytlive-master-videos" placeholder="Video 01&#10;Video 02&#10;Video 03&#10;..."></textarea>
+                        </div>
+                    </div>
+                    <div class="yt-live-form-grid">
+                        <div class="yt-live-field">
+                            <label for="ytlive-pub-slots">Public Slots / Hari</label>
+                            <input type="number" id="ytlive-pub-slots" min="1" max="10" value="3">
+                        </div>
+                        <div class="yt-live-field">
+                            <label for="ytlive-unl-slots">Unlisted Slots / Hari</label>
+                            <input type="number" id="ytlive-unl-slots" min="1" max="10" value="3">
+                        </div>
+                        <div class="yt-live-field">
+                            <label for="ytlive-pub-min">Public Min (jam)</label>
+                            <input type="number" id="ytlive-pub-min" min="0.25" max="24" step="0.25" value="2">
+                        </div>
+                        <div class="yt-live-field">
+                            <label for="ytlive-pub-max">Public Max (jam)</label>
+                            <input type="number" id="ytlive-pub-max" min="0.25" max="24" step="0.25" value="4">
+                        </div>
+                        <div class="yt-live-field">
+                            <label for="ytlive-unl-min">Unlisted Min (jam)</label>
+                            <input type="number" id="ytlive-unl-min" min="0.25" max="24" step="0.25" value="12">
+                        </div>
+                        <div class="yt-live-field">
+                            <label for="ytlive-unl-max">Unlisted Max (jam)</label>
+                            <input type="number" id="ytlive-unl-max" min="0.25" max="24" step="0.25" value="16">
+                        </div>
+                        <div class="yt-live-field">
+                            <label for="ytlive-days">Jumlah Hari</label>
+                            <input type="number" id="ytlive-days" min="1" max="90" value="7">
+                        </div>
+                    </div>
+                    <div class="yt-live-action-bar">
+                        <button id="ytlive-generate-btn" class="yt-live-btn-generate">
+                            <i class="fas fa-magic"></i> Generate Schedule
+                        </button>
+                        <button id="ytlive-download-btn" class="yt-live-btn-secondary">
+                            <i class="fas fa-download"></i> Download Backup (.JSON)
+                        </button>
+                        <button id="ytlive-import-trigger" class="yt-live-btn-secondary">
+                            <i class="fas fa-upload"></i> Import Backup (.JSON)
+                        </button>
+                        <input type="file" id="ytlive-import-input" accept=".json" class="hidden">
+                    </div>
+                </div>
+
+                <!-- Schedule Display -->
+                <div class="yt-live-section-card">
+                    <div class="yt-live-section-title">
+                        <i class="fas fa-calendar-alt text-red-500"></i>
+                        Jadwal Aktif
+                    </div>
+                    <div id="ytlive-info-bar" class="yt-live-info-bar hidden">
+                        <i class="fas fa-clock text-red-400"></i>
+                        Terakhir di-generate: <strong id="ytlive-last-generated">-</strong>
+                        &nbsp;&middot;&nbsp;
+                        <span id="ytlive-day-count-info"></span>
+                    </div>
+                    <div id="ytlive-schedule-container">
+                        <div class="yt-live-schedule-empty">
+                            <i class="fas fa-broadcast-tower text-4xl mb-4 block text-gray-300 dark:text-gray-600"></i>
+                            <p class="font-semibold text-gray-400 dark:text-gray-500">Belum ada jadwal tersimpan.</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-600 mt-1">Isi konfigurasi di atas lalu klik <strong>Generate Schedule</strong> untuk memulai.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /#yt-live-panel -->
         </div>
 
 
@@ -9667,6 +10039,456 @@
 
         // Init YouTube with Adsense Tabs
         initYtAdsenseTabs();
+
+        // ============================================================
+        // YOUTUBE LIVE SCHEDULE ROTATOR — Full Implementation
+        // ============================================================
+
+        // --- Firestore References ---
+        const YT_LIVE_CONFIG_REF = doc(db, 'yt_live_rotator', 'configuration');
+        const YT_LIVE_SCHEDULE_REF = doc(db, 'yt_live_rotator', 'active_schedule');
+
+        // --- State ---
+        let ytLiveConfig = null;
+        let ytLiveScheduleData = null;
+        let currentYtModeTab = 'reguler';
+
+        // --- Tab Switch ---
+        window.switchYtModeTab = (tab) => {
+            currentYtModeTab = tab;
+            const regulerPanel = document.getElementById('yt-reguler-panel');
+            const livePanel = document.getElementById('yt-live-panel');
+            const tabReguler = document.getElementById('yt-mode-tab-reguler');
+            const tabLive = document.getElementById('yt-mode-tab-live');
+            if (!regulerPanel || !livePanel) return;
+
+            if (tab === 'live') {
+                regulerPanel.classList.add('hidden');
+                livePanel.classList.remove('hidden');
+                tabReguler.classList.remove('active');
+                tabLive.classList.add('active');
+                // Load data when switching to Live tab
+                loadYtLiveData();
+            } else {
+                livePanel.classList.add('hidden');
+                regulerPanel.classList.remove('hidden');
+                tabLive.classList.remove('active');
+                tabReguler.classList.add('active');
+            }
+        };
+
+        // --- Populate form from config ---
+        const populateYtLiveForm = (cfg) => {
+            if (!cfg) return;
+            const el = (id) => document.getElementById(id);
+            if (cfg.masterVideos && Array.isArray(cfg.masterVideos)) {
+                el('ytlive-master-videos').value = cfg.masterVideos.join('\n');
+            }
+            if (cfg.publicSlotsCount != null) el('ytlive-pub-slots').value = cfg.publicSlotsCount;
+            if (cfg.unlistedSlotsCount != null) el('ytlive-unl-slots').value = cfg.unlistedSlotsCount;
+            if (cfg.pubMinHours != null) el('ytlive-pub-min').value = cfg.pubMinHours;
+            if (cfg.pubMaxHours != null) el('ytlive-pub-max').value = cfg.pubMaxHours;
+            if (cfg.unlistedMinHours != null) el('ytlive-unl-min').value = cfg.unlistedMinHours;
+            if (cfg.unlistedMaxHours != null) el('ytlive-unl-max').value = cfg.unlistedMaxHours;
+            if (cfg.daysToGenerate != null) el('ytlive-days').value = cfg.daysToGenerate;
+        };
+
+        // --- Load from Firestore (on tab open, no auto-generate) ---
+        const loadYtLiveData = async () => {
+            try {
+                // Load config
+                const cfgSnap = await getDoc(YT_LIVE_CONFIG_REF);
+                if (cfgSnap.exists()) {
+                    ytLiveConfig = cfgSnap.data();
+                    populateYtLiveForm(ytLiveConfig);
+                }
+                // Load schedule (locked — do NOT regenerate)
+                const schSnap = await getDoc(YT_LIVE_SCHEDULE_REF);
+                if (schSnap.exists()) {
+                    const data = schSnap.data();
+                    ytLiveScheduleData = data.schedule || [];
+                    renderYtLiveSchedule(ytLiveScheduleData, data.lastGenerated);
+                }
+            } catch (err) {
+                console.error('YT Live: failed to load data', err);
+            }
+        };
+
+        // --- Read config from form ---
+        const readYtLiveFormConfig = () => {
+            const el = (id) => document.getElementById(id);
+            const rawVideos = el('ytlive-master-videos').value.trim();
+            const masterVideos = rawVideos.split('\n').map(v => v.trim()).filter(v => v.length > 0);
+            return {
+                masterVideos,
+                publicSlotsCount: parseInt(el('ytlive-pub-slots').value) || 3,
+                unlistedSlotsCount: parseInt(el('ytlive-unl-slots').value) || 3,
+                pubMinHours: parseFloat(el('ytlive-pub-min').value) || 2,
+                pubMaxHours: parseFloat(el('ytlive-pub-max').value) || 4,
+                unlistedMinHours: parseFloat(el('ytlive-unl-min').value) || 12,
+                unlistedMaxHours: parseFloat(el('ytlive-unl-max').value) || 16,
+                daysToGenerate: parseInt(el('ytlive-days').value) || 7,
+            };
+        };
+
+        // --- Random duration (kelipatan 15 menit) ---
+        const randomDuration15 = (minH, maxH) => {
+            const minQ = Math.round(minH * 4);  // quarters
+            const maxQ = Math.round(maxH * 4);
+            const q = minQ + Math.floor(Math.random() * (maxQ - minQ + 1));
+            return q / 4; // decimal hours
+        };
+
+        // --- Format decimal hours to "X Jam Y Mnt" ---
+        const fmtHours = (dec) => {
+            const h = Math.floor(dec);
+            const m = Math.round((dec - h) * 60);
+            if (m === 0) return `${h} Jam`;
+            return `${h} Jam ${m} Mnt`;
+        };
+
+        // --- Add decimal hours to HH:MM string, return HH:MM ---
+        const addHoursToTime = (timeStr, hours) => {
+            const [hh, mm] = timeStr.split(':').map(Number);
+            const totalMin = hh * 60 + mm + Math.round(hours * 60);
+            const newH = Math.floor(totalMin / 60) % 24;
+            const newM = totalMin % 60;
+            return `${String(newH).padStart(2,'0')}:${String(newM).padStart(2,'0')}`;
+        };
+
+        // --- Convert WIB HH:MM to EST HH:MM ---
+        const wibToEst = (timeStr) => {
+            const [hh, mm] = timeStr.split(':').map(Number);
+            let estH = hh - 12;
+            if (estH < 0) estH += 24;
+            return `${String(estH).padStart(2,'0')}:${String(mm).padStart(2,'0')} EST`;
+        };
+
+        // --- Core Algorithm: Generate Schedule ---
+        const generateYtLiveScheduleData = (cfg) => {
+            const {
+                masterVideos, publicSlotsCount, unlistedSlotsCount,
+                pubMinHours, pubMaxHours, unlistedMinHours, unlistedMaxHours, daysToGenerate
+            } = cfg;
+
+            if (!masterVideos || masterVideos.length === 0) {
+                showNotification('Tambahkan minimal 1 video master terlebih dahulu.', true);
+                return null;
+            }
+
+            // Anchor times (WIB)
+            const pubAnchors = ['17:30', '19:00', '20:30'];
+            const unlistedAnchors = ['00:00', '04:00', '16:00'];
+
+            const totalSlotsPerDay = publicSlotsCount + unlistedSlotsCount;
+            const totalVideos = masterVideos.length;
+            const schedule = [];
+
+            // Day names in Indonesian (WIB locale)
+            const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+            // Start from today (WIB)
+            const todayWIB = new Date();
+            // Normalize to midnight WIB
+            todayWIB.setHours(0, 0, 0, 0);
+
+            for (let d = 0; d < daysToGenerate; d++) {
+                const slots = [];
+                let totalHours = 0;
+
+                // Compute actual date for this day
+                const dayDate = new Date(todayWIB);
+                dayDate.setDate(todayWIB.getDate() + d);
+
+                const dayOfWeek = namaHari[dayDate.getDay()];
+                const tanggal = dayDate.getDate();
+                const bulan = namaBulan[dayDate.getMonth()];
+                const tahun = dayDate.getFullYear();
+                // ISO date string YYYY-MM-DD for sorting/comparison
+                const isoDate = `${tahun}-${String(dayDate.getMonth()+1).padStart(2,'0')}-${String(tanggal).padStart(2,'0')}`;
+                const dateLabel = `${dayOfWeek}, ${tanggal} ${namaBulan[dayDate.getMonth()]} ${tahun}`;
+
+                // Round-Robin offset for zero daily duplicates
+                const dayOffset = (d * totalSlotsPerDay) % totalVideos;
+
+                // Build today's video list (no duplicates within same day)
+                const todayVideos = [];
+                for (let s = 0; s < totalSlotsPerDay; s++) {
+                    todayVideos.push(masterVideos[(dayOffset + s) % totalVideos]);
+                }
+
+                // Public slots
+                for (let p = 0; p < publicSlotsCount; p++) {
+                    const anchor = pubAnchors[p % pubAnchors.length];
+                    const dur = randomDuration15(pubMinHours, pubMaxHours);
+                    const endWib = addHoursToTime(anchor, dur);
+                    totalHours += dur;
+                    slots.push({
+                        slotNumber: p + 1,
+                        videoName: todayVideos[p],
+                        isPublic: true,
+                        startTimeWIB: anchor + ' WIB',
+                        endTimeWIB: endWib + ' WIB',
+                        startTimeEST: wibToEst(anchor),
+                        endTimeEST: wibToEst(endWib),
+                        durationText: fmtHours(dur),
+                        durationDecimal: dur
+                    });
+                }
+
+                // Unlisted slots
+                for (let u = 0; u < unlistedSlotsCount; u++) {
+                    const anchor = unlistedAnchors[u % unlistedAnchors.length];
+                    const dur = randomDuration15(unlistedMinHours, unlistedMaxHours);
+                    const endWib = addHoursToTime(anchor, dur);
+                    totalHours += dur;
+                    slots.push({
+                        slotNumber: publicSlotsCount + u + 1,
+                        videoName: todayVideos[publicSlotsCount + u],
+                        isPublic: false,
+                        startTimeWIB: anchor + ' WIB',
+                        endTimeWIB: endWib + ' WIB',
+                        startTimeEST: wibToEst(anchor),
+                        endTimeEST: wibToEst(endWib),
+                        durationText: fmtHours(dur),
+                        durationDecimal: dur
+                    });
+                }
+
+                // Sort slots pagi → malam by startTimeWIB
+                slots.sort((a, b) => {
+                    const toMin = (t) => {
+                        const clean = t.replace(' WIB', '').trim();
+                        const [h, m] = clean.split(':').map(Number);
+                        return h * 60 + m;
+                    };
+                    return toMin(a.startTimeWIB) - toMin(b.startTimeWIB);
+                });
+
+                // Re-number slots after sorting
+                slots.forEach((slot, idx) => { slot.slotNumber = idx + 1; });
+
+                schedule.push({
+                    dayNumber: d + 1,
+                    dateLabel,
+                    isoDate,
+                    dayOfWeek,
+                    totalHoursDecimal: Math.round(totalHours * 100) / 100,
+                    slots
+                });
+
+            }
+            return schedule;
+        };
+
+        // --- Save to Firestore ---
+        const saveYtLiveToFirebase = async (scheduleData, cfg) => {
+            try {
+                await setDoc(YT_LIVE_CONFIG_REF, { ...cfg, updatedAt: new Date() });
+                const lastGenerated = new Date().toLocaleString('id-ID', {
+                    day: '2-digit', month: 'long', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+                await setDoc(YT_LIVE_SCHEDULE_REF, { lastGenerated, schedule: scheduleData });
+                return lastGenerated;
+            } catch (err) {
+                console.error('YT Live: failed to save', err);
+                showNotification('Gagal menyimpan ke Firebase.', true);
+                return null;
+            }
+        };
+
+        // --- Render Schedule ---
+        const renderYtLiveSchedule = (scheduleData, lastGenerated) => {
+            const container = document.getElementById('ytlive-schedule-container');
+            const infoBar = document.getElementById('ytlive-info-bar');
+            const lastGenEl = document.getElementById('ytlive-last-generated');
+            const dayCountEl = document.getElementById('ytlive-day-count-info');
+            if (!container) return;
+
+            if (!scheduleData || scheduleData.length === 0) {
+                container.innerHTML = `
+                    <div class="yt-live-schedule-empty">
+                        <i class="fas fa-broadcast-tower text-4xl mb-4 block text-gray-300 dark:text-gray-600"></i>
+                        <p class="font-semibold text-gray-400 dark:text-gray-500">Belum ada jadwal tersimpan.</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-600 mt-1">Isi konfigurasi di atas lalu klik <strong>Generate Schedule</strong> untuk memulai.</p>
+                    </div>`;
+                if (infoBar) infoBar.classList.add('hidden');
+                return;
+            }
+
+            if (infoBar) infoBar.classList.remove('hidden');
+            if (lastGenEl && lastGenerated) lastGenEl.textContent = lastGenerated;
+            if (dayCountEl) dayCountEl.textContent = `${scheduleData.length} hari direncanakan`;
+
+            // Get today's ISO date (WIB) for comparison
+            const nowWIB = new Date();
+            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth()+1).padStart(2,'0')}-${String(nowWIB.getDate()).padStart(2,'0')}`;
+
+            // Sort: today first, then ascending
+            const sorted = [...scheduleData].sort((a, b) => {
+                const aISO = a.isoDate || '';
+                const bISO = b.isoDate || '';
+                if (aISO === todayISO) return -1;
+                if (bISO === todayISO) return 1;
+                return aISO.localeCompare(bISO);
+            });
+
+            // Indonesian day name fallback (for old data without dateLabel)
+            const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+            let html = '';
+            sorted.forEach(day => {
+                const isToday = day.isoDate === todayISO;
+
+                // Build display label
+                let headerLabel = '';
+                if (day.dateLabel) {
+                    headerLabel = day.dateLabel;
+                } else if (day.isoDate) {
+                    // Reconstruct from isoDate
+                    const dt = new Date(day.isoDate + 'T00:00:00');
+                    headerLabel = `${namaHari[dt.getDay()]}, ${dt.getDate()} ${namaBulan[dt.getMonth()]} ${dt.getFullYear()}`;
+                } else {
+                    // Legacy fallback
+                    headerLabel = `Hari ${day.dayNumber}`;
+                }
+
+                const todayBadge = isToday
+                    ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);border-radius:99px;font-size:0.7rem;font-weight:700;margin-left:10px;"><span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;display:inline-block;animation:ytLivePulse 1.4s infinite;"></span>HARI INI</span>`
+                    : '';
+
+                const cardBorder = isToday
+                    ? 'border: 2px solid rgba(251,191,36,0.5); box-shadow: 0 0 20px rgba(251,191,36,0.1);'
+                    : '';
+
+                const slotsHtml = day.slots.map(slot => `
+                    <tr>
+                        <td class="font-semibold">#${slot.slotNumber}</td>
+                        <td>${slot.videoName}</td>
+                        <td><span class="${slot.isPublic ? 'yt-slot-badge-public' : 'yt-slot-badge-unlisted'}">${slot.isPublic ? 'Public' : 'Unlisted'}</span></td>
+                        <td class="font-mono">${slot.startTimeWIB}</td>
+                        <td class="font-mono">${slot.endTimeWIB}</td>
+                        <td class="font-mono" style="color:#94a3b8;">${slot.startTimeEST}</td>
+                        <td class="font-mono" style="color:#94a3b8;">${slot.endTimeEST}</td>
+                        <td>${slot.durationText}</td>
+                    </tr>`).join('');
+
+                html += `
+                    <div class="yt-live-day-card" style="${cardBorder}">
+                        <div class="yt-live-day-header" style="${isToday ? 'background:linear-gradient(135deg,#1e3a5f,#1e293b);' : ''}">
+                            <span class="yt-live-day-title"><i class="fas fa-calendar-day mr-2"></i>${headerLabel}${todayBadge}</span>
+                            <span class="yt-live-day-total"><i class="fas fa-clock mr-1"></i>Total: ${fmtHours(day.totalHoursDecimal)}</span>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="yt-live-slots-table">
+                                <thead>
+                                    <tr>
+                                        <th>Slot</th>
+                                        <th>Video</th>
+                                        <th>Tipe</th>
+                                        <th>Mulai WIB</th>
+                                        <th>Selesai WIB</th>
+                                        <th>Mulai EST</th>
+                                        <th>Selesai EST</th>
+                                        <th>Durasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${slotsHtml}</tbody>
+                            </table>
+                        </div>
+                    </div>`;
+            });
+            container.innerHTML = html;
+        };
+
+        // --- Download Backup ---
+        const downloadYtLiveBackup = () => {
+            const cfg = readYtLiveFormConfig();
+            const payload = { config: cfg, schedule: ytLiveScheduleData, exportedAt: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `yt-live-backup-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Backup berhasil diunduh!');
+        };
+
+        // --- Import Backup ---
+        const importYtLiveBackup = async (file) => {
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                if (!data.config || !data.schedule) throw new Error('Format JSON tidak valid.');
+                const confirmed = await showConfirmModal('Import backup? Jadwal aktif di Firebase akan ditimpa dengan data dari file ini.');
+                if (!confirmed) return;
+                populateYtLiveForm(data.config);
+                ytLiveScheduleData = data.schedule;
+                const lastGen = await saveYtLiveToFirebase(data.schedule, data.config);
+                renderYtLiveSchedule(data.schedule, lastGen || data.exportedAt || '-');
+                showNotification('Backup berhasil diimpor dan disinkronkan ke Firebase!');
+            } catch (err) {
+                console.error('YT Live import error:', err);
+                showNotification('Gagal import: ' + err.message, true);
+            }
+        };
+
+        // --- Wire Live Tab Event Listeners ---
+        const initYtLiveTab = () => {
+            // Generate button
+            const genBtn = document.getElementById('ytlive-generate-btn');
+            if (genBtn) {
+                genBtn.addEventListener('click', async () => {
+                    const confirmed = await showConfirmModal('Generate jadwal baru? Jadwal aktif yang ada di Firebase akan ditimpa. Lanjutkan?');
+                    if (!confirmed) return;
+                    const cfg = readYtLiveFormConfig();
+                    if (cfg.masterVideos.length === 0) {
+                        showNotification('Tambahkan setidaknya 1 nama video master.', true);
+                        return;
+                    }
+                    genBtn.disabled = true;
+                    genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                    try {
+                        const schedule = generateYtLiveScheduleData(cfg);
+                        if (!schedule) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule'; return; }
+                        ytLiveScheduleData = schedule;
+                        const lastGen = await saveYtLiveToFirebase(schedule, cfg);
+                        renderYtLiveSchedule(schedule, lastGen);
+                        showNotification('Jadwal berhasil di-generate dan disimpan ke Firebase!');
+                    } catch (err) {
+                        console.error('YT Live generate error:', err);
+                        showNotification('Terjadi kesalahan saat generate.', true);
+                    } finally {
+                        genBtn.disabled = false;
+                        genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule';
+                    }
+                });
+            }
+
+            // Download backup
+            const dlBtn = document.getElementById('ytlive-download-btn');
+            if (dlBtn) dlBtn.addEventListener('click', downloadYtLiveBackup);
+
+            // Import trigger
+            const importTrigger = document.getElementById('ytlive-import-trigger');
+            const importInput = document.getElementById('ytlive-import-input');
+            if (importTrigger && importInput) {
+                importTrigger.addEventListener('click', () => importInput.click());
+                importInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file) await importYtLiveBackup(file);
+                    e.target.value = '';
+                });
+            }
+        };
+
+        // Initialize Live Tab
+        initYtLiveTab();
+
 
         document.getElementById('personal-mode-btn').addEventListener('click', () => switchMode('personal'));
         document.getElementById('working-mode-btn').addEventListener('click', () => switchMode('working'));
