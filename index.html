@@ -10170,16 +10170,61 @@
                     ytLiveConfig = cfgSnap.data();
                     populateYtLiveForm(ytLiveConfig);
                 }
-                // Load schedule (locked — do NOT regenerate)
+                // Load schedule — auto-rotate past days before rendering
                 const schSnap = await getDoc(YT_LIVE_SCHEDULE_REF);
                 if (schSnap.exists()) {
                     const data = schSnap.data();
                     ytLiveScheduleData = data.schedule || [];
-                    renderYtLiveSchedule(ytLiveScheduleData, data.lastGenerated, data.checkedSlots || {});
+                    let checkedSlots = data.checkedSlots || {};
+                    // Rotate any past-dated days forward +7 days
+                    const rotated = rotatePastDays(ytLiveScheduleData, checkedSlots);
+                    if (rotated.changed) {
+                        ytLiveScheduleData = rotated.schedule;
+                        checkedSlots = rotated.checkedSlots;
+                        // Persist rotated schedule silently
+                        await setDoc(YT_LIVE_SCHEDULE_REF, {
+                            lastGenerated: data.lastGenerated,
+                            schedule: ytLiveScheduleData,
+                            checkedSlots
+                        });
+                    }
+                    renderYtLiveSchedule(ytLiveScheduleData, data.lastGenerated, checkedSlots);
                 }
             } catch (err) {
                 console.error('YT Live: failed to load data', err);
             }
+        };
+
+        // --- Auto-rotate: shift past-dated days forward by +7 days ---
+        const rotatePastDays = (scheduleData, checkedSlots) => {
+            const nowWIB = new Date();
+            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth()+1).padStart(2,'0')}-${String(nowWIB.getDate()).padStart(2,'0')}`;
+            const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+            const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            let changed = false;
+            const newCheckedSlots = { ...checkedSlots };
+            const newSchedule = scheduleData.map(day => {
+                if (!day.isoDate || day.isoDate >= todayISO) return day;
+                // This day has passed — roll forward +7 days
+                changed = true;
+                // Remove old checked-slot keys for this day
+                Object.keys(newCheckedSlots).forEach(k => {
+                    if (k.startsWith(day.isoDate + '_')) delete newCheckedSlots[k];
+                });
+                // Compute new date (+7)
+                const [y, mo, d] = day.isoDate.split('-').map(Number);
+                const newDate = new Date(y, mo - 1, d);
+                newDate.setDate(newDate.getDate() + 7);
+                const newISO = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,'0')}-${String(newDate.getDate()).padStart(2,'0')}`;
+                const newLabel = `${namaHari[newDate.getDay()]}, ${newDate.getDate()} ${namaBulan[newDate.getMonth()]} ${newDate.getFullYear()}`;
+                return {
+                    ...day,
+                    isoDate: newISO,
+                    dateLabel: newLabel,
+                    dayOfWeek: namaHari[newDate.getDay()]
+                };
+            });
+            return { schedule: newSchedule, checkedSlots: newCheckedSlots, changed };
         };
 
         // --- Read config from form ---
@@ -10430,7 +10475,7 @@
             const nowWIB = new Date();
             const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth()+1).padStart(2,'0')}-${String(nowWIB.getDate()).padStart(2,'0')}`;
 
-            // Sort: today first, then ascending
+            // Sort: today first, then ascending (past days are already rotated away)
             const sorted = [...scheduleData].sort((a, b) => {
                 const aISO = a.isoDate || '';
                 const bISO = b.isoDate || '';
