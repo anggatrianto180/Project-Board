@@ -50,6 +50,26 @@ const ytChannelCollectionName = (tabId) => {
     return `youtube_channels_adsense_${idNum}`;
 };
 
+// --- Build live schedule section for a given day ---
+function buildLiveSection(dayData, checkedSlots, label, emoji) {
+    if (!dayData) return null;
+    const slots = dayData.slots || [];
+    if (slots.length === 0) return null;
+
+    const lines = [];
+    for (const slot of slots) {
+        const key = `${dayData.isoDate}_${slot.slotNumber}`;
+        const isDone = checkedSlots && checkedSlots[key];
+        const typeLabel = slot.isPublic ? '🔴 Public' : '🔒 Unlisted';
+        const check = isDone ? '✅' : '⬜';
+        lines.push(`  ${check} ${typeLabel} | ${slot.startTimeWIB} → ${slot.endTimeWIB} | *${slot.videoName}* (${slot.durationText})`);
+    }
+
+    const totalHours = dayData.totalHoursDecimal ? `${dayData.totalHoursDecimal} jam total` : '';
+    const header = `${emoji} *LIVE ${label} — ${dayData.dateLabel}*${totalHours ? ` _(${totalHours})_` : ''}`;
+    return `${header}\n${lines.join('\n')}`;
+}
+
 async function main() {
     try {
         if (FIREBASE_EMAIL && FIREBASE_PASSWORD) {
@@ -96,6 +116,9 @@ async function main() {
 
         console.log(`Checking schedules — Hari ini: ${todayStr}, Besok: ${tomorrowStr}`);
 
+        // ====================================================
+        // SECTION 1: Jadwal Upload YouTube
+        // ====================================================
         let todayMessages = [];
         let tomorrowMessages = [];
 
@@ -135,24 +158,73 @@ async function main() {
             });
         }
 
-        // Build final message
-        let sections = [];
-
+        // Build upload sections
+        let uploadSections = [];
         if (todayMessages.length > 0) {
-            sections.push(`📌 *HARI INI — ${todayLabel}*\n${todayMessages.join('\n')}`);
+            uploadSections.push(`📌 *HARI INI — ${todayLabel}*\n${todayMessages.join('\n')}`);
         }
         if (tomorrowMessages.length > 0) {
-            sections.push(`⏰ *BESOK — ${tomorrowLabel}*\n${tomorrowMessages.join('\n')}`);
+            uploadSections.push(`⏰ *BESOK — ${tomorrowLabel}*\n${tomorrowMessages.join('\n')}`);
         }
 
-        if (sections.length > 0) {
-            const finalMessage = `🔔 *Jadwal Upload YouTube*\n\n${sections.join('\n\n')}`;
-            console.log("Sending notifications...");
-            await sendTelegramMessage(finalMessage);
-            console.log("Notifications sent successfully.");
-        } else {
-            console.log("No pending uploads for today or tomorrow in combined adsense channels.");
+        // ====================================================
+        // SECTION 2: Jadwal Live YouTube
+        // ====================================================
+        console.log("Fetching YouTube Live schedule...");
+        let liveSections = [];
+
+        try {
+            const liveSnap = await getDoc(doc(db, 'yt_live_rotator', 'active_schedule'));
+            if (liveSnap.exists()) {
+                const liveData = liveSnap.data();
+                const schedule = liveData.schedule || [];
+                const checkedSlots = liveData.checkedSlots || {};
+
+                // Find today's and tomorrow's day entries
+                const todayDay = schedule.find(day => day.isoDate === todayStr);
+                const tomorrowDay = schedule.find(day => day.isoDate === tomorrowStr);
+
+                const todayLiveSection = buildLiveSection(todayDay, checkedSlots, 'HARI INI', '📌');
+                const tomorrowLiveSection = buildLiveSection(tomorrowDay, checkedSlots, 'BESOK', '⏰');
+
+                if (todayLiveSection) liveSections.push(todayLiveSection);
+                if (tomorrowLiveSection) liveSections.push(tomorrowLiveSection);
+            } else {
+                console.log("No live schedule found in Firestore.");
+            }
+        } catch (liveErr) {
+            console.warn("Could not fetch live schedule:", liveErr.message);
         }
+
+        // ====================================================
+        // Combine into ONE message
+        // ====================================================
+        const hasUpload = uploadSections.length > 0;
+        const hasLive = liveSections.length > 0;
+
+        if (!hasUpload && !hasLive) {
+            console.log("No pending uploads or live slots for today or tomorrow.");
+            process.exit(0);
+            return;
+        }
+
+        let messageParts = [];
+
+        // --- Upload block ---
+        if (hasUpload) {
+            messageParts.push(`📹 *Jadwal Upload YouTube*\n\n${uploadSections.join('\n\n')}`);
+        }
+
+        // --- Live block ---
+        if (hasLive) {
+            messageParts.push(`📡 *Jadwal Live YouTube*\n\n${liveSections.join('\n\n')}`);
+        }
+
+        const finalMessage = messageParts.join('\n\n━━━━━━━━━━━━━━━━\n\n');
+
+        console.log("Sending combined notification...");
+        await sendTelegramMessage(finalMessage);
+        console.log("Notification sent successfully.");
 
         process.exit(0);
     } catch (error) {
