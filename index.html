@@ -3150,9 +3150,31 @@
                         Konfigurasi
                     </div>
                     <div class="mb-4">
-                        <div class="yt-live-field">
-                            <label for="ytlive-master-videos">Master Video Names <span class="text-red-400">(1 nama per baris)</span></label>
-                            <textarea id="ytlive-master-videos" placeholder="Video 01&#10;Video 02&#10;Video 03&#10;..."></textarea>
+                        <!-- Master Video Names: structured per-video with stream keys -->
+                        <div class="yt-live-field" style="margin-bottom:0;">
+                            <label style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+                                <span>Master Video Names <span class="text-red-400" style="font-weight:500;">(nama video + stream key public &amp; unlisted)</span></span>
+                                <button type="button" id="ytlive-add-video-btn" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.25)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'">
+                                    <i class="fas fa-plus"></i> Tambah Video
+                                </button>
+                            </label>
+                        </div>
+                        <!-- Table header for master video rows -->
+                        <div id="ytlive-video-list-wrap" style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;background:rgba(15,23,42,0.4);">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:0;background:rgba(30,41,59,0.8);border-bottom:1px solid rgba(255,255,255,0.08);padding:7px 12px;">
+                                <span style="font-size:0.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;">Nama Video</span>
+                                <span style="font-size:0.7rem;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i class="fas fa-globe" style="margin-right:4px;"></i>Stream Key Public</span>
+                                <span style="font-size:0.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i class="fas fa-eye-slash" style="margin-right:4px;"></i>Stream Key Unlisted</span>
+                                <span></span>
+                            </div>
+                            <div id="ytlive-video-rows" style="max-height:320px;overflow-y:auto;"></div>
+                        </div>
+                        <!-- Footer: info + save button -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:10px;flex-wrap:wrap;">
+                            <p style="font-size:0.68rem;color:#64748b;margin:0;"><i class="fas fa-info-circle" style="margin-right:4px;"></i>Stream key akan otomatis muncul di kolom jadwal sesuai tipe slot (Public/Unlisted).</p>
+                            <button type="button" id="ytlive-save-streamkeys-btn" style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:linear-gradient(135deg,#16a34a,#15803d);border:1px solid rgba(34,197,94,0.4);color:#fff;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='brightness(1)'">
+                                <i class="fas fa-save"></i> Simpan Stream Keys
+                            </button>
                         </div>
                     </div>
                     <div class="yt-live-form-grid">
@@ -10145,12 +10167,67 @@
             }
         };
 
+        // --- Master Video Row Builder ---
+        const ytliveMakeVideoRow = (name = '', pubKey = '', unlKey = '', idx) => {
+            const row = document.createElement('div');
+            row.className = 'ytlive-video-row';
+            row.dataset.idx = idx;
+            row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:center;';
+            const inputStyle = 'width:100%;background:transparent;border:none;border-right:1px solid rgba(255,255,255,0.05);outline:none;color:#e2e8f0;font-size:0.78rem;padding:8px 10px;font-family:inherit;';
+            row.innerHTML = `
+                <input type="text" class="ytlive-vid-name" placeholder="Nama Video" value="${escHtml(name)}" style="${inputStyle}">
+                <input type="text" class="ytlive-vid-pubkey" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" value="${escHtml(pubKey)}" style="${inputStyle}font-family:monospace;color:#93c5fd;" title="Stream Key untuk slot Public">
+                <input type="text" class="ytlive-vid-unlkey" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" value="${escHtml(unlKey)}" style="${inputStyle}font-family:monospace;color:#c4b5fd;border-right:none;" title="Stream Key untuk slot Unlisted">
+                <button type="button" onclick="ytliveRemoveVideoRow(this)" style="display:flex;align-items:center;justify-content:center;width:36px;height:100%;background:transparent;border:none;color:#475569;cursor:pointer;font-size:0.85rem;transition:color 0.15s;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#475569'" title="Hapus">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            return row;
+        };
+
+        window.ytliveRemoveVideoRow = (btn) => {
+            btn.closest('.ytlive-video-row').remove();
+        };
+
+        const escHtml = (str) => String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+        const ytliveReadVideoRows = () => {
+            const rows = document.querySelectorAll('#ytlive-video-rows .ytlive-video-row');
+            const result = [];
+            rows.forEach(row => {
+                const name = row.querySelector('.ytlive-vid-name')?.value.trim() || '';
+                const pubKey = row.querySelector('.ytlive-vid-pubkey')?.value.trim() || '';
+                const unlKey = row.querySelector('.ytlive-vid-unlkey')?.value.trim() || '';
+                if (name) result.push({ name, pubKey, unlKey });
+            });
+            return result;
+        };
+
+        const ytlivePopulateVideoRows = (masterVideos) => {
+            const container = document.getElementById('ytlive-video-rows');
+            if (!container) return;
+            container.innerHTML = '';
+            if (!masterVideos || masterVideos.length === 0) {
+                // Add 1 empty row by default
+                container.appendChild(ytliveMakeVideoRow('', '', '', 0));
+                return;
+            }
+            masterVideos.forEach((v, i) => {
+                // Support both old format (string) and new format (object)
+                if (typeof v === 'string') {
+                    container.appendChild(ytliveMakeVideoRow(v, '', '', i));
+                } else {
+                    container.appendChild(ytliveMakeVideoRow(v.name || '', v.pubKey || '', v.unlKey || '', i));
+                }
+            });
+        };
+
         // --- Populate form from config ---
         const populateYtLiveForm = (cfg) => {
             if (!cfg) return;
             const el = (id) => document.getElementById(id);
             if (cfg.masterVideos && Array.isArray(cfg.masterVideos)) {
-                el('ytlive-master-videos').value = cfg.masterVideos.join('\n');
+                ytlivePopulateVideoRows(cfg.masterVideos);
             }
             if (cfg.publicSlotsCount != null) el('ytlive-pub-slots').value = cfg.publicSlotsCount;
             if (cfg.unlistedSlotsCount != null) el('ytlive-unl-slots').value = cfg.unlistedSlotsCount;
@@ -10230,8 +10307,7 @@
         // --- Read config from form ---
         const readYtLiveFormConfig = () => {
             const el = (id) => document.getElementById(id);
-            const rawVideos = el('ytlive-master-videos').value.trim();
-            const masterVideos = rawVideos.split('\n').map(v => v.trim()).filter(v => v.length > 0);
+            const masterVideos = ytliveReadVideoRows(); // array of {name, pubKey, unlKey}
             return {
                 masterVideos,
                 publicSlotsCount: parseInt(el('ytlive-pub-slots').value) || 3,
@@ -10306,6 +10382,11 @@
             // Normalize to midnight WIB
             todayWIB.setHours(0, 0, 0, 0);
 
+            // Helper: get name/key from video entry (supports both string & object)
+            const getVideoName = (v) => (typeof v === 'string' ? v : (v.name || ''));
+            const getVideoPubKey = (v) => (typeof v === 'string' ? '' : (v.pubKey || ''));
+            const getVideoUnlKey = (v) => (typeof v === 'string' ? '' : (v.unlKey || ''));
+
             for (let d = 0; d < daysToGenerate; d++) {
                 const slots = [];
                 let totalHours = 0;
@@ -10337,9 +10418,11 @@
                     const dur = randomDuration15(pubMinHours, pubMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
+                    const vid = todayVideos[p];
                     slots.push({
                         slotNumber: p + 1,
-                        videoName: todayVideos[p],
+                        videoName: getVideoName(vid),
+                        streamKey: getVideoPubKey(vid),
                         isPublic: true,
                         startTimeWIB: anchor + ' WIB',
                         endTimeWIB: endWib + ' WIB',
@@ -10356,9 +10439,11 @@
                     const dur = randomDuration15(unlistedMinHours, unlistedMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
+                    const vid = todayVideos[publicSlotsCount + u];
                     slots.push({
                         slotNumber: publicSlotsCount + u + 1,
-                        videoName: todayVideos[publicSlotsCount + u],
+                        videoName: getVideoName(vid),
+                        streamKey: getVideoUnlKey(vid),
                         isPublic: false,
                         startTimeWIB: anchor + ' WIB',
                         endTimeWIB: endWib + ' WIB',
@@ -10526,11 +10611,15 @@
                     const key = `${day.isoDate}_${slot.slotNumber}`;
                     const isChecked = !!ytLiveCheckedSlots[key];
                     const checkedRowStyle = isChecked ? ' yt-slot-checked' : '';
+                    const streamKeyDisplay = slot.streamKey
+                        ? `<span style="font-family:monospace;font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 7px;border-radius:5px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;user-select:all;" title="Klik untuk copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${slot.streamKey.replace(/'/g,"\\'")}').then(()=>{showNotification('Stream key disalin!')});">${slot.streamKey}</span>`
+                        : `<span style="color:#475569;font-size:0.7rem;">-</span>`;
                     return `
                     <tr data-slot-key="${key}" class="${checkedRowStyle}">
                         <td class="font-semibold">#${slot.slotNumber}</td>
                         <td>${slot.videoName}</td>
                         <td><span class="${slot.isPublic ? 'yt-slot-badge-public' : 'yt-slot-badge-unlisted'}">${slot.isPublic ? 'Public' : 'Unlisted'}</span></td>
+                        <td>${streamKeyDisplay}</td>
                         <td class="font-mono">${slot.startTimeWIB}</td>
                         <td class="font-mono">${slot.endTimeWIB}</td>
                         <td class="font-mono" style="color:#94a3b8;">${slot.startTimeEST}</td>
@@ -10559,6 +10648,7 @@
                                         <th>Slot</th>
                                         <th>Video</th>
                                         <th>Tipe</th>
+                                        <th>Stream Key</th>
                                         <th>Mulai WIB</th>
                                         <th>Selesai WIB</th>
                                         <th>Mulai EST</th>
@@ -10608,8 +10698,86 @@
             }
         };
 
+        // --- Save Stream Keys: update existing schedule slots without re-generating ---
+        const saveYtLiveStreamKeys = async () => {
+            const btn = document.getElementById('ytlive-save-streamkeys-btn');
+            if (!ytLiveScheduleData || ytLiveScheduleData.length === 0) {
+                showNotification('Belum ada jadwal aktif. Generate jadwal terlebih dahulu.', true);
+                return;
+            }
+            const videoList = ytliveReadVideoRows(); // [{name, pubKey, unlKey}]
+            if (videoList.length === 0) {
+                showNotification('Tidak ada data video untuk disimpan.', true);
+                return;
+            }
+
+            // Build lookup map: videoName -> {pubKey, unlKey}
+            const keyMap = {};
+            videoList.forEach(v => { if (v.name) keyMap[v.name] = { pubKey: v.pubKey, unlKey: v.unlKey }; });
+
+            // Patch streamKey in every slot of every day
+            const updatedSchedule = ytLiveScheduleData.map(day => ({
+                ...day,
+                slots: day.slots.map(slot => {
+                    const entry = keyMap[slot.videoName];
+                    if (!entry) return slot;
+                    return {
+                        ...slot,
+                        streamKey: slot.isPublic ? (entry.pubKey || '') : (entry.unlKey || '')
+                    };
+                })
+            }));
+
+            // Save config (masterVideos) + updated schedule to Firebase
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; }
+            try {
+                // Save config masterVideos
+                await setDoc(YT_LIVE_CONFIG_REF, { ...ytLiveConfig, masterVideos: videoList, updatedAt: new Date() });
+                // Merge-update schedule slots (preserve checkedSlots & lastGenerated)
+                await setDoc(YT_LIVE_SCHEDULE_REF, { schedule: updatedSchedule }, { merge: true });
+                ytLiveScheduleData = updatedSchedule;
+                ytLiveConfig = { ...ytLiveConfig, masterVideos: videoList };
+                // Re-render schedule table with updated stream keys
+                const schSnap = await getDoc(YT_LIVE_SCHEDULE_REF);
+                const checkedSlots = schSnap.exists() ? (schSnap.data().checkedSlots || {}) : {};
+                const lastGen = schSnap.exists() ? schSnap.data().lastGenerated : null;
+                renderYtLiveSchedule(updatedSchedule, lastGen, checkedSlots);
+                showNotification('Stream keys berhasil disimpan dan jadwal diperbarui!');
+            } catch (err) {
+                console.error('YT Live save stream keys error:', err);
+                showNotification('Gagal menyimpan stream keys.', true);
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Simpan Stream Keys'; }
+            }
+        };
+
         // --- Wire Live Tab Event Listeners ---
         const initYtLiveTab = () => {
+            // Init video rows with 1 empty row if empty
+            const rowsContainer = document.getElementById('ytlive-video-rows');
+            if (rowsContainer && rowsContainer.children.length === 0) {
+                rowsContainer.appendChild(ytliveMakeVideoRow('', '', '', 0));
+            }
+
+            // Save Stream Keys button
+            const saveSkBtn = document.getElementById('ytlive-save-streamkeys-btn');
+            if (saveSkBtn) saveSkBtn.addEventListener('click', saveYtLiveStreamKeys);
+
+            // Add Video button
+            const addVideoBtn = document.getElementById('ytlive-add-video-btn');
+            if (addVideoBtn) {
+                addVideoBtn.addEventListener('click', () => {
+                    const container = document.getElementById('ytlive-video-rows');
+                    if (container) {
+                        const idx = container.children.length;
+                        container.appendChild(ytliveMakeVideoRow('', '', '', idx));
+                        // Scroll to the newly added row
+                        container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        container.lastElementChild.querySelector('.ytlive-vid-name')?.focus();
+                    }
+                });
+            }
+
             // Generate button
             const genBtn = document.getElementById('ytlive-generate-btn');
             if (genBtn) {
