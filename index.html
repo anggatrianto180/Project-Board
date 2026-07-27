@@ -10387,6 +10387,12 @@
             const getVideoPubKey = (v) => (typeof v === 'string' ? '' : (v.pubKey || ''));
             const getVideoUnlKey = (v) => (typeof v === 'string' ? '' : (v.unlKey || ''));
 
+            // --- Balance Tracker ---
+            // videoBalance[i] = publicCount - unlistedCount for video at index i
+            // Lower balance → more "owed" public slots → prioritized for public
+            // Higher balance → more "owed" unlisted slots → prioritized for unlisted
+            const videoBalance = new Array(totalVideos).fill(0);
+
             for (let d = 0; d < daysToGenerate; d++) {
                 const slots = [];
                 let totalHours = 0;
@@ -10406,19 +10412,35 @@
                 // Round-Robin offset for zero daily duplicates
                 const dayOffset = (d * totalSlotsPerDay) % totalVideos;
 
-                // Build today's video list (no duplicates within same day)
-                const todayVideos = [];
+                // Build today's video pool as indices (no duplicates within same day)
+                const poolIndices = [];
                 for (let s = 0; s < totalSlotsPerDay; s++) {
-                    todayVideos.push(masterVideos[(dayOffset + s) % totalVideos]);
+                    poolIndices.push((dayOffset + s) % totalVideos);
                 }
 
-                // Public slots
+                // Sort pool by balance (ascending):
+                //   - Lowest balance (more unlisted history) → assigned to Public first
+                //   - Highest balance (more public history) → assigned to Unlisted first
+                // Random tiebreak prevents deterministic patterns when balance is equal
+                const sortedIndices = [...poolIndices].sort((a, b) => {
+                    const diff = videoBalance[a] - videoBalance[b];
+                    return diff !== 0 ? diff : (Math.random() - 0.5);
+                });
+
+                const publicIndices = sortedIndices.slice(0, publicSlotsCount);
+                const unlistedIndices = sortedIndices.slice(publicSlotsCount);
+
+                // Update balance counters
+                publicIndices.forEach(idx => videoBalance[idx]++);
+                unlistedIndices.forEach(idx => videoBalance[idx]--);
+
+                // Build Public slots
                 for (let p = 0; p < publicSlotsCount; p++) {
+                    const vid = masterVideos[publicIndices[p]];
                     const anchor = pubAnchors[p % pubAnchors.length];
                     const dur = randomDuration15(pubMinHours, pubMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
-                    const vid = todayVideos[p];
                     slots.push({
                         slotNumber: p + 1,
                         videoName: getVideoName(vid),
@@ -10433,13 +10455,13 @@
                     });
                 }
 
-                // Unlisted slots
+                // Build Unlisted slots
                 for (let u = 0; u < unlistedSlotsCount; u++) {
+                    const vid = masterVideos[unlistedIndices[u]];
                     const anchor = unlistedAnchors[u % unlistedAnchors.length];
                     const dur = randomDuration15(unlistedMinHours, unlistedMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
-                    const vid = todayVideos[publicSlotsCount + u];
                     slots.push({
                         slotNumber: publicSlotsCount + u + 1,
                         videoName: getVideoName(vid),
@@ -10479,6 +10501,7 @@
             }
             return schedule;
         };
+
 
         // --- Save to Firestore ---
         const saveYtLiveToFirebase = async (scheduleData, cfg) => {
