@@ -51,6 +51,7 @@ const ytChannelCollectionName = (tabId) => {
 };
 
 // --- Build live schedule section for a given day ---
+// Only includes slots that have NOT been checked (unchecked = belum dijadwalkan)
 function buildLiveSection(dayData, checkedSlots, label, emoji) {
     if (!dayData) return null;
     const slots = dayData.slots || [];
@@ -60,10 +61,14 @@ function buildLiveSection(dayData, checkedSlots, label, emoji) {
     for (const slot of slots) {
         const key = `${dayData.isoDate}_${slot.slotNumber}`;
         const isDone = checkedSlots && checkedSlots[key];
+        // Skip slots that are already checked (sudah dijadwalkan)
+        if (isDone) continue;
         const typeLabel = slot.isPublic ? '🔴 Public' : '🔒 Unlisted';
-        const check = isDone ? '✅' : '⬜';
-        lines.push(`  ${check} ${typeLabel} | ${slot.startTimeWIB} → ${slot.endTimeWIB} | *${slot.videoName}* (${slot.durationText})`);
+        lines.push(`  ⬜ ${typeLabel} | ${slot.startTimeWIB} → ${slot.endTimeWIB} | *${slot.videoName}* (${slot.durationText})`);
     }
+
+    // If all slots are already done, skip this day entirely
+    if (lines.length === 0) return null;
 
     const totalHours = dayData.totalHoursDecimal ? `${dayData.totalHoursDecimal} jam total` : '';
     const header = `${emoji} *LIVE ${label} — ${dayData.dateLabel}*${totalHours ? ` _(${totalHours})_` : ''}`;
