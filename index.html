@@ -8860,6 +8860,8 @@
         };
 
         // --- YouTube Upload Summary (like Telegram notification) ---
+        // Session-only day offset (0 = today, resets on page refresh)
+        if (typeof window._ytSummaryDayOffset === 'undefined') window._ytSummaryDayOffset = 0;
         const renderYtUploadSummary = (channels) => {
             const summaryEl = document.getElementById('yt-upload-summary');
             if (!summaryEl) return;
@@ -8877,10 +8879,15 @@
                 const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                 return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
             };
-            const today = new Date(now);
-            const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+            // Apply session day offset (0 = today, resets on page refresh)
+            const dayOffset = window._ytSummaryDayOffset || 0;
+            const realToday = new Date(now);
+            const today = new Date(now); today.setDate(now.getDate() + dayOffset);
+            const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + dayOffset + 1);
             const todayStr = toDateStr(today);
             const tomorrowStr = toDateStr(tomorrow);
+            const realTodayStr = toDateStr(realToday);
+            const isViewingToday = (dayOffset === 0);
             const todayLabel = formatDateLabel(today);
             const tomorrowLabel = formatDateLabel(tomorrow);
 
@@ -8949,13 +8956,32 @@
                                 <span class="text-[10px] font-semibold text-green-600 dark:text-green-400 group-hover:text-green-700 leading-none whitespace-nowrap">Upload</span>
                             </label>`;
                         items.push(`
-                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0">
+                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0" data-item-channel="${c.id}" data-item-date="${dateStr}">
                                 <span class="mt-0.5 text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center flex-wrap gap-1">
                                         <span class="font-semibold text-gray-900 dark:text-white text-sm leading-tight">${c.name || c.id}</span>${monetizeBadge}
                                     </div>
                                     <span class="text-xs ${statusClass} mt-0.5 leading-tight block">— ${statusText}</span>
+                                    <!-- Cancel & Postpone action row -->
+                                    <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                        <button type="button"
+                                            class="yt-summary-postpone-btn inline-flex items-center gap-1 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 px-2 py-0.5 rounded-full transition-all"
+                                            data-channel-id="${c.id}"
+                                            data-date="${dateStr}"
+                                            data-source-id="${sourceId}"
+                                            title="Undur jadwal ke hari berikutnya">
+                                            <i class="fas fa-forward text-[8px]"></i> Undur ke Besok
+                                        </button>
+                                        <button type="button"
+                                            class="yt-summary-cancel-btn inline-flex items-center gap-1 text-[10px] font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-700 px-2 py-0.5 rounded-full transition-all"
+                                            data-channel-id="${c.id}"
+                                            data-date="${dateStr}"
+                                            data-source-id="${sourceId}"
+                                            title="Batalkan jadwal upload ini">
+                                            <i class="fas fa-times text-[8px]"></i> Batalkan
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0 ml-auto">
                                     ${buatVideoChk}
@@ -8991,23 +9017,42 @@
 
             summaryEl.innerHTML = `
                 <!-- Telegram-style Header — same logic as notify-youtube-upload.mjs -->
-                <div class="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 dark:from-red-800 dark:via-red-700 dark:to-rose-800 px-5 py-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                            <i class="fab fa-youtube text-white text-lg"></i>
+                <div class="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 dark:from-red-800 dark:via-red-700 dark:to-rose-800 px-5 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fab fa-youtube text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold text-base leading-tight">🔔 Jadwal Upload YouTube</p>
+                                <p class="text-red-100 text-xs mt-0.5">${uploadedTodayCount}/${scheduledTodayCount} terjadwal sudah upload${isViewingToday ? ' hari ini' : ''} · ${totalMonthUploads}× bulan ini</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-white font-bold text-base leading-tight">🔔 Jadwal Upload YouTube</p>
-                            <p class="text-red-100 text-xs mt-0.5">${uploadedTodayCount}/${scheduledTodayCount} terjadwal sudah upload hari ini · ${totalMonthUploads}× bulan ini</p>
+                        <div class="flex flex-col items-end gap-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-white font-extrabold text-2xl leading-none">${uploadRate}%</span>
+                            </div>
+                            <div class="w-20 h-1.5 bg-white/30 rounded-full overflow-hidden">
+                                <div class="${progressBarColor} h-full rounded-full transition-all duration-700" style="width:${uploadRate}%"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex flex-col items-end gap-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-white font-extrabold text-2xl leading-none">${uploadRate}%</span>
+                    <!-- Day Navigation -->
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/20">
+                        <button id="yt-summary-prev-day"
+                            class="flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white bg-white/10 hover:bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-full transition-all"
+                            title="Hari sebelumnya">
+                            <i class="fas fa-chevron-left text-[10px]"></i> Sebelumnya
+                        </button>
+                        <div class="flex flex-col items-center">
+                            <span class="text-white/70 text-[10px] font-medium tracking-wide uppercase">Sedang dilihat</span>
+                            <span class="text-white text-xs font-bold mt-0.5">${isViewingToday ? '📍 Hari Ini' : (dayOffset > 0 ? `+${dayOffset} hari` : `${dayOffset} hari`)}</span>
                         </div>
-                        <div class="w-20 h-1.5 bg-white/30 rounded-full overflow-hidden">
-                            <div class="${progressBarColor} h-full rounded-full transition-all duration-700" style="width:${uploadRate}%"></div>
-                        </div>
+                        <button id="yt-summary-next-day"
+                            class="flex items-center gap-1.5 text-xs font-semibold text-white/80 hover:text-white bg-white/10 hover:bg-white/20 active:bg-white/30 px-3 py-1.5 rounded-full transition-all"
+                            title="Hari berikutnya">
+                            Berikutnya <i class="fas fa-chevron-right text-[10px]"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -9032,11 +9077,11 @@
                 <!-- Two-column body: Today | Tomorrow -->
                 <div class="bg-white dark:bg-gray-800 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
 
-                    <!-- HARI INI -->
+                    <!-- HARI INI / TANGGAL DIPILIH -->
                     <div class="p-4">
                         <div class="flex items-center gap-2 mb-3">
-                            <span class="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                                <i class="fas fa-calendar-day text-[10px]"></i> 📌 HARI INI
+                            <span class="inline-flex items-center gap-1.5 ${isViewingToday ? 'bg-red-600' : 'bg-purple-600'} text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                                <i class="fas fa-calendar-day text-[10px]"></i> ${isViewingToday ? '📌 HARI INI' : '📅 DIPILIH'}
                             </span>
                             <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">${todayLabel}</span>
                         </div>
@@ -9046,11 +9091,11 @@
                 }
                     </div>
 
-                    <!-- BESOK -->
+                    <!-- BESOK / HARI BERIKUTNYA -->
                     <div class="p-4">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                                <i class="fas fa-calendar-plus text-[10px]"></i> ⏰ BESOK
+                                <i class="fas fa-calendar-plus text-[10px]"></i> ${isViewingToday ? '⏰ BESOK' : '⏰ BERIKUTNYA'}
                             </span>
                             <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">${tomorrowLabel}</span>
                         </div>
@@ -9070,6 +9115,22 @@
                 </div>
             `;
             summaryEl.classList.remove('hidden');
+
+            // --- Prev/Next day navigation ---
+            const prevBtn = summaryEl.querySelector('#yt-summary-prev-day');
+            const nextBtn = summaryEl.querySelector('#yt-summary-next-day');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    window._ytSummaryDayOffset = (window._ytSummaryDayOffset || 0) - 1;
+                    renderYtUploadSummary(channels);
+                });
+            }
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    window._ytSummaryDayOffset = (window._ytSummaryDayOffset || 0) + 1;
+                    renderYtUploadSummary(channels);
+                });
+            }
 
             // --- Attach checklist listeners in the summary card ---
             summaryEl.querySelectorAll('.yt-summary-ready-chk').forEach(chk => {
@@ -9116,6 +9177,80 @@
                         e.target.checked = !isChecked;
                         channel.uploads[dateStr] = !isChecked;
                         showNotification('Gagal menyimpan status upload', true);
+                    }
+                });
+            });
+
+            // --- Postpone (undur) schedule to next day ---
+            summaryEl.querySelectorAll('.yt-summary-postpone-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const channelId = btn.dataset.channelId;
+                    const dateStr = btn.dataset.date;
+                    let sourceId = btn.dataset.sourceId;
+                    if (!sourceId || sourceId === 'undefined' || sourceId === 'null') sourceId = currentYtAdsenseTab;
+                    const channel = channels.find(c => c.id === channelId);
+                    if (!channel) return;
+
+                    // Compute next day string
+                    const dateParts = dateStr.split('-');
+                    const d = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+                    d.setDate(d.getDate() + 1);
+                    const nextDayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+                    const uploadSchedules = { ...(channel.uploadSchedules || {}) };
+                    // Remove from current date, set on next day
+                    delete uploadSchedules[dateStr];
+                    uploadSchedules[nextDayStr] = true;
+
+                    // Disable button while saving
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin text-[8px]"></i> Menyimpan...';
+
+                    try {
+                        await updateDoc(doc(db, ytChannelCollectionName(sourceId), channelId), { uploadSchedules });
+                        channel.uploadSchedules = uploadSchedules;
+                        showNotification(`⏭️ Jadwal ${channel.name || channelId} diundur ke ${nextDayStr}`);
+                        renderYtUploadSummary(channels);
+                    } catch (err) {
+                        console.error('Failed to postpone schedule:', err);
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-forward text-[8px]"></i> Undur ke Besok';
+                        showNotification('Gagal mengundur jadwal', true);
+                    }
+                });
+            });
+
+            // --- Cancel schedule for this date ---
+            summaryEl.querySelectorAll('.yt-summary-cancel-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const channelId = btn.dataset.channelId;
+                    const dateStr = btn.dataset.date;
+                    let sourceId = btn.dataset.sourceId;
+                    if (!sourceId || sourceId === 'undefined' || sourceId === 'null') sourceId = currentYtAdsenseTab;
+                    const channel = channels.find(c => c.id === channelId);
+                    if (!channel) return;
+
+                    const confirmed = await showConfirmModal(
+                        `Batalkan jadwal upload "${channel.name || channelId}" untuk tanggal ${dateStr}?\n\nJadwal akan dihapus dari kalender.`
+                    );
+                    if (!confirmed) return;
+
+                    const uploadSchedules = { ...(channel.uploadSchedules || {}) };
+                    delete uploadSchedules[dateStr];
+
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin text-[8px]"></i> Membatalkan...';
+
+                    try {
+                        await updateDoc(doc(db, ytChannelCollectionName(sourceId), channelId), { uploadSchedules });
+                        channel.uploadSchedules = uploadSchedules;
+                        showNotification(`🗑️ Jadwal ${channel.name || channelId} untuk ${dateStr} dibatalkan`);
+                        renderYtUploadSummary(channels);
+                    } catch (err) {
+                        console.error('Failed to cancel schedule:', err);
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-times text-[8px]"></i> Batalkan';
+                        showNotification('Gagal membatalkan jadwal', true);
                     }
                 });
             });
