@@ -3218,6 +3218,10 @@
                             <i class="fas fa-upload"></i> Import Backup (.JSON)
                         </button>
                         <input type="file" id="ytlive-import-input" accept=".json" class="hidden">
+                        <button id="ytlive-send-telegram-btn" class="yt-live-btn-secondary" style="background:linear-gradient(135deg,#1a7db5,#229ED9);border-color:rgba(34,158,217,0.5);color:#fff;" title="Kirim jadwal live hari ini & besok ke Telegram">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                            Kirim Jadwal Live ke Telegram
+                        </button>
                     </div>
                 </div>
 
@@ -3413,7 +3417,85 @@
         </div>
     </div>
 
+    <!-- ===== TELEGRAM REPORT MODAL ===== -->
+    <div id="tg-report-modal" data-mode="upload" data-channels-json=""
+        class="fixed inset-0 hidden items-center justify-center"
+        style="z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);">
+        <div class="relative w-full max-w-md mx-4 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+            style="background:linear-gradient(145deg,#0f172a,#1e293b);">
+            <!-- Header -->
+            <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10"
+                style="background:linear-gradient(135deg,rgba(34,158,217,0.2),rgba(26,125,181,0.1));">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0"
+                    style="background:linear-gradient(135deg,#229ED9,#1a7db5);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-base leading-tight">Kirim Laporan ke Telegram</h3>
+                    <p id="tg-modal-subtitle" class="text-blue-300 text-xs mt-0.5">Jadwal Upload & Live — Hari Ini & Besok</p>
+                </div>
+                <button id="tg-modal-close-btn" class="ml-auto text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <!-- Body -->
+            <div class="px-6 py-5 space-y-4">
+                <!-- Bot Token -->
+                <div>
+                    <label for="tg-bot-token-input" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                        <i class="fas fa-robot text-blue-400 mr-1"></i>Bot Token
+                    </label>
+                    <input type="text" id="tg-bot-token-input" placeholder="1234567890:AABBCC..."
+                        autocomplete="off" spellcheck="false"
+                        class="w-full px-3.5 py-2.5 rounded-xl text-sm font-mono transition-all duration-200"
+                        style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#e2e8f0;outline:none;"
+                        onfocus="this.style.borderColor='rgba(34,158,217,0.6)';this.style.boxShadow='0 0 0 3px rgba(34,158,217,0.15)'"
+                        onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'">
+                    <p class="text-xs text-gray-500 mt-1">Dapatkan dari @BotFather di Telegram</p>
+                </div>
+                <!-- Chat ID -->
+                <div>
+                    <label for="tg-chat-id-input" class="block text-xs font-semibold text-gray-300 mb-1.5">
+                        <i class="fas fa-hashtag text-blue-400 mr-1"></i>Chat ID
+                    </label>
+                    <input type="text" id="tg-chat-id-input" placeholder="-100123456789 atau @username"
+                        autocomplete="off" spellcheck="false"
+                        class="w-full px-3.5 py-2.5 rounded-xl text-sm font-mono transition-all duration-200"
+                        style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#e2e8f0;outline:none;"
+                        onfocus="this.style.borderColor='rgba(34,158,217,0.6)';this.style.boxShadow='0 0 0 3px rgba(34,158,217,0.15)'"
+                        onblur="this.style.borderColor='rgba(255,255,255,0.12)';this.style.boxShadow='none'">
+                    <p class="text-xs text-gray-500 mt-1">Gunakan @userinfobot untuk menemukan Chat ID</p>
+                </div>
+                <!-- Remember toggle -->
+                <label class="flex items-center gap-2.5 cursor-pointer select-none" title="Simpan token di localStorage browser ini">
+                    <span class="relative inline-block w-9 h-5">
+                        <input type="checkbox" id="tg-remember-chk" class="sr-only peer">
+                        <span class="absolute inset-0 rounded-full transition-colors duration-200 peer-checked:bg-blue-500" style="background:rgba(255,255,255,0.15);"></span>
+                        <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4"></span>
+                    </span>
+                    <span class="text-xs text-gray-300">Ingat kredensial di browser ini</span>
+                </label>
+                <!-- Status -->
+                <div id="tg-modal-status" class="hidden text-xs px-3 py-2 rounded-lg"></div>
+            </div>
+            <!-- Footer -->
+            <div class="px-6 pb-5 flex gap-3 justify-end">
+                <button id="tg-modal-cancel-btn"
+                    class="px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white rounded-xl transition-all hover:bg-white/10">
+                    Batal
+                </button>
+                <button id="tg-modal-send-btn"
+                    class="inline-flex items-center gap-2 px-5 py-2 text-sm font-bold text-white rounded-xl transition-all duration-200"
+                    style="background:linear-gradient(135deg,#229ED9,#1a7db5);box-shadow:0 4px 15px rgba(34,158,217,0.4);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                    Kirim Laporan
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add Adsense Modal -->
+
     <div id="add-adsense-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
         <div
             class="modal-panel bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-auto p-6 border border-gray-200 dark:border-gray-700">
@@ -4345,6 +4427,9 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
         const auth = getAuth(app);
+        // Expose for Telegram report helper functions
+        window._db = db;
+        window._firestoreFns = { getDoc, doc };
         let currentUserUid = null;
 
         // Hide UI until auth state is confirmed
@@ -9106,12 +9191,19 @@
                     </div>
                 </div>
 
-                <!-- Legend -->
-                <div class="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 px-4 py-2 flex flex-wrap gap-x-4 gap-y-1">
+                <!-- Legend + Telegram Button -->
+                <div class="bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700 px-4 py-2 flex flex-wrap items-center gap-x-4 gap-y-2">
                     <span class="text-xs text-gray-400 dark:text-gray-500">✅ Video sudah ready — tinggal upload</span>
                     <span class="text-xs text-gray-400 dark:text-gray-500">🎬 Perlu dibuat video dan upload</span>
                     <span class="text-xs text-gray-400 dark:text-gray-500">💰 Monetized</span>
-                    <span class="text-xs text-gray-400 dark:text-gray-500 ml-auto italic">Hanya channel Adsense Gabungan</span>
+                    <span class="text-xs text-gray-400 dark:text-gray-500 italic">Hanya channel Adsense Gabungan</span>
+                    <button id="yt-summary-send-telegram-btn"
+                        class="ml-auto inline-flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full transition-all duration-200"
+                        style="background:linear-gradient(135deg,#229ED9,#1a7db5);color:#fff;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(34,158,217,0.35);"
+                        title="Kirim laporan jadwal upload & live ke Telegram">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                        Kirim ke Telegram
+                    </button>
                 </div>
             `;
             summaryEl.classList.remove('hidden');
@@ -9129,6 +9221,15 @@
                 nextBtn.addEventListener('click', () => {
                     window._ytSummaryDayOffset = (window._ytSummaryDayOffset || 0) + 1;
                     renderYtUploadSummary(channels);
+                });
+            }
+
+            // --- Kirim ke Telegram button ---
+            const tgSendBtn = summaryEl.querySelector('#yt-summary-send-telegram-btn');
+            if (tgSendBtn) {
+                tgSendBtn.addEventListener('click', () => {
+                    const opener = window._tgModalOpenPatch || openTelegramReportModal;
+                    opener('upload', channels);
                 });
             }
 
@@ -9255,6 +9356,260 @@
                 });
             });
         };
+
+
+        // =====================================================================
+        // SEND SCHEDULE REPORT TO TELEGRAM
+        // Builds ASCII table and sends to Telegram Bot API
+        // =====================================================================
+
+        // --- Helper: pad string to fixed width (truncate if too long) ---
+        const tgPad = (str, len, align = 'left') => {
+            const s = String(str ?? '');
+            const truncated = s.length > len ? s.slice(0, len - 1) + '…' : s;
+            if (align === 'right') return truncated.padStart(len);
+            if (align === 'center') {
+                const pad = len - truncated.length;
+                return ' '.repeat(Math.floor(pad / 2)) + truncated + ' '.repeat(Math.ceil(pad / 2));
+            }
+            return truncated.padEnd(len);
+        };
+
+        // --- Helper: horizontal rule ---
+        const tgHr = (cols) => cols.map(w => '─'.repeat(w)).join('┼');
+        const tgHrTop = (cols) => '┌' + cols.map(w => '─'.repeat(w)).join('┬') + '┐';
+        const tgHrMid = (cols) => '├' + cols.map(w => '─'.repeat(w)).join('┼') + '┤';
+        const tgHrBot = (cols) => '└' + cols.map(w => '─'.repeat(w)).join('┴') + '┘';
+        const tgRow = (cells, cols) => '│' + cells.map((c, i) => tgPad(c, cols[i])).join('│') + '│';
+
+        // --- Build Upload Schedule Table ---
+        const buildUploadTableMsg = (channels, dateStr, label) => {
+            const pending = channels.filter(c =>
+                c.isCombinedAdsense &&
+                c.uploadSchedules && c.uploadSchedules[dateStr] &&
+                !(c.uploads && c.uploads[dateStr])
+            );
+            if (pending.length === 0) return null;
+
+            // Cols: No | Channel | Status
+            const cols = [4, 22, 7];
+            const lines = [];
+            lines.push(tgHrTop(cols));
+            lines.push(tgRow(['No', 'Channel', 'Status'], cols));
+            lines.push(tgHrMid(cols));
+            pending.forEach((c, i) => {
+                const isReady = c.readyVideos && c.readyVideos[dateStr];
+                const status = isReady ? '✅ Ready' : '🎬 Belum';
+                lines.push(tgRow([String(i + 1), c.name || c.id, status], cols));
+            });
+            lines.push(tgHrBot(cols));
+
+            return `📹 <b>Jadwal Upload — ${label}</b>\n<pre>${lines.join('\n')}</pre>`;
+        };
+
+        // --- Build Live Schedule Table for a day ---
+        const buildLiveTableMsg = (dayData, checkedSlots, label) => {
+            if (!dayData) return null;
+            const slots = (dayData.slots || []).filter(slot => {
+                const key = `${dayData.isoDate}_${slot.slotNumber}`;
+                return !checkedSlots[key]; // only unchecked (belum dijadwalkan)
+            });
+            if (slots.length === 0) return null;
+
+            // Cols: Slot | Video | Tipe | Mulai | Selesai | Durasi
+            const cols = [4, 18, 9, 6, 6, 7];
+            const lines = [];
+            lines.push(tgHrTop(cols));
+            lines.push(tgRow(['#', 'Video', 'Tipe', 'Mulai', 'Slsai', 'Durasi'], cols));
+            lines.push(tgHrMid(cols));
+            slots.forEach(slot => {
+                const tipe = slot.isPublic ? '🔴Public' : '🔒Unlstd';
+                lines.push(tgRow([
+                    String(slot.slotNumber),
+                    slot.videoName,
+                    tipe,
+                    slot.startTimeWIB,
+                    slot.endTimeWIB,
+                    slot.durationText || '-'
+                ], cols));
+            });
+            lines.push(tgHrBot(cols));
+
+            const totalHours = dayData.totalHoursDecimal ? ` | Total: ${dayData.totalHoursDecimal}` : '';
+            return `📡 <b>Jadwal Live — ${label}${totalHours}</b>\n<pre>${lines.join('\n')}</pre>`;
+        };
+
+        // --- Send message to Telegram ---
+        const sendToTelegramAPI = async (botToken, chatId, html) => {
+            // Telegram max message length = 4096 chars; split if needed
+            const MAX = 4000;
+            const chunks = [];
+            let cur = '';
+            html.split('\n').forEach(line => {
+                if ((cur + '\n' + line).length > MAX) {
+                    if (cur) chunks.push(cur);
+                    cur = line;
+                } else {
+                    cur = cur ? cur + '\n' + line : line;
+                }
+            });
+            if (cur) chunks.push(cur);
+
+            for (const chunk of chunks) {
+                const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: chunk,
+                        parse_mode: 'HTML'
+                    })
+                });
+                if (!res.ok) {
+                    const err = await res.text();
+                    throw new Error(`Telegram API error: ${err}`);
+                }
+            }
+        };
+
+        // --- Main send function: collects both upload + live, sends as tables ---
+        const sendScheduleReportToTelegram = async (botToken, chatId, channels) => {
+            const now = new Date();
+            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const formatDateLabel = (d) => {
+                const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+            };
+            const today = new Date(now);
+            const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+            const todayStr = toDateStr(today);
+            const tomorrowStr = toDateStr(tomorrow);
+            const todayLabel = formatDateLabel(today);
+            const tomorrowLabel = formatDateLabel(tomorrow);
+
+            const parts = [];
+
+            // Header
+            const ts = now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+            parts.push(`🔔 <b>LAPORAN JADWAL YOUTUBE</b>\n<i>Dikirim: ${ts} WIB</i>`);
+
+            // === UPLOAD SECTIONS ===
+            const uploadToday = buildUploadTableMsg(channels, todayStr, `📌 Hari Ini — ${todayLabel}`);
+            const uploadTomorrow = buildUploadTableMsg(channels, tomorrowStr, `⏰ Besok — ${tomorrowLabel}`);
+
+            if (uploadToday || uploadTomorrow) {
+                parts.push('━━━━━━━━━━━━━━━━━━━');
+                if (uploadToday) parts.push(uploadToday);
+                if (uploadTomorrow) parts.push(uploadTomorrow);
+            } else {
+                parts.push('━━━━━━━━━━━━━━━━━━━\n📹 <b>Jadwal Upload</b>\n<i>Tidak ada jadwal upload hari ini/besok.</i>');
+            }
+
+            // === LIVE SECTIONS ===
+            try {
+                const { getDoc, doc } = window._firestoreFns || {};
+                const db = window._db;
+                if (getDoc && doc && db) {
+                    const liveSnap = await getDoc(doc(db, 'yt_live_rotator', 'active_schedule'));
+                    if (liveSnap.exists()) {
+                        const liveData = liveSnap.data();
+                        const schedule = liveData.schedule || [];
+                        const checkedSlots = liveData.checkedSlots || {};
+                        const todayDay = schedule.find(d => d.isoDate === todayStr);
+                        const tomorrowDay = schedule.find(d => d.isoDate === tomorrowStr);
+                        const liveToday = buildLiveTableMsg(todayDay, checkedSlots, `📌 Hari Ini — ${todayLabel}`);
+                        const liveTomorrow = buildLiveTableMsg(tomorrowDay, checkedSlots, `⏰ Besok — ${tomorrowLabel}`);
+
+                        if (liveToday || liveTomorrow) {
+                            parts.push('━━━━━━━━━━━━━━━━━━━');
+                            if (liveToday) parts.push(liveToday);
+                            if (liveTomorrow) parts.push(liveTomorrow);
+                        } else {
+                            parts.push('━━━━━━━━━━━━━━━━━━━\n📡 <b>Jadwal Live</b>\n<i>Semua slot live sudah terjadwal / tidak ada jadwal.</i>');
+                        }
+                    } else {
+                        parts.push('━━━━━━━━━━━━━━━━━━━\n📡 <b>Jadwal Live</b>\n<i>Belum ada jadwal live aktif.</i>');
+                    }
+                }
+            } catch (liveErr) {
+                console.warn('Could not fetch live schedule for Telegram report:', liveErr);
+                parts.push('━━━━━━━━━━━━━━━━━━━\n📡 <b>Jadwal Live</b>\n<i>Gagal memuat jadwal live.</i>');
+            }
+
+            const fullMessage = parts.join('\n\n');
+            await sendToTelegramAPI(botToken, chatId, fullMessage);
+        };
+
+        // --- Send live-only report to Telegram ---
+        const sendLiveOnlyReportToTelegram = async (botToken, chatId) => {
+            const now = new Date();
+            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const formatDateLabel = (d) => {
+                const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+                const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+            };
+            const today = new Date(now);
+            const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+            const todayStr = toDateStr(today);
+            const tomorrowStr = toDateStr(tomorrow);
+            const todayLabel = formatDateLabel(today);
+            const tomorrowLabel = formatDateLabel(tomorrow);
+
+            const parts = [];
+            const ts = now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+            parts.push(`🔔 <b>LAPORAN JADWAL LIVE YOUTUBE</b>\n<i>Dikirim: ${ts} WIB</i>`);
+
+            try {
+                const { getDoc, doc } = window._firestoreFns || {};
+                const db = window._db;
+                if (!getDoc || !doc || !db) throw new Error('Firestore not ready');
+                const liveSnap = await getDoc(doc(db, 'yt_live_rotator', 'active_schedule'));
+                if (liveSnap.exists()) {
+                    const liveData = liveSnap.data();
+                    const schedule = liveData.schedule || [];
+                    const checkedSlots = liveData.checkedSlots || {};
+
+                    // Send up to 5 days from today
+                    let found = 0;
+                    const sortedDays = [...schedule].sort((a, b) => (a.isoDate || '').localeCompare(b.isoDate || ''));
+                    for (const dayData of sortedDays) {
+                        if (dayData.isoDate < todayStr) continue;
+                        if (found >= 5) break;
+                        const label = dayData.isoDate === todayStr ? `📌 Hari Ini — ${todayLabel}`
+                            : dayData.isoDate === tomorrowStr ? `⏰ Besok — ${tomorrowLabel}`
+                            : `📅 ${dayData.dateLabel || dayData.isoDate}`;
+                        const tbl = buildLiveTableMsg(dayData, checkedSlots, label);
+                        if (tbl) { parts.push('━━━━━━━━━━━━━━━━━━━'); parts.push(tbl); found++; }
+                    }
+                    if (found === 0) parts.push('━━━━━━━━━━━━━━━━━━━\n<i>Semua slot live sudah terjadwal / tidak ada jadwal aktif.</i>');
+                } else {
+                    parts.push('━━━━━━━━━━━━━━━━━━━\n<i>Belum ada jadwal live aktif.</i>');
+                }
+            } catch (liveErr) {
+                console.warn('Live report error:', liveErr);
+                parts.push('━━━━━━━━━━━━━━━━━━━\n<i>Gagal memuat jadwal live: ' + liveErr.message + '</i>');
+            }
+
+            await sendToTelegramAPI(botToken, chatId, parts.join('\n\n'));
+        };
+
+        // --- Open Telegram Config Modal and trigger send ---
+        const openTelegramReportModal = (mode, channels) => {
+            const modal = document.getElementById('tg-report-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Set mode in dataset for send button
+            modal.dataset.mode = mode || 'upload';
+            modal.dataset.channelsJson = mode === 'upload' ? JSON.stringify(
+                (channels || []).map(c => ({ id: c.id, name: c.name, isCombinedAdsense: c.isCombinedAdsense, uploadSchedules: c.uploadSchedules, uploads: c.uploads, readyVideos: c.readyVideos }))
+            ) : '';
+        };
+
+        // Wire upload summary send button after render
+        // (attached dynamically in renderYtUploadSummary below via event listener)
 
 
         const renderYouTubeChannels = (channels) => {
@@ -10981,10 +11336,137 @@
                     e.target.value = '';
                 });
             }
+
+            // Kirim Jadwal Live ke Telegram
+            const liveTgBtn = document.getElementById('ytlive-send-telegram-btn');
+            if (liveTgBtn) {
+                liveTgBtn.addEventListener('click', () => {
+                    // Use patched version if available (updates subtitle)
+                    const opener = window._tgModalOpenPatch || openTelegramReportModal;
+                    opener('live', null);
+                });
+            }
         };
 
         // Initialize Live Tab
         initYtLiveTab();
+
+        // =====================================================================
+        // TELEGRAM REPORT MODAL LOGIC
+        // =====================================================================
+        (() => {
+            const modal     = document.getElementById('tg-report-modal');
+            const closeBtn  = document.getElementById('tg-modal-close-btn');
+            const cancelBtn = document.getElementById('tg-modal-cancel-btn');
+            const sendBtn   = document.getElementById('tg-modal-send-btn');
+            const tokenInp  = document.getElementById('tg-bot-token-input');
+            const chatInp   = document.getElementById('tg-chat-id-input');
+            const remChk    = document.getElementById('tg-remember-chk');
+            const statusEl  = document.getElementById('tg-modal-status');
+            const subtitle  = document.getElementById('tg-modal-subtitle');
+            if (!modal || !sendBtn) return;
+
+            // --- Restore saved credentials ---
+            const TG_LS_KEY = 'tg_report_creds';
+            try {
+                const saved = JSON.parse(localStorage.getItem(TG_LS_KEY) || 'null');
+                if (saved) {
+                    if (tokenInp) tokenInp.value = saved.token || '';
+                    if (chatInp)  chatInp.value  = saved.chatId || '';
+                    if (remChk)   remChk.checked  = true;
+                }
+            } catch (_) {}
+
+            // --- Update subtitle based on mode ---
+            const updateSubtitle = (mode) => {
+                if (!subtitle) return;
+                subtitle.textContent = mode === 'live'
+                    ? 'Jadwal Live YouTube — 5 Hari ke Depan'
+                    : 'Jadwal Upload & Live — Hari Ini & Besok';
+            };
+
+            // Patch openTelegramReportModal to update subtitle
+            const _origOpen = window._tgModalOpenPatch || openTelegramReportModal;
+            window._tgModalOpenPatch = (mode, channels) => {
+                _origOpen(mode, channels);
+                updateSubtitle(mode);
+                showStatus('', '');
+            };
+            // Override the openTelegramReportModal reference for future calls
+            // (re-assign on window so both callers use the patched version)
+            // We already reference openTelegramReportModal directly, so override via wrapper:
+            document.querySelectorAll('[data-tg-open]').forEach(b => {
+                b.addEventListener('click', () => window._tgModalOpenPatch(b.dataset.tgOpen, null));
+            });
+
+            // --- Status helper ---
+            const showStatus = (msg, type) => {
+                if (!statusEl) return;
+                if (!msg) { statusEl.classList.add('hidden'); return; }
+                statusEl.textContent = msg;
+                statusEl.className = `text-xs px-3 py-2 rounded-lg ${
+                    type === 'error'   ? 'bg-red-900/50 text-red-300 border border-red-700/40' :
+                    type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700/40' :
+                    'bg-blue-900/40 text-blue-300 border border-blue-700/30'
+                }`;
+                statusEl.classList.remove('hidden');
+            };
+
+            // --- Close modal ---
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                showStatus('', '');
+            };
+            if (closeBtn)  closeBtn.addEventListener('click', closeModal);
+            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+            // --- Send ---
+            sendBtn.addEventListener('click', async () => {
+                const botToken = (tokenInp?.value || '').trim();
+                const chatId   = (chatInp?.value  || '').trim();
+                if (!botToken || !chatId) {
+                    showStatus('⚠️ Bot Token dan Chat ID wajib diisi.', 'error');
+                    return;
+                }
+
+                // Save credentials if requested
+                if (remChk?.checked) {
+                    try { localStorage.setItem(TG_LS_KEY, JSON.stringify({ token: botToken, chatId })); } catch (_) {}
+                } else {
+                    try { localStorage.removeItem(TG_LS_KEY); } catch (_) {}
+                }
+
+                // Loading state
+                sendBtn.disabled = true;
+                const origHTML = sendBtn.innerHTML;
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i> Mengirim...';
+                showStatus('⏳ Menyusun dan mengirim laporan...', 'info');
+
+                try {
+                    const mode = modal.dataset.mode || 'upload';
+                    if (mode === 'live') {
+                        await sendLiveOnlyReportToTelegram(botToken, chatId);
+                    } else {
+                        // Parse channels from dataset
+                        let channels = [];
+                        try { channels = JSON.parse(modal.dataset.channelsJson || '[]'); } catch (_) {}
+                        await sendScheduleReportToTelegram(botToken, chatId, channels);
+                    }
+                    showStatus('✅ Laporan berhasil dikirim ke Telegram!', 'success');
+                    showNotification('📨 Laporan jadwal berhasil dikirim ke Telegram!');
+                    setTimeout(closeModal, 2000);
+                } catch (err) {
+                    console.error('Telegram send error:', err);
+                    showStatus(`❌ Gagal: ${err.message}`, 'error');
+                } finally {
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = origHTML;
+                }
+            });
+        })();
+
 
 
         document.getElementById('personal-mode-btn').addEventListener('click', () => switchMode('personal'));
