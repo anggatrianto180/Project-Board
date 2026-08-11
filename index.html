@@ -1488,10 +1488,12 @@
             padding: 4px;
             border: 1px solid #e2e8f0;
         }
+
         .dark .yt-mode-tab-bar {
-            background: rgba(255,255,255,0.04);
-            border-color: rgba(255,255,255,0.08);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
         }
+
         .yt-mode-tab {
             flex: 1;
             display: flex;
@@ -1506,41 +1508,71 @@
             border: none;
             background: transparent;
             color: #64748b;
-            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             letter-spacing: -0.01em;
         }
-        .yt-mode-tab:hover { color: #334155; background: rgba(0,0,0,0.04); }
-        .dark .yt-mode-tab { color: #94a3b8; }
-        .dark .yt-mode-tab:hover { color: #e2e8f0; background: rgba(255,255,255,0.06); }
+
+        .yt-mode-tab:hover {
+            color: #334155;
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .yt-mode-tab {
+            color: #94a3b8;
+        }
+
+        .dark .yt-mode-tab:hover {
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
         .yt-mode-tab.active {
             background: white;
             color: #0f172a;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
         }
+
         .dark .yt-mode-tab.active {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: white;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
         }
+
         .yt-mode-tab.active.live-tab {
             background: linear-gradient(135deg, #dc2626, #b91c1c);
             color: white;
-            box-shadow: 0 4px 16px rgba(220,38,38,0.4);
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
         }
+
         .dark .yt-mode-tab.active.live-tab {
             background: linear-gradient(135deg, #dc2626, #b91c1c);
         }
+
         .yt-live-pulse {
-            width: 8px; height: 8px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #ef4444;
             display: inline-block;
             animation: ytLivePulse 1.4s ease-in-out infinite;
         }
-        .yt-mode-tab.active.live-tab .yt-live-pulse { background: white; }
+
+        .yt-mode-tab.active.live-tab .yt-live-pulse {
+            background: white;
+        }
+
         @keyframes ytLivePulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.75); }
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(0.75);
+            }
         }
 
         /* ===== Live Panel Styles ===== */
@@ -1550,12 +1582,14 @@
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
         }
+
         .dark .yt-live-section-card {
             background: #1e293b;
-            border-color: rgba(255,255,255,0.08);
+            border-color: rgba(255, 255, 255, 0.08);
         }
+
         .yt-live-section-title {
             font-size: 1rem;
             font-weight: 700;
@@ -1565,12 +1599,17 @@
             align-items: center;
             gap: 8px;
         }
-        .dark .yt-live-section-title { color: #f1f5f9; }
+
+        .dark .yt-live-section-title {
+            color: #f1f5f9;
+        }
+
         .yt-live-form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 14px;
         }
+
         .yt-live-field label {
             display: block;
             font-size: 0.75rem;
@@ -1580,7 +1619,11 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
-        .dark .yt-live-field label { color: #94a3b8; }
+
+        .dark .yt-live-field label {
+            color: #94a3b8;
+        }
+
         .yt-live-field input[type="number"],
         .yt-live-field textarea {
             width: 100%;
@@ -1594,18 +1637,25 @@
             outline: none;
             font-family: inherit;
         }
+
         .dark .yt-live-field input[type="number"],
         .dark .yt-live-field textarea {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
             color: #f1f5f9;
         }
+
         .yt-live-field input[type="number"]:focus,
         .yt-live-field textarea:focus {
             border-color: #ef4444;
-            box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
         }
-        .yt-live-field textarea { resize: vertical; min-height: 100px; }
+
+        .yt-live-field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
         .yt-live-action-bar {
             display: flex;
             gap: 10px;
@@ -1614,54 +1664,84 @@
             padding-top: 20px;
             border-top: 1px solid #e2e8f0;
         }
-        .dark .yt-live-action-bar { border-top-color: rgba(255,255,255,0.08); }
+
+        .dark .yt-live-action-bar {
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+
         .yt-live-btn-generate {
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 11px 22px;
             background: linear-gradient(135deg, #dc2626, #b91c1c);
             color: white;
-            border: none; border-radius: 10px;
-            font-weight: 700; font-size: 0.875rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.875rem;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(220,38,38,0.3);
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
             transition: all 0.2s;
         }
-        .yt-live-btn-generate:hover { box-shadow: 0 6px 20px rgba(220,38,38,0.45); transform: translateY(-1px); }
+
+        .yt-live-btn-generate:hover {
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45);
+            transform: translateY(-1px);
+        }
+
         .yt-live-btn-secondary {
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             padding: 11px 18px;
             background: #f1f5f9;
             color: #475569;
-            border: 1.5px solid #e2e8f0; border-radius: 10px;
-            font-weight: 600; font-size: 0.875rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .dark .yt-live-btn-secondary {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.1);
             color: #94a3b8;
         }
-        .yt-live-btn-secondary:hover { background: #e2e8f0; color: #0f172a; }
-        .dark .yt-live-btn-secondary:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+
+        .yt-live-btn-secondary:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .dark .yt-live-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+        }
+
         /* Schedule display */
         .yt-live-schedule-empty {
             text-align: center;
             padding: 48px 24px;
             color: #94a3b8;
         }
+
         .yt-live-day-card {
             background: white;
             border: 1px solid #e2e8f0;
             border-radius: 14px;
             overflow: hidden;
             margin-bottom: 16px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         }
+
         .dark .yt-live-day-card {
             background: #1e293b;
-            border-color: rgba(255,255,255,0.08);
+            border-color: rgba(255, 255, 255, 0.08);
         }
+
         .yt-live-day-header {
             display: flex;
             align-items: center;
@@ -1670,21 +1750,29 @@
             background: linear-gradient(135deg, #0f172a, #1e293b);
             color: white;
         }
+
         .yt-live-day-title {
-            font-weight: 700; font-size: 0.95rem; color: #f1f5f9;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #f1f5f9;
         }
+
         .yt-live-day-total {
-            font-size: 0.78rem; font-weight: 600;
-            background: rgba(239,68,68,0.2);
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
-            padding: 3px 10px; border-radius: 99px;
-            border: 1px solid rgba(239,68,68,0.3);
+            padding: 3px 10px;
+            border-radius: 99px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
+
         .yt-live-slots-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.8rem;
         }
+
         .yt-live-slots-table th {
             padding: 8px 12px;
             text-align: left;
@@ -1696,50 +1784,86 @@
             background: #f8fafc;
             border-bottom: 1px solid #e2e8f0;
         }
+
         .dark .yt-live-slots-table th {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             color: #64748b;
-            border-bottom-color: rgba(255,255,255,0.07);
+            border-bottom-color: rgba(255, 255, 255, 0.07);
         }
+
         .yt-live-slots-table td {
             padding: 9px 12px;
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
             vertical-align: middle;
         }
+
         .dark .yt-live-slots-table td {
             color: #cbd5e1;
-            border-bottom-color: rgba(255,255,255,0.05);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
         }
-        .yt-live-slots-table tr:last-child td { border-bottom: none; }
-        .yt-live-slots-table tr:hover td { background: rgba(239,68,68,0.03); }
+
+        .yt-live-slots-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .yt-live-slots-table tr:hover td {
+            background: rgba(239, 68, 68, 0.03);
+        }
+
         .yt-slot-badge-public {
             display: inline-block;
-            padding: 2px 8px; border-radius: 99px;
-            font-size: 0.68rem; font-weight: 700;
-            background: rgba(34,197,94,0.12); color: #16a34a;
-            border: 1px solid rgba(34,197,94,0.3);
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: rgba(34, 197, 94, 0.12);
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
-        .dark .yt-slot-badge-public { color: #4ade80; background: rgba(34,197,94,0.1); }
+
+        .dark .yt-slot-badge-public {
+            color: #4ade80;
+            background: rgba(34, 197, 94, 0.1);
+        }
+
         .yt-slot-badge-unlisted {
             display: inline-block;
-            padding: 2px 8px; border-radius: 99px;
-            font-size: 0.68rem; font-weight: 700;
-            background: rgba(99,102,241,0.1); color: #6366f1;
-            border: 1px solid rgba(99,102,241,0.25);
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.25);
         }
-        .dark .yt-slot-badge-unlisted { color: #a5b4fc; background: rgba(99,102,241,0.1); }
+
+        .dark .yt-slot-badge-unlisted {
+            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
         .yt-live-info-bar {
-            display: flex; align-items: center; gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             padding: 10px 16px;
-            background: rgba(239,68,68,0.05);
-            border: 1px solid rgba(239,68,68,0.12);
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.12);
             border-radius: 10px;
             margin-bottom: 16px;
-            font-size: 0.8rem; color: #64748b;
+            font-size: 0.8rem;
+            color: #64748b;
         }
-        .dark .yt-live-info-bar { background: rgba(239,68,68,0.06); color: #94a3b8; }
-        .yt-live-info-bar strong { color: #dc2626; }
+
+        .dark .yt-live-info-bar {
+            background: rgba(239, 68, 68, 0.06);
+            color: #94a3b8;
+        }
+
+        .yt-live-info-bar strong {
+            color: #dc2626;
+        }
 
         /* ── YT Live Slot Checklist ── */
         .yt-slot-check-label {
@@ -1750,9 +1874,11 @@
             user-select: none;
             white-space: nowrap;
         }
+
         .yt-slot-checkbox {
             display: none;
         }
+
         .yt-slot-check-custom {
             width: 20px;
             height: 20px;
@@ -1767,46 +1893,56 @@
             transition: all 0.2s ease;
             flex-shrink: 0;
         }
+
         .dark .yt-slot-check-custom {
             border-color: #475569;
         }
+
         .yt-slot-check-label:hover .yt-slot-check-custom {
             border-color: #22c55e;
-            background: rgba(34,197,94,0.08);
+            background: rgba(34, 197, 94, 0.08);
         }
-        .yt-slot-checkbox:checked + .yt-slot-check-custom {
+
+        .yt-slot-checkbox:checked+.yt-slot-check-custom {
             background: linear-gradient(135deg, #16a34a, #22c55e);
             border-color: #22c55e;
-            box-shadow: 0 2px 8px rgba(34,197,94,0.35);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.35);
         }
+
         .yt-slot-check-text {
             font-size: 0.72rem;
             font-weight: 600;
             color: #94a3b8;
             transition: color 0.2s;
         }
+
         .yt-slot-check-label:hover .yt-slot-check-text {
             color: #22c55e;
         }
+
         /* Checked row style */
         .yt-live-slots-table tr.yt-slot-checked td {
             opacity: 0.55;
             text-decoration: line-through;
-            text-decoration-color: rgba(34,197,94,0.5);
+            text-decoration-color: rgba(34, 197, 94, 0.5);
         }
+
         .yt-live-slots-table tr.yt-slot-checked td:last-child {
             text-decoration: none;
             opacity: 1;
         }
+
         .yt-live-slots-table tr.yt-slot-checked .yt-slot-check-text {
             color: #22c55e;
             text-decoration: none;
         }
+
         .yt-live-slots-table tr.yt-slot-checked {
-            background: rgba(34,197,94,0.04);
+            background: rgba(34, 197, 94, 0.04);
         }
+
         .dark .yt-live-slots-table tr.yt-slot-checked {
-            background: rgba(34,197,94,0.05);
+            background: rgba(34, 197, 94, 0.05);
         }
 
         /* TikTok Tab System */
@@ -2905,228 +3041,234 @@
             <!-- ===== PANEL: REGULER (semua konten lama) ===== -->
             <div id="yt-reguler-panel">
 
-            <!-- Header — paling atas -->
-            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">YouTube Channel Inventory</h2>
-                    <p class="text-gray-600 dark:text-gray-300">Manage your YouTube channels, monetization status, and
-                        assets.</p>
-                </div>
-                <button id="add-channel-btn"
-                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all flex items-center gap-2">
-                    <i class="fas fa-plus"></i>
-                    <span>Add New Channel</span>
-                </button>
-            </div>
-
-
-            <!-- ===== YouTube Project Board (Enhanced) ===== -->
-            <div id="yt-project-board-panel"
-                class="mb-8 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
-                style="background:#0f172a;">
-
-                <!-- Board Header Bar -->
-                <div id="yt-board-header-bar" class="px-4 py-2.5">
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <!-- Brand -->
-                        <div class="flex items-center gap-1.5 mr-2">
-                            <span class="yt-board-title">Project Board</span>
-                        </div>
-
-                        <!-- Filter & Search dropdown -->
-                        <div id="yt-filter-dropdown" class="relative">
-                            <button id="yt-filter-dropdown-btn"
-                                class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
-                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;">
-                                <i class="fas fa-filter text-[10px]"></i> Filter &amp; Search
-                                <i class="fas fa-chevron-down text-[9px] transition-transform"
-                                    id="yt-filter-chevron"></i>
-                            </button>
-                            <!-- Filter panel -->
-                            <div id="yt-filter-dropdown-panel" class="hidden">
-                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2" style="color:#475569;">
-                                    Active Filters</p>
-                                <div id="yt-active-tags" class="flex flex-wrap gap-1.5 mb-3">
-                                    <span class="yt-active-tag-pill" data-tag="due-week">
-                                        Due: This Week
-                                        <span class="remove-tag" onclick="removeYtFilter('due-week')">✕</span>
-                                    </span>
-                                    <span class="yt-active-tag-pill" data-tag="tag-creator">
-                                        Tag: Creator
-                                        <span class="remove-tag" onclick="removeYtFilter('tag-creator')">✕</span>
-                                    </span>
-                                </div>
-                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2" style="color:#475569;">
-                                    Filter by Tag</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <button onclick="addYtFilter('tag-creator')"
-                                        class="yt-task-tag-pill yt-tag-orange">Creator</button>
-                                    <button onclick="addYtFilter('tag-editor')"
-                                        class="yt-task-tag-pill yt-tag-blue">Editor</button>
-                                    <button onclick="addYtFilter('tag-design')"
-                                        class="yt-task-tag-pill yt-tag-green">Design</button>
-                                    <button onclick="addYtFilter('tag-urgent')"
-                                        class="yt-task-tag-pill yt-tag-red">Urgent</button>
-                                </div>
-                                <hr style="border-color:rgba(255,255,255,0.07);margin:10px 0;">
-                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2" style="color:#475569;">
-                                    Due Date</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <button onclick="addYtFilter('due-week')" class="yt-task-tag-pill yt-tag-blue">This
-                                        Week</button>
-                                    <button onclick="addYtFilter('due-today')"
-                                        class="yt-task-tag-pill yt-tag-red">Today</button>
-                                    <button onclick="addYtFilter('due-month')"
-                                        class="yt-task-tag-pill yt-tag-green">This Month</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Search bar -->
-                        <div class="yt-search-wrap">
-                            <i class="fas fa-search yt-search-icon"></i>
-                            <input id="yt-board-search" type="text" placeholder="Search for tasks..."
-                                oninput="filterYtBoard(this.value)">
-                        </div>
-
-                        <!-- Filter icon -->
-                        <button title="Advanced filter"
-                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;transition:all 0.2s;"
-                            onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
-                            <i class="fas fa-sliders-h" style="font-size:11px;"></i>
-                        </button>
-
-                        <!-- Spacer -->
-                        <div class="flex-1"></div>
-
-                        <!-- Settings (size) -->
-                        <div class="relative">
-                            <button id="yt-board-settings-btn" title="Board size settings"
-                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;font-size:11px;transition:all 0.2s;"
-                                onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
-                                <i class="fas fa-expand-arrows-alt"></i>
-                            </button>
-                            <!-- Settings popover -->
-                            <div id="yt-board-settings-popover"
-                                class="hidden absolute top-9 right-0 z-30 rounded-xl shadow-xl p-4 w-64"
-                                style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);">
-                                <p class="text-xs font-bold mb-3" style="color:#e2e8f0;">Board Size Settings</p>
-                                <div class="mb-3">
-                                    <div class="flex justify-between mb-1">
-                                        <label class="text-xs" style="color:#64748b;">Column Width</label>
-                                        <span id="yt-col-width-val" class="text-xs font-semibold"
-                                            style="color:#ef4444;">248px</span>
-                                    </div>
-                                    <input id="yt-col-width-slider" type="range" min="120" max="400" step="8"
-                                        value="248" class="w-full accent-red-500 cursor-pointer">
-                                </div>
-                                <div class="mb-1">
-                                    <div class="flex justify-between mb-1">
-                                        <label class="text-xs" style="color:#64748b;">Task List Height</label>
-                                        <span id="yt-col-height-val" class="text-xs font-semibold"
-                                            style="color:#ef4444;">280px</span>
-                                    </div>
-                                    <input id="yt-col-height-slider" type="range" min="80" max="700" step="8"
-                                        value="280" class="w-full accent-red-500 cursor-pointer">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add Column button -->
-                        <button id="yt-add-column-btn"
-                            class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
-                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;"
-                            onmouseenter="this.style.background='rgba(255,255,255,0.14)'"
-                            onmouseleave="this.style.background='rgba(255,255,255,0.08)'">
-                            <i class="fas fa-plus text-[10px]"></i> Add Column
-                        </button>
-
-                        <!-- Add Task button -->
-                        <button id="yt-add-task-btn"
-                            class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
-                            style="background:linear-gradient(135deg,#dc2626,#b91c1c);border:none;color:white;box-shadow:0 2px 8px rgba(220,38,38,0.3);"
-                            onmouseenter="this.style.boxShadow='0 4px 16px rgba(220,38,38,0.5)'"
-                            onmouseleave="this.style.boxShadow='0 2px 8px rgba(220,38,38,0.3)'">
-                            <i class="fas fa-plus text-[10px]"></i> Add Task
-                        </button>
+                <!-- Header — paling atas -->
+                <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white">YouTube Channel Inventory</h2>
+                        <p class="text-gray-600 dark:text-gray-300">Manage your YouTube channels, monetization status,
+                            and
+                            assets.</p>
                     </div>
-                </div>
-
-                <!-- Board columns rendered by JS -->
-                <div id="yt-board" class="flex gap-3 overflow-x-auto pb-2" style="padding:12px;"></div>
-
-                <!-- Show Archived Cards footer -->
-                <div id="yt-board-footer">
-                    <button id="yt-show-archived-btn" onclick="toggleYtArchivedCards()">
-                        <i class="fas fa-archive" style="font-size:0.7rem;"></i>
-                        <span>Show Archived Cards</span>
+                    <button id="add-channel-btn"
+                        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        <span>Add New Channel</span>
                     </button>
                 </div>
-            </div>
 
 
-            <!-- Upload Summary Card (like Telegram notification) -->
-            <div id="yt-upload-summary"
-                class="mb-6 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hidden">
-                <!-- Summary rendered dynamically by JS -->
-            </div>
+                <!-- ===== YouTube Project Board (Enhanced) ===== -->
+                <div id="yt-project-board-panel"
+                    class="mb-8 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                    style="background:#0f172a;">
 
-            <!-- Adsense Tab Bar -->
-            <div id="yt-adsense-tab-bar" class="yt-adsense-tab-bar mb-6">
-                <!-- Tabs rendered dynamically by JS -->
-            </div>
+                    <!-- Board Header Bar -->
+                    <div id="yt-board-header-bar" class="px-4 py-2.5">
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <!-- Brand -->
+                            <div class="flex items-center gap-1.5 mr-2">
+                                <span class="yt-board-title">Project Board</span>
+                            </div>
 
-            <!-- Tab Content Area (channels + notes, rendered dynamically per active tab) -->
-            <div id="yt-tab-content" class="mt-6">
-                <!-- YouTube Channels List -->
-                <div id="youtube-channels-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Channels will be rendered here -->
-                </div>
+                            <!-- Filter & Search dropdown -->
+                            <div id="yt-filter-dropdown" class="relative">
+                                <button id="yt-filter-dropdown-btn"
+                                    class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                                    style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;">
+                                    <i class="fas fa-filter text-[10px]"></i> Filter &amp; Search
+                                    <i class="fas fa-chevron-down text-[9px] transition-transform"
+                                        id="yt-filter-chevron"></i>
+                                </button>
+                                <!-- Filter panel -->
+                                <div id="yt-filter-dropdown-panel" class="hidden">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider mb-2"
+                                        style="color:#475569;">
+                                        Active Filters</p>
+                                    <div id="yt-active-tags" class="flex flex-wrap gap-1.5 mb-3">
+                                        <span class="yt-active-tag-pill" data-tag="due-week">
+                                            Due: This Week
+                                            <span class="remove-tag" onclick="removeYtFilter('due-week')">✕</span>
+                                        </span>
+                                        <span class="yt-active-tag-pill" data-tag="tag-creator">
+                                            Tag: Creator
+                                            <span class="remove-tag" onclick="removeYtFilter('tag-creator')">✕</span>
+                                        </span>
+                                    </div>
+                                    <p class="text-[10px] font-bold uppercase tracking-wider mb-2"
+                                        style="color:#475569;">
+                                        Filter by Tag</p>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <button onclick="addYtFilter('tag-creator')"
+                                            class="yt-task-tag-pill yt-tag-orange">Creator</button>
+                                        <button onclick="addYtFilter('tag-editor')"
+                                            class="yt-task-tag-pill yt-tag-blue">Editor</button>
+                                        <button onclick="addYtFilter('tag-design')"
+                                            class="yt-task-tag-pill yt-tag-green">Design</button>
+                                        <button onclick="addYtFilter('tag-urgent')"
+                                            class="yt-task-tag-pill yt-tag-red">Urgent</button>
+                                    </div>
+                                    <hr style="border-color:rgba(255,255,255,0.07);margin:10px 0;">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider mb-2"
+                                        style="color:#475569;">
+                                        Due Date</p>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <button onclick="addYtFilter('due-week')"
+                                            class="yt-task-tag-pill yt-tag-blue">This
+                                            Week</button>
+                                        <button onclick="addYtFilter('due-today')"
+                                            class="yt-task-tag-pill yt-tag-red">Today</button>
+                                        <button onclick="addYtFilter('due-month')"
+                                            class="yt-task-tag-pill yt-tag-green">This Month</button>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Empty State (hidden by default) -->
-                <div id="youtube-empty-state" class="hidden text-center py-12">
-                    <div
-                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                        <i class="fab fa-youtube text-3xl text-gray-400"></i>
+                            <!-- Search bar -->
+                            <div class="yt-search-wrap">
+                                <i class="fas fa-search yt-search-icon"></i>
+                                <input id="yt-board-search" type="text" placeholder="Search for tasks..."
+                                    oninput="filterYtBoard(this.value)">
+                            </div>
+
+                            <!-- Filter icon -->
+                            <button title="Advanced filter"
+                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;transition:all 0.2s;"
+                                onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
+                                <i class="fas fa-sliders-h" style="font-size:11px;"></i>
+                            </button>
+
+                            <!-- Spacer -->
+                            <div class="flex-1"></div>
+
+                            <!-- Settings (size) -->
+                            <div class="relative">
+                                <button id="yt-board-settings-btn" title="Board size settings"
+                                    style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;font-size:11px;transition:all 0.2s;"
+                                    onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </button>
+                                <!-- Settings popover -->
+                                <div id="yt-board-settings-popover"
+                                    class="hidden absolute top-9 right-0 z-30 rounded-xl shadow-xl p-4 w-64"
+                                    style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);">
+                                    <p class="text-xs font-bold mb-3" style="color:#e2e8f0;">Board Size Settings</p>
+                                    <div class="mb-3">
+                                        <div class="flex justify-between mb-1">
+                                            <label class="text-xs" style="color:#64748b;">Column Width</label>
+                                            <span id="yt-col-width-val" class="text-xs font-semibold"
+                                                style="color:#ef4444;">248px</span>
+                                        </div>
+                                        <input id="yt-col-width-slider" type="range" min="120" max="400" step="8"
+                                            value="248" class="w-full accent-red-500 cursor-pointer">
+                                    </div>
+                                    <div class="mb-1">
+                                        <div class="flex justify-between mb-1">
+                                            <label class="text-xs" style="color:#64748b;">Task List Height</label>
+                                            <span id="yt-col-height-val" class="text-xs font-semibold"
+                                                style="color:#ef4444;">280px</span>
+                                        </div>
+                                        <input id="yt-col-height-slider" type="range" min="80" max="700" step="8"
+                                            value="280" class="w-full accent-red-500 cursor-pointer">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Add Column button -->
+                            <button id="yt-add-column-btn"
+                                class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;"
+                                onmouseenter="this.style.background='rgba(255,255,255,0.14)'"
+                                onmouseleave="this.style.background='rgba(255,255,255,0.08)'">
+                                <i class="fas fa-plus text-[10px]"></i> Add Column
+                            </button>
+
+                            <!-- Add Task button -->
+                            <button id="yt-add-task-btn"
+                                class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                                style="background:linear-gradient(135deg,#dc2626,#b91c1c);border:none;color:white;box-shadow:0 2px 8px rgba(220,38,38,0.3);"
+                                onmouseenter="this.style.boxShadow='0 4px 16px rgba(220,38,38,0.5)'"
+                                onmouseleave="this.style.boxShadow='0 2px 8px rgba(220,38,38,0.3)'">
+                                <i class="fas fa-plus text-[10px]"></i> Add Task
+                            </button>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">No channels yet</h3>
-                    <p class="text-gray-500 dark:text-gray-400 mt-1">Get started by creating a new YouTube channel
-                        inventory
-                        item.</p>
-                </div>
 
-                <hr class="my-8 border-gray-200 dark:border-gray-700">
+                    <!-- Board columns rendered by JS -->
+                    <div id="yt-board" class="flex gap-3 overflow-x-auto pb-2" style="padding:12px;"></div>
 
-                <!-- YouTube Combined Notes Section (shown only on Adsense Gabungan tab) -->
-                <div id="youtube-combined-notes-section" class="hidden">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Notes — Adsense Gabungan</h3>
-                        <button id="youtube-combined-add-note-btn"
-                            class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
-                            <i class="fas fa-plus"></i> Add Note
+                    <!-- Show Archived Cards footer -->
+                    <div id="yt-board-footer">
+                        <button id="yt-show-archived-btn" onclick="toggleYtArchivedCards()">
+                            <i class="fas fa-archive" style="font-size:0.7rem;"></i>
+                            <span>Show Archived Cards</span>
                         </button>
                     </div>
-                    <!-- YouTube Combined Notes List -->
-                    <div id="youtube-combined-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Notes rendered here -->
-                    </div>
                 </div>
 
-                <!-- YouTube Notes Section (shown on individual Adsense tabs) -->
-                <div id="youtube-notes-section">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Notes</h3>
-                        <button id="youtube-add-note-btn"
-                            class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
-                            <i class="fas fa-plus"></i> Add Note
-                        </button>
+
+                <!-- Upload Summary Card (like Telegram notification) -->
+                <div id="yt-upload-summary"
+                    class="mb-6 rounded-2xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-700 hidden">
+                    <!-- Summary rendered dynamically by JS -->
+                </div>
+
+                <!-- Adsense Tab Bar -->
+                <div id="yt-adsense-tab-bar" class="yt-adsense-tab-bar mb-6">
+                    <!-- Tabs rendered dynamically by JS -->
+                </div>
+
+                <!-- Tab Content Area (channels + notes, rendered dynamically per active tab) -->
+                <div id="yt-tab-content" class="mt-6">
+                    <!-- YouTube Channels List -->
+                    <div id="youtube-channels-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Channels will be rendered here -->
                     </div>
-                    <!-- YouTube Notes List -->
-                    <div id="youtube-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Notes rendered here -->
+
+                    <!-- Empty State (hidden by default) -->
+                    <div id="youtube-empty-state" class="hidden text-center py-12">
+                        <div
+                            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                            <i class="fab fa-youtube text-3xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">No channels yet</h3>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">Get started by creating a new YouTube channel
+                            inventory
+                            item.</p>
+                    </div>
+
+                    <hr class="my-8 border-gray-200 dark:border-gray-700">
+
+                    <!-- YouTube Combined Notes Section (shown only on Adsense Gabungan tab) -->
+                    <div id="youtube-combined-notes-section" class="hidden">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Notes — Adsense Gabungan</h3>
+                            <button id="youtube-combined-add-note-btn"
+                                class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
+                                <i class="fas fa-plus"></i> Add Note
+                            </button>
+                        </div>
+                        <!-- YouTube Combined Notes List -->
+                        <div id="youtube-combined-notes-list"
+                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Notes rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- YouTube Notes Section (shown on individual Adsense tabs) -->
+                    <div id="youtube-notes-section">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Notes</h3>
+                            <button id="youtube-add-note-btn"
+                                class="bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 transition flex items-center gap-2 text-sm">
+                                <i class="fas fa-plus"></i> Add Note
+                            </button>
+                        </div>
+                        <!-- YouTube Notes List -->
+                        <div id="youtube-notes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Notes rendered here -->
+                        </div>
                     </div>
                 </div>
-            </div>
             </div><!-- /#yt-reguler-panel -->
 
             <!-- ===== PANEL: LIVE (YouTube Live Schedule Rotator) ===== -->
@@ -3139,8 +3281,28 @@
                             <span class="yt-live-pulse" style="width:12px;height:12px;"></span>
                             YouTube Live Schedule Rotator
                         </h2>
-                        <p class="text-gray-600 dark:text-gray-300">Kelola rotasi jadwal live musik 24/7 untuk target US &mdash; Zero daily duplicates, WIB&rarr;EST auto-convert.</p>
+                        <p class="text-gray-600 dark:text-gray-300">Kelola rotasi jadwal live musik 24/7 untuk target US
+                            &mdash; Zero daily duplicates, WIB&rarr;EST auto-convert.</p>
                     </div>
+                </div>
+
+                <!-- ===== Channel Tab Bar ===== -->
+                <div id="ytlive-channel-bar"
+                    style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;padding:10px 14px;background:rgba(15,23,42,0.5);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+                    <span style="font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap;flex-shrink:0;">
+                        <i class="fas fa-tv" style="margin-right:4px;"></i>Channel:
+                    </span>
+                    <div id="ytlive-channel-tabs" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0;">
+                        <!-- Tabs rendered by JS -->
+                        <span style="color:#475569;font-size:0.75rem;font-style:italic;">Memuat channel...</span>
+                    </div>
+                    <button id="ytlive-add-channel-btn" type="button"
+                        style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#f87171;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;"
+                        onmouseover="this.style.background='rgba(239,68,68,0.22)'"
+                        onmouseout="this.style.background='rgba(239,68,68,0.12)'"
+                        title="Tambah channel baru">
+                        <i class="fas fa-plus" style="font-size:9px;"></i> Tambah Channel
+                    </button>
                 </div>
 
                 <!-- Config Card -->
@@ -3152,27 +3314,47 @@
                     <div class="mb-4">
                         <!-- Master Video Names: structured per-video with stream keys -->
                         <div class="yt-live-field" style="margin-bottom:0;">
-                            <label style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
-                                <span>Master Video Names <span class="text-red-400" style="font-weight:500;">(nama video + stream key public &amp; unlisted)</span></span>
-                                <button type="button" id="ytlive-add-video-btn" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.25)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'">
+                            <label
+                                style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+                                <span>Master Video Names <span class="text-red-400" style="font-weight:500;">(nama video
+                                        + stream key public &amp; unlisted)</span></span>
+                                <button type="button" id="ytlive-add-video-btn"
+                                    style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.2s;"
+                                    onmouseover="this.style.background='rgba(239,68,68,0.25)'"
+                                    onmouseout="this.style.background='rgba(239,68,68,0.15)'">
                                     <i class="fas fa-plus"></i> Tambah Video
                                 </button>
                             </label>
                         </div>
                         <!-- Table header for master video rows -->
-                        <div id="ytlive-video-list-wrap" style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;background:rgba(15,23,42,0.4);">
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:0;background:rgba(30,41,59,0.8);border-bottom:1px solid rgba(255,255,255,0.08);padding:7px 12px;">
-                                <span style="font-size:0.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;">Nama Video</span>
-                                <span style="font-size:0.7rem;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i class="fas fa-globe" style="margin-right:4px;"></i>Stream Key Public</span>
-                                <span style="font-size:0.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i class="fas fa-eye-slash" style="margin-right:4px;"></i>Stream Key Unlisted</span>
+                        <div id="ytlive-video-list-wrap"
+                            style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;background:rgba(15,23,42,0.4);">
+                            <div
+                                style="display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:0;background:rgba(30,41,59,0.8);border-bottom:1px solid rgba(255,255,255,0.08);padding:7px 12px;">
+                                <span
+                                    style="font-size:0.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;">Nama
+                                    Video</span>
+                                <span
+                                    style="font-size:0.7rem;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i
+                                        class="fas fa-globe" style="margin-right:4px;"></i>Stream Key Public</span>
+                                <span
+                                    style="font-size:0.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i
+                                        class="fas fa-eye-slash" style="margin-right:4px;"></i>Stream Key
+                                    Unlisted</span>
                                 <span></span>
                             </div>
                             <div id="ytlive-video-rows" style="max-height:320px;overflow-y:auto;"></div>
                         </div>
                         <!-- Footer: info + save button -->
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:10px;flex-wrap:wrap;">
-                            <p style="font-size:0.68rem;color:#64748b;margin:0;"><i class="fas fa-info-circle" style="margin-right:4px;"></i>Stream key akan otomatis muncul di kolom jadwal sesuai tipe slot (Public/Unlisted).</p>
-                            <button type="button" id="ytlive-save-streamkeys-btn" style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:linear-gradient(135deg,#16a34a,#15803d);border:1px solid rgba(34,197,94,0.4);color:#fff;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter='brightness(1)'">
+                        <div
+                            style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:10px;flex-wrap:wrap;">
+                            <p style="font-size:0.68rem;color:#64748b;margin:0;"><i class="fas fa-info-circle"
+                                    style="margin-right:4px;"></i>Stream key akan otomatis muncul di kolom jadwal sesuai
+                                tipe slot (Public/Unlisted).</p>
+                            <button type="button" id="ytlive-save-streamkeys-btn"
+                                style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:linear-gradient(135deg,#16a34a,#15803d);border:1px solid rgba(34,197,94,0.4);color:#fff;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;"
+                                onmouseover="this.style.filter='brightness(1.15)'"
+                                onmouseout="this.style.filter='brightness(1)'">
                                 <i class="fas fa-save"></i> Simpan Stream Keys
                             </button>
                         </div>
@@ -3218,8 +3400,13 @@
                             <i class="fas fa-upload"></i> Import Backup (.JSON)
                         </button>
                         <input type="file" id="ytlive-import-input" accept=".json" class="hidden">
-                        <button id="ytlive-send-telegram-btn" class="yt-live-btn-secondary" style="background:linear-gradient(135deg,#1a7db5,#229ED9);border-color:rgba(34,158,217,0.5);color:#fff;" title="Kirim jadwal live hari ini & besok ke Telegram">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                        <button id="ytlive-send-telegram-btn" class="yt-live-btn-secondary"
+                            style="background:linear-gradient(135deg,#1a7db5,#229ED9);border-color:rgba(34,158,217,0.5);color:#fff;"
+                            title="Kirim jadwal live hari ini & besok ke Telegram">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+                                <path
+                                    d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z" />
+                            </svg>
                             Kirim Jadwal Live ke Telegram
                         </button>
                     </div>
@@ -3241,7 +3428,8 @@
                         <div class="yt-live-schedule-empty">
                             <i class="fas fa-broadcast-tower text-4xl mb-4 block text-gray-300 dark:text-gray-600"></i>
                             <p class="font-semibold text-gray-400 dark:text-gray-500">Belum ada jadwal tersimpan.</p>
-                            <p class="text-sm text-gray-400 dark:text-gray-600 mt-1">Isi konfigurasi di atas lalu klik <strong>Generate Schedule</strong> untuk memulai.</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-600 mt-1">Isi konfigurasi di atas lalu klik
+                                <strong>Generate Schedule</strong> untuk memulai.</p>
                         </div>
                     </div>
                 </div>
@@ -3428,13 +3616,18 @@
                 style="background:linear-gradient(135deg,rgba(34,158,217,0.2),rgba(26,125,181,0.1));">
                 <div class="flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0"
                     style="background:linear-gradient(135deg,#229ED9,#1a7db5);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path
+                            d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z" />
+                    </svg>
                 </div>
                 <div>
                     <h3 class="text-white font-bold text-base leading-tight">Kirim Laporan ke Telegram</h3>
-                    <p id="tg-modal-subtitle" class="text-blue-300 text-xs mt-0.5">Jadwal Upload & Live — Hari Ini & Besok</p>
+                    <p id="tg-modal-subtitle" class="text-blue-300 text-xs mt-0.5">Jadwal Upload & Live — Hari Ini &
+                        Besok</p>
                 </div>
-                <button id="tg-modal-close-btn" class="ml-auto text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
+                <button id="tg-modal-close-btn"
+                    class="ml-auto text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -3445,8 +3638,8 @@
                     <label for="tg-bot-token-input" class="block text-xs font-semibold text-gray-300 mb-1.5">
                         <i class="fas fa-robot text-blue-400 mr-1"></i>Bot Token
                     </label>
-                    <input type="text" id="tg-bot-token-input" placeholder="1234567890:AABBCC..."
-                        autocomplete="off" spellcheck="false"
+                    <input type="text" id="tg-bot-token-input" placeholder="1234567890:AABBCC..." autocomplete="off"
+                        spellcheck="false"
                         class="w-full px-3.5 py-2.5 rounded-xl text-sm font-mono transition-all duration-200"
                         style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#e2e8f0;outline:none;"
                         onfocus="this.style.borderColor='rgba(34,158,217,0.6)';this.style.boxShadow='0 0 0 3px rgba(34,158,217,0.15)'"
@@ -3467,11 +3660,15 @@
                     <p class="text-xs text-gray-500 mt-1">Gunakan @userinfobot untuk menemukan Chat ID</p>
                 </div>
                 <!-- Remember toggle -->
-                <label class="flex items-center gap-2.5 cursor-pointer select-none" title="Simpan token di localStorage browser ini">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none"
+                    title="Simpan token di localStorage browser ini">
                     <span class="relative inline-block w-9 h-5">
                         <input type="checkbox" id="tg-remember-chk" class="sr-only peer">
-                        <span class="absolute inset-0 rounded-full transition-colors duration-200 peer-checked:bg-blue-500" style="background:rgba(255,255,255,0.15);"></span>
-                        <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4"></span>
+                        <span
+                            class="absolute inset-0 rounded-full transition-colors duration-200 peer-checked:bg-blue-500"
+                            style="background:rgba(255,255,255,0.15);"></span>
+                        <span
+                            class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4"></span>
                     </span>
                     <span class="text-xs text-gray-300">Ingat kredensial di browser ini</span>
                 </label>
@@ -3487,7 +3684,10 @@
                 <button id="tg-modal-send-btn"
                     class="inline-flex items-center gap-2 px-5 py-2 text-sm font-bold text-white rounded-xl transition-all duration-200"
                     style="background:linear-gradient(135deg,#229ED9,#1a7db5);box-shadow:0 4px 15px rgba(34,158,217,0.4);">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.014 9.487c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.877.734z" />
+                    </svg>
                     Kirim Laporan
                 </button>
             </div>
@@ -8987,7 +9187,7 @@
             const combinedChannels = channels.filter(c => c.isCombinedAdsense === true);
             const combinedCount = combinedChannels.length;
 
-            // Build list for a date: show only if scheduled AND not yet uploaded
+            // Build list for a date: show if scheduled (including already uploaded)
             const buildDayList = (dateStr) => {
                 const items = [];
                 combinedChannels.forEach(c => {
@@ -8995,13 +9195,17 @@
                     const isUploaded = c.uploads && c.uploads[dateStr];
                     const isReady = c.readyVideos && c.readyVideos[dateStr]; // date-specific check
 
-                    if (hasSchedule && !isUploaded) {
+                    if (hasSchedule) {
                         const isMonetized = c.monetization === 'Monetized';
                         const monetizeBadge = isMonetized
                             ? `<span class="ml-1 text-[10px] bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300 px-1.5 py-0.5 rounded-full font-bold">💰</span>`
                             : '';
                         let statusIcon, statusText, statusClass;
-                        if (isReady) {
+                        if (isUploaded) {
+                            statusIcon = '☑️';
+                            statusText = 'Sudah diupload';
+                            statusClass = 'text-green-500 dark:text-green-400';
+                        } else if (isReady) {
                             statusIcon = '✅';
                             statusText = 'Video sudah ready — tinggal upload';
                             statusClass = 'text-green-600 dark:text-green-400';
@@ -9012,7 +9216,7 @@
                         }
                         // Inline checklist buttons (Buat Video + Upload)
                         const sourceId = c.sourceAdsenseId || currentYtAdsenseTab;
-                        const buatVideoChk = !isReady ? `
+                        const buatVideoChk = `
                             <label class="yt-summary-checklist-item inline-flex items-center gap-1.5 cursor-pointer select-none group" title="Tandai video sudah dibuat/ready">
                                 <span class="relative flex-shrink-0">
                                     <input type="checkbox" class="yt-summary-ready-chk peer sr-only"
@@ -9020,12 +9224,14 @@
                                         data-date="${dateStr}"
                                         data-source-id="${sourceId}"
                                         ${isReady ? 'checked' : ''}>
-                                    <span class="flex w-[18px] h-[18px] rounded-[4px] border-2 border-orange-400 dark:border-orange-500 bg-white dark:bg-gray-700 peer-checked:bg-orange-500 peer-checked:border-orange-500 transition-all items-center justify-center">
-                                        <i class="fas fa-film text-[8px] text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                    <span class="flex w-[18px] h-[18px] rounded-[4px] border-2 peer-checked:bg-orange-500 peer-checked:border-orange-500 transition-all items-center justify-center"
+                                        style="${isReady ? 'background-color:#f97316;border-color:#f97316;' : 'background-color:white;border-color:#fb923c;'}">
+                                        <i class="fas fa-film text-[8px] text-white transition-opacity peer-checked:opacity-100"
+                                            style="opacity:${isReady ? '1' : '0'}"></i>
                                     </span>
                                 </span>
                                 <span class="text-[10px] font-semibold text-orange-600 dark:text-orange-400 group-hover:text-orange-700 leading-none whitespace-nowrap">Buat Video</span>
-                            </label>` : '';
+                            </label>`;
                         const uploadChk = `
                             <label class="yt-summary-checklist-item inline-flex items-center gap-1.5 cursor-pointer select-none group" title="Tandai sudah diupload">
                                 <span class="relative flex-shrink-0">
@@ -9034,22 +9240,16 @@
                                         data-date="${dateStr}"
                                         data-source-id="${sourceId}"
                                         ${isUploaded ? 'checked' : ''}>
-                                    <span class="flex w-[18px] h-[18px] rounded-[4px] border-2 border-green-400 dark:border-green-500 bg-white dark:bg-gray-700 peer-checked:bg-green-500 peer-checked:border-green-500 transition-all items-center justify-center">
-                                        <i class="fas fa-upload text-[8px] text-white opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                    <span class="flex w-[18px] h-[18px] rounded-[4px] border-2 peer-checked:bg-green-500 peer-checked:border-green-500 transition-all items-center justify-center"
+                                        style="${isUploaded ? 'background-color:#22c55e;border-color:#22c55e;' : 'background-color:white;border-color:#4ade80;'}">
+                                        <i class="fas fa-upload text-[8px] text-white transition-opacity peer-checked:opacity-100"
+                                            style="opacity:${isUploaded ? '1' : '0'}"></i>
                                     </span>
                                 </span>
                                 <span class="text-[10px] font-semibold text-green-600 dark:text-green-400 group-hover:text-green-700 leading-none whitespace-nowrap">Upload</span>
                             </label>`;
-                        items.push(`
-                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0" data-item-channel="${c.id}" data-item-date="${dateStr}">
-                                <span class="mt-0.5 text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center flex-wrap gap-1">
-                                        <span class="font-semibold text-gray-900 dark:text-white text-sm leading-tight">${c.name || c.id}</span>${monetizeBadge}
-                                    </div>
-                                    <span class="text-xs ${statusClass} mt-0.5 leading-tight block">— ${statusText}</span>
-                                    <!-- Cancel & Postpone action row -->
-                                    <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        // Action buttons only for non-uploaded items
+                        const actionButtons = !isUploaded ? `
                                         <button type="button"
                                             class="yt-summary-postpone-btn inline-flex items-center gap-1 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-700 px-2 py-0.5 rounded-full transition-all"
                                             data-channel-id="${c.id}"
@@ -9065,7 +9265,18 @@
                                             data-source-id="${sourceId}"
                                             title="Batalkan jadwal upload ini">
                                             <i class="fas fa-times text-[8px]"></i> Batalkan
-                                        </button>
+                                        </button>` : '';
+                        items.push(`
+                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0${isUploaded ? ' opacity-60' : ''}" data-item-channel="${c.id}" data-item-date="${dateStr}">
+                                <span class="mt-0.5 text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center flex-wrap gap-1">
+                                        <span class="font-semibold text-sm leading-tight${isUploaded ? ' line-through text-gray-400 dark:text-gray-500' : ' text-gray-900 dark:text-white'}">${c.name || c.id}</span>${monetizeBadge}
+                                    </div>
+                                    <span class="text-xs ${statusClass} mt-0.5 leading-tight block">— ${statusText}</span>
+                                    <!-- Cancel & Postpone action row -->
+                                    <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                        ${actionButtons}
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0 ml-auto">
@@ -9475,10 +9686,10 @@
         // --- Main send function: collects both upload + live, sends as tables ---
         const sendScheduleReportToTelegram = async (botToken, chatId, channels) => {
             const now = new Date();
-            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             const formatDateLabel = (d) => {
-                const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-                const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                 return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
             };
             const today = new Date(now);
@@ -9544,10 +9755,10 @@
         // --- Send live-only report to Telegram ---
         const sendLiveOnlyReportToTelegram = async (botToken, chatId) => {
             const now = new Date();
-            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             const formatDateLabel = (d) => {
-                const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-                const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                 return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
             };
             const today = new Date(now);
@@ -9579,7 +9790,7 @@
                         if (found >= 5) break;
                         const label = dayData.isoDate === todayStr ? `📌 Hari Ini — ${todayLabel}`
                             : dayData.isoDate === tomorrowStr ? `⏰ Besok — ${tomorrowLabel}`
-                            : `📅 ${dayData.dateLabel || dayData.isoDate}`;
+                                : `📅 ${dayData.dateLabel || dayData.isoDate}`;
                         const tbl = buildLiveTableMsg(dayData, checkedSlots, label);
                         if (tbl) { parts.push('━━━━━━━━━━━━━━━━━━━'); parts.push(tbl); found++; }
                     }
@@ -10621,19 +10832,27 @@
         initYtAdsenseTabs();
 
         // ============================================================
-        // YOUTUBE LIVE SCHEDULE ROTATOR — Full Implementation
+        // YOUTUBE LIVE SCHEDULE ROTATOR — Multi-Channel Implementation
         // ============================================================
 
-        // --- Firestore References ---
-        const YT_LIVE_CONFIG_REF = doc(db, 'yt_live_rotator', 'configuration');
-        const YT_LIVE_SCHEDULE_REF = doc(db, 'yt_live_rotator', 'active_schedule');
+        // --- Firestore helpers ---
+        // Legacy refs (for one-time migration only)
+        const YT_LIVE_LEGACY_CONFIG_REF = doc(db, 'yt_live_rotator', 'configuration');
+        const YT_LIVE_LEGACY_SCHEDULE_REF = doc(db, 'yt_live_rotator', 'active_schedule');
+        // Per-channel — each uses a top-level collection so Firestore paths are valid (odd segments)
+        const ytLiveChannelConfigRef = (chId) => doc(db, 'yt_live_channel_configs', chId);
+        const ytLiveChannelScheduleRef = (chId) => doc(db, 'yt_live_channel_schedules', chId);
+        const YT_LIVE_CHANNELS_COL = collection(db, 'yt_live_channels');
 
         // --- State ---
         let ytLiveConfig = null;
         let ytLiveScheduleData = null;
         let currentYtModeTab = 'reguler';
+        let ytLiveChannels = [];          // [{id, name, order}]
+        let currentYtLiveChannelId = null;
+        let ytLiveCheckedSlots = {};
 
-        // --- Tab Switch ---
+        // --- Tab Switch (Reguler / Live) ---
         window.switchYtModeTab = (tab) => {
             currentYtModeTab = tab;
             const regulerPanel = document.getElementById('yt-reguler-panel');
@@ -10647,8 +10866,7 @@
                 livePanel.classList.remove('hidden');
                 tabReguler.classList.remove('active');
                 tabLive.classList.add('active');
-                // Load data when switching to Live tab
-                loadYtLiveData();
+                loadYtLiveChannelList();
             } else {
                 livePanel.classList.add('hidden');
                 regulerPanel.classList.remove('hidden');
@@ -10679,7 +10897,7 @@
             btn.closest('.ytlive-video-row').remove();
         };
 
-        const escHtml = (str) => String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        const escHtml = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
         const ytliveReadVideoRows = () => {
             const rows = document.querySelectorAll('#ytlive-video-rows .ytlive-video-row');
@@ -10698,12 +10916,10 @@
             if (!container) return;
             container.innerHTML = '';
             if (!masterVideos || masterVideos.length === 0) {
-                // Add 1 empty row by default
                 container.appendChild(ytliveMakeVideoRow('', '', '', 0));
                 return;
             }
             masterVideos.forEach((v, i) => {
-                // Support both old format (string) and new format (object)
                 if (typeof v === 'string') {
                     container.appendChild(ytliveMakeVideoRow(v, '', '', i));
                 } else {
@@ -10718,6 +10934,8 @@
             const el = (id) => document.getElementById(id);
             if (cfg.masterVideos && Array.isArray(cfg.masterVideos)) {
                 ytlivePopulateVideoRows(cfg.masterVideos);
+            } else {
+                ytlivePopulateVideoRows([]);
             }
             if (cfg.publicSlotsCount != null) el('ytlive-pub-slots').value = cfg.publicSlotsCount;
             if (cfg.unlistedSlotsCount != null) el('ytlive-unl-slots').value = cfg.unlistedSlotsCount;
@@ -10728,68 +10946,363 @@
             if (cfg.daysToGenerate != null) el('ytlive-days').value = cfg.daysToGenerate;
         };
 
-        // --- Load from Firestore (on tab open, no auto-generate) ---
-        const loadYtLiveData = async () => {
+        // --- Clear form to defaults ---
+        const clearYtLiveForm = () => {
+            const el = (id) => document.getElementById(id);
+            ytlivePopulateVideoRows([]);
+            el('ytlive-pub-slots').value = 3;
+            el('ytlive-unl-slots').value = 3;
+            el('ytlive-pub-min').value = 2;
+            el('ytlive-pub-max').value = 4;
+            el('ytlive-unl-min').value = 12;
+            el('ytlive-unl-max').value = 16;
+            el('ytlive-days').value = 7;
+        };
+
+        // ============================================================
+        // MULTI-CHANNEL MANAGEMENT
+        // ============================================================
+
+        // Render channel tab bar
+        const renderYtLiveChannelTabs = () => {
+            const tabsEl = document.getElementById('ytlive-channel-tabs');
+            if (!tabsEl) return;
+            tabsEl.innerHTML = '';
+
+            if (ytLiveChannels.length === 0) {
+                tabsEl.innerHTML = '<span style="color:#475569;font-size:0.75rem;font-style:italic;">Belum ada channel. Klik "+ Tambah Channel".</span>';
+                return;
+            }
+
+            const sorted = [...ytLiveChannels].sort((a, b) => (a.order || 0) - (b.order || 0));
+            sorted.forEach(ch => {
+                const isActive = ch.id === currentYtLiveChannelId;
+                const tab = document.createElement('div');
+                tab.style.cssText = `display:inline-flex;align-items:center;gap:5px;padding:5px 10px 5px 13px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.18s;border:1px solid ${isActive ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.07)'};background:${isActive ? 'rgba(239,68,68,0.18)' : 'rgba(255,255,255,0.04)'};color:${isActive ? '#f87171' : '#94a3b8'};white-space:nowrap;`;
+
+                if (isActive) {
+                    // --- Inline edit mode for active tab ---
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-tv';
+                    icon.style.cssText = 'font-size:9px;opacity:0.7;flex-shrink:0;';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.style.cssText = 'max-width:130px;overflow:hidden;text-overflow:ellipsis;';
+                    nameSpan.textContent = ch.name;
+
+                    // Pencil / rename button
+                    const editBtn = document.createElement('button');
+                    editBtn.type = 'button';
+                    editBtn.title = 'Edit nama channel (double-click nama untuk mengedit)';
+                    editBtn.style.cssText = 'background:none;border:none;cursor:pointer;padding:0 1px;color:#f87171;opacity:0.45;font-size:9px;line-height:1;transition:opacity 0.15s;';
+                    editBtn.innerHTML = '<i class="fas fa-pencil-alt"></i>';
+                    editBtn.onmouseover = () => { editBtn.style.opacity = '1'; };
+                    editBtn.onmouseout = () => { editBtn.style.opacity = '0.45'; };
+
+                    // Delete button
+                    const delBtn = document.createElement('button');
+                    delBtn.type = 'button';
+                    delBtn.title = 'Hapus channel ini';
+                    delBtn.style.cssText = 'background:none;border:none;cursor:pointer;padding:0 1px;color:#f87171;opacity:0.45;font-size:9px;line-height:1;transition:opacity 0.15s;';
+                    delBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    delBtn.onmouseover = () => { delBtn.style.opacity = '1'; };
+                    delBtn.onmouseout = () => { delBtn.style.opacity = '0.45'; };
+                    delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteYtLiveChannel(ch.id, ch.name); });
+
+                    tab.appendChild(icon);
+                    tab.appendChild(nameSpan);
+                    tab.appendChild(editBtn);
+                    tab.appendChild(delBtn);
+
+                    // Enter inline edit mode
+                    const enterEditMode = (e) => {
+                        if (e) e.stopPropagation();
+                        // Replace nameSpan with input
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = ch.name;
+                        input.style.cssText = 'background:rgba(15,23,42,0.8);border:1px solid rgba(239,68,68,0.5);border-radius:5px;color:#f1f5f9;font-size:0.75rem;font-weight:700;padding:1px 6px;outline:none;width:130px;font-family:inherit;';
+                        input.maxLength = 40;
+
+                        const confirmBtn = document.createElement('button');
+                        confirmBtn.type = 'button';
+                        confirmBtn.style.cssText = 'background:none;border:none;cursor:pointer;padding:0 2px;color:#4ade80;font-size:10px;line-height:1;';
+                        confirmBtn.innerHTML = '<i class="fas fa-check"></i>';
+                        confirmBtn.title = 'Simpan';
+
+                        const cancelEditBtn = document.createElement('button');
+                        cancelEditBtn.type = 'button';
+                        cancelEditBtn.style.cssText = 'background:none;border:none;cursor:pointer;padding:0 2px;color:#94a3b8;font-size:10px;line-height:1;';
+                        cancelEditBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        cancelEditBtn.title = 'Batal';
+
+                        // Replace content
+                        tab.innerHTML = '';
+                        tab.appendChild(icon);
+                        tab.appendChild(input);
+                        tab.appendChild(confirmBtn);
+                        tab.appendChild(cancelEditBtn);
+                        tab.style.cursor = 'default';
+
+                        input.focus();
+                        input.select();
+
+                        const doSave = async () => {
+                            const newName = input.value.trim();
+                            if (newName && newName !== ch.name) {
+                                await renameYtLiveChannel(ch.id, newName);
+                            } else {
+                                renderYtLiveChannelTabs();
+                            }
+                        };
+
+                        const doCancel = () => renderYtLiveChannelTabs();
+
+                        confirmBtn.addEventListener('click', (ev) => { ev.stopPropagation(); doSave(); });
+                        cancelEditBtn.addEventListener('click', (ev) => { ev.stopPropagation(); doCancel(); });
+                        input.addEventListener('keydown', (ev) => {
+                            if (ev.key === 'Enter') { ev.preventDefault(); doSave(); }
+                            if (ev.key === 'Escape') doCancel();
+                            ev.stopPropagation();
+                        });
+                        input.addEventListener('click', (ev) => ev.stopPropagation());
+                    };
+
+                    editBtn.addEventListener('click', enterEditMode);
+                    // Double-click on name also enters edit mode
+                    nameSpan.addEventListener('dblclick', enterEditMode);
+                    nameSpan.title = 'Double-click untuk edit nama';
+
+                } else {
+                    tab.title = ch.name;
+                    tab.innerHTML = `<i class="fas fa-tv" style="font-size:9px;opacity:0.7;"></i><span style="max-width:120px;overflow:hidden;text-overflow:ellipsis;">${escHtml(ch.name)}</span>`;
+                    tab.onmouseover = () => { tab.style.background = 'rgba(255,255,255,0.08)'; tab.style.color = '#e2e8f0'; };
+                    tab.onmouseout = () => { tab.style.background = 'rgba(255,255,255,0.04)'; tab.style.color = '#94a3b8'; };
+                    tab.addEventListener('click', () => switchYtLiveChannel(ch.id));
+                }
+
+                tabsEl.appendChild(tab);
+            });
+        };
+
+        // Switch active channel
+        const switchYtLiveChannel = async (channelId) => {
+            if (channelId === currentYtLiveChannelId) return;
+            currentYtLiveChannelId = channelId;
+            renderYtLiveChannelTabs();
+            await loadYtLiveDataForChannel(channelId);
+        };
+
+        // Rename channel
+        const renameYtLiveChannel = async (channelId, newName) => {
+            newName = (newName || '').trim();
+            if (!newName) { renderYtLiveChannelTabs(); return; }
+            if (ytLiveChannels.some(ch => ch.id !== channelId && ch.name.toLowerCase() === newName.toLowerCase())) {
+                showNotification(`Nama channel "${newName}" sudah digunakan.`, true);
+                renderYtLiveChannelTabs();
+                return;
+            }
             try {
-                // Load config
-                const cfgSnap = await getDoc(YT_LIVE_CONFIG_REF);
+                // Update Firestore channel doc
+                await updateDoc(doc(db, 'yt_live_channels', channelId), { name: newName });
+                // Update local state
+                const ch = ytLiveChannels.find(c => c.id === channelId);
+                if (ch) ch.name = newName;
+                renderYtLiveChannelTabs();
+                showNotification(`Nama channel diubah ke "${newName}".`);
+            } catch (err) {
+                console.error('YT Live: failed to rename channel', err);
+                showNotification('Gagal mengubah nama channel.', true);
+                renderYtLiveChannelTabs();
+            }
+        };
+
+        // Add new channel
+        const addYtLiveChannel = async (name) => {
+            name = (name || '').trim();
+            if (!name) return;
+            // Check duplicate name
+            if (ytLiveChannels.some(ch => ch.name.toLowerCase() === name.toLowerCase())) {
+                showNotification(`Channel "${name}" sudah ada.`, true);
+                return;
+            }
+            try {
+                const order = ytLiveChannels.length > 0 ? Math.max(...ytLiveChannels.map(c => c.order || 0)) + 1 : 1;
+                // Create channel doc in collection
+                const newDoc = await addDoc(YT_LIVE_CHANNELS_COL, { name, order, createdAt: Date.now() });
+                const newChannel = { id: newDoc.id, name, order };
+                ytLiveChannels.push(newChannel);
+                showNotification(`Channel "${name}" berhasil ditambahkan!`);
+                // Switch to new channel
+                currentYtLiveChannelId = newDoc.id;
+                renderYtLiveChannelTabs();
+                clearYtLiveForm();
+                clearYtLiveScheduleDisplay();
+                ytLiveConfig = null;
+                ytLiveScheduleData = null;
+                ytLiveCheckedSlots = {};
+            } catch (err) {
+                console.error('YT Live: failed to add channel', err);
+                showNotification('Gagal menambahkan channel.', true);
+            }
+        };
+
+        // Delete active channel
+        const deleteYtLiveChannel = async (channelId, channelName) => {
+            if (ytLiveChannels.length <= 1) {
+                showNotification('Minimal harus ada 1 channel. Tidak bisa menghapus channel terakhir.', true);
+                return;
+            }
+            const confirmed = await showConfirmModal(`Hapus channel "${channelName}"?\n\nKonfigurasi dan jadwal channel ini akan dihapus permanen.`);
+            if (!confirmed) return;
+
+            try {
+                // Delete per-channel Firestore docs
+                try { await deleteDoc(ytLiveChannelConfigRef(channelId)); } catch (_) {}
+                try { await deleteDoc(ytLiveChannelScheduleRef(channelId)); } catch (_) {}
+                try { await deleteDoc(doc(db, 'yt_live_channels', channelId)); } catch (_) {}
+
+                ytLiveChannels = ytLiveChannels.filter(c => c.id !== channelId);
+                showNotification(`Channel "${channelName}" dihapus.`);
+
+                // Switch to first remaining channel
+                const remaining = [...ytLiveChannels].sort((a, b) => (a.order || 0) - (b.order || 0));
+                if (remaining.length > 0) {
+                    currentYtLiveChannelId = remaining[0].id;
+                    renderYtLiveChannelTabs();
+                    await loadYtLiveDataForChannel(currentYtLiveChannelId);
+                }
+            } catch (err) {
+                console.error('YT Live: failed to delete channel', err);
+                showNotification('Gagal menghapus channel.', true);
+            }
+        };
+
+        // Load channel list from Firestore, then auto-select first channel
+        const loadYtLiveChannelList = async () => {
+            try {
+                const snap = await getDocs(YT_LIVE_CHANNELS_COL);
+
+                if (snap.empty) {
+                    // --- Migration: check if legacy data exists ---
+                    const legacyCfgSnap = await getDoc(YT_LIVE_LEGACY_CONFIG_REF);
+                    const legacySchSnap = await getDoc(YT_LIVE_LEGACY_SCHEDULE_REF);
+
+                    if (legacyCfgSnap.exists() || legacySchSnap.exists()) {
+                        // Create "Channel 1" and copy legacy data under it
+                        const newChDoc = await addDoc(YT_LIVE_CHANNELS_COL, { name: 'Channel 1', order: 1, createdAt: Date.now() });
+                        if (legacyCfgSnap.exists()) {
+                            await setDoc(ytLiveChannelConfigRef(newChDoc.id), legacyCfgSnap.data());
+                        }
+                        if (legacySchSnap.exists()) {
+                            await setDoc(ytLiveChannelScheduleRef(newChDoc.id), legacySchSnap.data());
+                        }
+                        ytLiveChannels = [{ id: newChDoc.id, name: 'Channel 1', order: 1 }];
+                        showNotification('Data lama berhasil dimigrasikan ke "Channel 1".');
+                    } else {
+                        // No data at all — start fresh with one channel
+                        const newChDoc = await addDoc(YT_LIVE_CHANNELS_COL, { name: 'Channel 1', order: 1, createdAt: Date.now() });
+                        ytLiveChannels = [{ id: newChDoc.id, name: 'Channel 1', order: 1 }];
+                    }
+                } else {
+                    ytLiveChannels = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                }
+
+                const sorted = [...ytLiveChannels].sort((a, b) => (a.order || 0) - (b.order || 0));
+                // Keep current channel if still valid, else go to first
+                if (!currentYtLiveChannelId || !ytLiveChannels.find(c => c.id === currentYtLiveChannelId)) {
+                    currentYtLiveChannelId = sorted[0].id;
+                }
+                renderYtLiveChannelTabs();
+                await loadYtLiveDataForChannel(currentYtLiveChannelId);
+            } catch (err) {
+                console.error('YT Live: failed to load channels', err);
+                showNotification('Gagal memuat daftar channel.', true);
+            }
+        };
+
+        // Load config + schedule for a specific channel
+        const loadYtLiveDataForChannel = async (channelId) => {
+            if (!channelId) return;
+            // Reset schedule display while loading
+            clearYtLiveScheduleDisplay(true);
+            ytLiveConfig = null;
+            ytLiveScheduleData = null;
+            ytLiveCheckedSlots = {};
+
+            try {
+                const cfgSnap = await getDoc(ytLiveChannelConfigRef(channelId));
                 if (cfgSnap.exists()) {
                     ytLiveConfig = cfgSnap.data();
                     populateYtLiveForm(ytLiveConfig);
+                } else {
+                    clearYtLiveForm();
                 }
-                // Load schedule — auto-rotate past days before rendering
-                const schSnap = await getDoc(YT_LIVE_SCHEDULE_REF);
+
+                const schSnap = await getDoc(ytLiveChannelScheduleRef(channelId));
                 if (schSnap.exists()) {
                     const data = schSnap.data();
                     ytLiveScheduleData = data.schedule || [];
                     let checkedSlots = data.checkedSlots || {};
-                    // Rotate any past-dated days forward +7 days
                     const rotated = rotatePastDays(ytLiveScheduleData, checkedSlots);
                     if (rotated.changed) {
                         ytLiveScheduleData = rotated.schedule;
                         checkedSlots = rotated.checkedSlots;
-                        // Persist rotated schedule silently
-                        await setDoc(YT_LIVE_SCHEDULE_REF, {
+                        await setDoc(ytLiveChannelScheduleRef(channelId), {
                             lastGenerated: data.lastGenerated,
                             schedule: ytLiveScheduleData,
                             checkedSlots
                         });
                     }
                     renderYtLiveSchedule(ytLiveScheduleData, data.lastGenerated, checkedSlots);
+                } else {
+                    clearYtLiveScheduleDisplay(false);
                 }
             } catch (err) {
-                console.error('YT Live: failed to load data', err);
+                console.error('YT Live: failed to load channel data', err);
             }
         };
+
+        // Clear schedule display (show empty state)
+        const clearYtLiveScheduleDisplay = (isLoading = false) => {
+            const container = document.getElementById('ytlive-schedule-container');
+            const infoBar = document.getElementById('ytlive-info-bar');
+            if (infoBar) infoBar.classList.add('hidden');
+            if (container) {
+                container.innerHTML = isLoading
+                    ? `<div style="display:flex;align-items:center;gap:8px;padding:24px 16px;color:#64748b;font-size:0.82rem;"><i class="fas fa-spinner fa-spin"></i> Memuat jadwal channel...</div>`
+                    : `<div class="yt-live-schedule-empty">
+                        <i class="fas fa-broadcast-tower text-4xl mb-4 block text-gray-300 dark:text-gray-600"></i>
+                        <p class="font-semibold text-gray-400 dark:text-gray-500">Belum ada jadwal tersimpan.</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-600 mt-1">Isi konfigurasi di atas lalu klik <strong>Generate Schedule</strong> untuk memulai.</p>
+                       </div>`;
+            }
+        };
+
+        // ============================================================
+        // SCHEDULE CORE LOGIC (unchanged, channel-agnostic)
+        // ============================================================
 
         // --- Auto-rotate: shift past-dated days forward by +7 days ---
         const rotatePastDays = (scheduleData, checkedSlots) => {
             const nowWIB = new Date();
-            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth()+1).padStart(2,'0')}-${String(nowWIB.getDate()).padStart(2,'0')}`;
-            const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth() + 1).padStart(2, '0')}-${String(nowWIB.getDate()).padStart(2, '0')}`;
+            const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             let changed = false;
             const newCheckedSlots = { ...checkedSlots };
             const newSchedule = scheduleData.map(day => {
                 if (!day.isoDate || day.isoDate >= todayISO) return day;
-                // This day has passed — roll forward +7 days
                 changed = true;
-                // Remove old checked-slot keys for this day
                 Object.keys(newCheckedSlots).forEach(k => {
                     if (k.startsWith(day.isoDate + '_')) delete newCheckedSlots[k];
                 });
-                // Compute new date (+7)
                 const [y, mo, d] = day.isoDate.split('-').map(Number);
                 const newDate = new Date(y, mo - 1, d);
                 newDate.setDate(newDate.getDate() + 7);
-                const newISO = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,'0')}-${String(newDate.getDate()).padStart(2,'0')}`;
+                const newISO = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}-${String(newDate.getDate()).padStart(2, '0')}`;
                 const newLabel = `${namaHari[newDate.getDay()]}, ${newDate.getDate()} ${namaBulan[newDate.getMonth()]} ${newDate.getFullYear()}`;
-                return {
-                    ...day,
-                    isoDate: newISO,
-                    dateLabel: newLabel,
-                    dayOfWeek: namaHari[newDate.getDay()]
-                };
+                return { ...day, isoDate: newISO, dateLabel: newLabel, dayOfWeek: namaHari[newDate.getDay()] };
             });
             return { schedule: newSchedule, checkedSlots: newCheckedSlots, changed };
         };
@@ -10797,7 +11310,7 @@
         // --- Read config from form ---
         const readYtLiveFormConfig = () => {
             const el = (id) => document.getElementById(id);
-            const masterVideos = ytliveReadVideoRows(); // array of {name, pubKey, unlKey}
+            const masterVideos = ytliveReadVideoRows();
             return {
                 masterVideos,
                 publicSlotsCount: parseInt(el('ytlive-pub-slots').value) || 3,
@@ -10812,13 +11325,13 @@
 
         // --- Random duration (kelipatan 15 menit) ---
         const randomDuration15 = (minH, maxH) => {
-            const minQ = Math.round(minH * 4);  // quarters
+            const minQ = Math.round(minH * 4);
             const maxQ = Math.round(maxH * 4);
             const q = minQ + Math.floor(Math.random() * (maxQ - minQ + 1));
-            return q / 4; // decimal hours
+            return q / 4;
         };
 
-        // --- Format decimal hours to "X Jam Y Mnt" ---
+        // --- Format decimal hours ---
         const fmtHours = (dec) => {
             const h = Math.floor(dec);
             const m = Math.round((dec - h) * 60);
@@ -10826,13 +11339,13 @@
             return `${h} Jam ${m} Mnt`;
         };
 
-        // --- Add decimal hours to HH:MM string, return HH:MM ---
+        // --- Add decimal hours to HH:MM string ---
         const addHoursToTime = (timeStr, hours) => {
             const [hh, mm] = timeStr.split(':').map(Number);
             const totalMin = hh * 60 + mm + Math.round(hours * 60);
             const newH = Math.floor(totalMin / 60) % 24;
             const newM = totalMin % 60;
-            return `${String(newH).padStart(2,'0')}:${String(newM).padStart(2,'0')}`;
+            return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
         };
 
         // --- Convert WIB HH:MM to EST HH:MM ---
@@ -10840,7 +11353,7 @@
             const [hh, mm] = timeStr.split(':').map(Number);
             let estH = hh - 12;
             if (estH < 0) estH += 24;
-            return `${String(estH).padStart(2,'0')}:${String(mm).padStart(2,'0')} EST`;
+            return `${String(estH).padStart(2, '0')}:${String(mm).padStart(2, '0')} EST`;
         };
 
         // --- Core Algorithm: Generate Schedule ---
@@ -10855,153 +11368,99 @@
                 return null;
             }
 
-            // Anchor times (WIB)
             const pubAnchors = ['17:30', '19:00', '20:30'];
             const unlistedAnchors = ['00:00', '04:00', '16:00'];
-
             const totalSlotsPerDay = publicSlotsCount + unlistedSlotsCount;
             const totalVideos = masterVideos.length;
             const schedule = [];
+            const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+            const safeStep = (() => {
+                let step = totalSlotsPerDay;
+                while (gcd(step, totalVideos) !== 1) step++;
+                return step;
+            })();
 
-            // Day names in Indonesian (WIB locale)
-            const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-
-            // Start from today (WIB)
+            const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             const todayWIB = new Date();
-            // Normalize to midnight WIB
             todayWIB.setHours(0, 0, 0, 0);
 
-            // Helper: get name/key from video entry (supports both string & object)
             const getVideoName = (v) => (typeof v === 'string' ? v : (v.name || ''));
             const getVideoPubKey = (v) => (typeof v === 'string' ? '' : (v.pubKey || ''));
             const getVideoUnlKey = (v) => (typeof v === 'string' ? '' : (v.unlKey || ''));
-
-            // --- Balance Tracker ---
-            // videoBalance[i] = publicCount - unlistedCount for video at index i
-            // Lower balance → more "owed" public slots → prioritized for public
-            // Higher balance → more "owed" unlisted slots → prioritized for unlisted
             const videoBalance = new Array(totalVideos).fill(0);
 
             for (let d = 0; d < daysToGenerate; d++) {
                 const slots = [];
                 let totalHours = 0;
-
-                // Compute actual date for this day
                 const dayDate = new Date(todayWIB);
                 dayDate.setDate(todayWIB.getDate() + d);
-
                 const dayOfWeek = namaHari[dayDate.getDay()];
                 const tanggal = dayDate.getDate();
                 const bulan = namaBulan[dayDate.getMonth()];
                 const tahun = dayDate.getFullYear();
-                // ISO date string YYYY-MM-DD for sorting/comparison
-                const isoDate = `${tahun}-${String(dayDate.getMonth()+1).padStart(2,'0')}-${String(tanggal).padStart(2,'0')}`;
-                const dateLabel = `${dayOfWeek}, ${tanggal} ${namaBulan[dayDate.getMonth()]} ${tahun}`;
-
-                // Round-Robin offset for zero daily duplicates
-                const dayOffset = (d * totalSlotsPerDay) % totalVideos;
-
-                // Build today's video pool as indices (no duplicates within same day)
+                const isoDate = `${tahun}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(tanggal).padStart(2, '0')}`;
+                const dateLabel = `${dayOfWeek}, ${tanggal} ${bulan} ${tahun}`;
+                const dayOffset = (d * safeStep) % totalVideos;
                 const poolIndices = [];
-                for (let s = 0; s < totalSlotsPerDay; s++) {
-                    poolIndices.push((dayOffset + s) % totalVideos);
+                for (let s = 0; s < totalSlotsPerDay; s++) poolIndices.push((dayOffset + s) % totalVideos);
+
+                if (d > 0 && schedule.length > 0) {
+                    const prevDay = schedule[schedule.length - 1];
+                    const prevIndices = new Set(prevDay.slots.map(slot => masterVideos.findIndex(v => getVideoName(v) === slot.videoName)));
+                    const allIndices = Array.from({ length: totalVideos }, (_, i) => i);
+                    const unusedIndices = allIndices.filter(i => !poolIndices.includes(i) && !prevIndices.has(i));
+                    for (let s = 0; s < poolIndices.length; s++) {
+                        if (prevIndices.has(poolIndices[s]) && unusedIndices.length > 0) {
+                            const swapPos = Math.floor(Math.random() * unusedIndices.length);
+                            poolIndices[s] = unusedIndices.splice(swapPos, 1)[0];
+                        }
+                    }
                 }
 
-                // Sort pool by balance (ascending):
-                //   - Lowest balance (more unlisted history) → assigned to Public first
-                //   - Highest balance (more public history) → assigned to Unlisted first
-                // Random tiebreak prevents deterministic patterns when balance is equal
                 const sortedIndices = [...poolIndices].sort((a, b) => {
                     const diff = videoBalance[a] - videoBalance[b];
                     return diff !== 0 ? diff : (Math.random() - 0.5);
                 });
-
                 const publicIndices = sortedIndices.slice(0, publicSlotsCount);
                 const unlistedIndices = sortedIndices.slice(publicSlotsCount);
-
-                // Update balance counters
                 publicIndices.forEach(idx => videoBalance[idx]++);
                 unlistedIndices.forEach(idx => videoBalance[idx]--);
 
-                // Build Public slots
                 for (let p = 0; p < publicSlotsCount; p++) {
                     const vid = masterVideos[publicIndices[p]];
                     const anchor = pubAnchors[p % pubAnchors.length];
                     const dur = randomDuration15(pubMinHours, pubMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
-                    slots.push({
-                        slotNumber: p + 1,
-                        videoName: getVideoName(vid),
-                        streamKey: getVideoPubKey(vid),
-                        isPublic: true,
-                        startTimeWIB: anchor + ' WIB',
-                        endTimeWIB: endWib + ' WIB',
-                        startTimeEST: wibToEst(anchor),
-                        endTimeEST: wibToEst(endWib),
-                        durationText: fmtHours(dur),
-                        durationDecimal: dur
-                    });
+                    slots.push({ slotNumber: p + 1, videoName: getVideoName(vid), streamKey: getVideoPubKey(vid), isPublic: true, startTimeWIB: anchor + ' WIB', endTimeWIB: endWib + ' WIB', startTimeEST: wibToEst(anchor), endTimeEST: wibToEst(endWib), durationText: fmtHours(dur), durationDecimal: dur });
                 }
-
-                // Build Unlisted slots
                 for (let u = 0; u < unlistedSlotsCount; u++) {
                     const vid = masterVideos[unlistedIndices[u]];
                     const anchor = unlistedAnchors[u % unlistedAnchors.length];
                     const dur = randomDuration15(unlistedMinHours, unlistedMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
-                    slots.push({
-                        slotNumber: publicSlotsCount + u + 1,
-                        videoName: getVideoName(vid),
-                        streamKey: getVideoUnlKey(vid),
-                        isPublic: false,
-                        startTimeWIB: anchor + ' WIB',
-                        endTimeWIB: endWib + ' WIB',
-                        startTimeEST: wibToEst(anchor),
-                        endTimeEST: wibToEst(endWib),
-                        durationText: fmtHours(dur),
-                        durationDecimal: dur
-                    });
+                    slots.push({ slotNumber: publicSlotsCount + u + 1, videoName: getVideoName(vid), streamKey: getVideoUnlKey(vid), isPublic: false, startTimeWIB: anchor + ' WIB', endTimeWIB: endWib + ' WIB', startTimeEST: wibToEst(anchor), endTimeEST: wibToEst(endWib), durationText: fmtHours(dur), durationDecimal: dur });
                 }
 
-                // Sort slots pagi → malam by startTimeWIB
                 slots.sort((a, b) => {
-                    const toMin = (t) => {
-                        const clean = t.replace(' WIB', '').trim();
-                        const [h, m] = clean.split(':').map(Number);
-                        return h * 60 + m;
-                    };
+                    const toMin = (t) => { const clean = t.replace(' WIB', '').trim(); const [h, m] = clean.split(':').map(Number); return h * 60 + m; };
                     return toMin(a.startTimeWIB) - toMin(b.startTimeWIB);
                 });
-
-                // Re-number slots after sorting
                 slots.forEach((slot, idx) => { slot.slotNumber = idx + 1; });
-
-                schedule.push({
-                    dayNumber: d + 1,
-                    dateLabel,
-                    isoDate,
-                    dayOfWeek,
-                    totalHoursDecimal: Math.round(totalHours * 100) / 100,
-                    slots
-                });
-
+                schedule.push({ dayNumber: d + 1, dateLabel, isoDate, dayOfWeek, totalHoursDecimal: Math.round(totalHours * 100) / 100, slots });
             }
             return schedule;
         };
 
-
-        // --- Save to Firestore ---
+        // --- Save to Firestore (per-channel) ---
         const saveYtLiveToFirebase = async (scheduleData, cfg) => {
+            if (!currentYtLiveChannelId) { showNotification('Pilih channel terlebih dahulu.', true); return null; }
             try {
-                await setDoc(YT_LIVE_CONFIG_REF, { ...cfg, updatedAt: new Date() });
-                const lastGenerated = new Date().toLocaleString('id-ID', {
-                    day: '2-digit', month: 'long', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
-                await setDoc(YT_LIVE_SCHEDULE_REF, { lastGenerated, schedule: scheduleData });
+                await setDoc(ytLiveChannelConfigRef(currentYtLiveChannelId), { ...cfg, updatedAt: new Date() });
+                const lastGenerated = new Date().toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                await setDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), { lastGenerated, schedule: scheduleData });
                 return lastGenerated;
             } catch (err) {
                 console.error('YT Live: failed to save', err);
@@ -11010,17 +11469,14 @@
             }
         };
 
-        // --- Checked slots state (key: "isoDate_slotNumber") ---
-        let ytLiveCheckedSlots = {};
-
-        // --- Save checked slots to Firestore ---
+        // --- Save checked slots (per-channel) ---
         const saveYtLiveCheckedSlots = async () => {
+            if (!currentYtLiveChannelId) return;
             try {
-                await updateDoc(YT_LIVE_SCHEDULE_REF, { checkedSlots: ytLiveCheckedSlots });
+                await updateDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), { checkedSlots: ytLiveCheckedSlots });
             } catch (err) {
-                // If doc doesn't exist yet (edge case), use setDoc merge
                 try {
-                    await setDoc(YT_LIVE_SCHEDULE_REF, { checkedSlots: ytLiveCheckedSlots }, { merge: true });
+                    await setDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), { checkedSlots: ytLiveCheckedSlots }, { merge: true });
                 } catch (err2) {
                     console.error('YT Live: failed to save checked slots', err2);
                 }
@@ -11033,11 +11489,8 @@
             const row = document.querySelector(`tr[data-slot-key="${key}"]`);
             const cb = document.getElementById(`ytlive-cb-${key}`);
             if (row) {
-                if (ytLiveCheckedSlots[key]) {
-                    row.classList.add('yt-slot-checked');
-                } else {
-                    row.classList.remove('yt-slot-checked');
-                }
+                if (ytLiveCheckedSlots[key]) row.classList.add('yt-slot-checked');
+                else row.classList.remove('yt-slot-checked');
             }
             if (cb) cb.checked = ytLiveCheckedSlots[key];
             saveYtLiveCheckedSlots();
@@ -11052,66 +11505,40 @@
             if (!container) return;
 
             if (!scheduleData || scheduleData.length === 0) {
-                container.innerHTML = `
-                    <div class="yt-live-schedule-empty">
-                        <i class="fas fa-broadcast-tower text-4xl mb-4 block text-gray-300 dark:text-gray-600"></i>
-                        <p class="font-semibold text-gray-400 dark:text-gray-500">Belum ada jadwal tersimpan.</p>
-                        <p class="text-sm text-gray-400 dark:text-gray-600 mt-1">Isi konfigurasi di atas lalu klik <strong>Generate Schedule</strong> untuk memulai.</p>
-                    </div>`;
-                if (infoBar) infoBar.classList.add('hidden');
+                clearYtLiveScheduleDisplay(false);
                 return;
             }
 
-            // Restore checked state
             if (checkedSlots) ytLiveCheckedSlots = { ...checkedSlots };
-
             if (infoBar) infoBar.classList.remove('hidden');
             if (lastGenEl && lastGenerated) lastGenEl.textContent = lastGenerated;
-            if (dayCountEl) dayCountEl.textContent = `${scheduleData.length} hari direncanakan`;
 
-            // Get today's ISO date (WIB) for comparison
+            // Channel name badge in info bar
+            const activeChannel = ytLiveChannels.find(c => c.id === currentYtLiveChannelId);
+            if (dayCountEl) dayCountEl.textContent = `${scheduleData.length} hari${activeChannel ? ' · ' + activeChannel.name : ''}`;
+
             const nowWIB = new Date();
-            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth()+1).padStart(2,'0')}-${String(nowWIB.getDate()).padStart(2,'0')}`;
-
-            // Sort: today first, then ascending (past days are already rotated away)
+            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth() + 1).padStart(2, '0')}-${String(nowWIB.getDate()).padStart(2, '0')}`;
             const sorted = [...scheduleData].sort((a, b) => {
-                const aISO = a.isoDate || '';
-                const bISO = b.isoDate || '';
+                const aISO = a.isoDate || ''; const bISO = b.isoDate || '';
                 if (aISO === todayISO) return -1;
                 if (bISO === todayISO) return 1;
                 return aISO.localeCompare(bISO);
             });
 
-            // Indonesian day name fallback (for old data without dateLabel)
-            const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-            const namaBulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
             let html = '';
             sorted.forEach(day => {
                 const isToday = day.isoDate === todayISO;
-
-                // Build display label
                 let headerLabel = '';
-                if (day.dateLabel) {
-                    headerLabel = day.dateLabel;
-                } else if (day.isoDate) {
-                    // Reconstruct from isoDate
-                    const dt = new Date(day.isoDate + 'T00:00:00');
-                    headerLabel = `${namaHari[dt.getDay()]}, ${dt.getDate()} ${namaBulan[dt.getMonth()]} ${dt.getFullYear()}`;
-                } else {
-                    // Legacy fallback
-                    headerLabel = `Hari ${day.dayNumber}`;
-                }
+                if (day.dateLabel) { headerLabel = day.dateLabel; }
+                else if (day.isoDate) { const dt = new Date(day.isoDate + 'T00:00:00'); headerLabel = `${namaHari[dt.getDay()]}, ${dt.getDate()} ${namaBulan[dt.getMonth()]} ${dt.getFullYear()}`; }
+                else { headerLabel = `Hari ${day.dayNumber}`; }
 
-                const todayBadge = isToday
-                    ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);border-radius:99px;font-size:0.7rem;font-weight:700;margin-left:10px;"><span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;display:inline-block;animation:ytLivePulse 1.4s infinite;"></span>HARI INI</span>`
-                    : '';
-
-                const cardBorder = isToday
-                    ? 'border: 2px solid rgba(251,191,36,0.5); box-shadow: 0 0 20px rgba(251,191,36,0.1);'
-                    : '';
-
-                // Count checked slots for this day
+                const todayBadge = isToday ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);border-radius:99px;font-size:0.7rem;font-weight:700;margin-left:10px;"><span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;display:inline-block;animation:ytLivePulse 1.4s infinite;"></span>HARI INI</span>` : '';
+                const cardBorder = isToday ? 'border: 2px solid rgba(251,191,36,0.5); box-shadow: 0 0 20px rgba(251,191,36,0.1);' : '';
                 const dayCheckedCount = day.slots.filter(slot => ytLiveCheckedSlots[`${day.isoDate}_${slot.slotNumber}`]).length;
                 const dayTotal = day.slots.length;
                 const progressBadge = dayCheckedCount === dayTotal && dayTotal > 0
@@ -11125,7 +11552,7 @@
                     const isChecked = !!ytLiveCheckedSlots[key];
                     const checkedRowStyle = isChecked ? ' yt-slot-checked' : '';
                     const streamKeyDisplay = slot.streamKey
-                        ? `<span style="font-family:monospace;font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 7px;border-radius:5px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;user-select:all;" title="Klik untuk copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${slot.streamKey.replace(/'/g,"\\'")}').then(()=>{showNotification('Stream key disalin!')});">${slot.streamKey}</span>`
+                        ? `<span style="font-family:monospace;font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 7px;border-radius:5px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;user-select:all;" title="Klik untuk copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${slot.streamKey.replace(/'/g, "\\'")}').then(()=>{showNotification('Stream key disalin!')});">${slot.streamKey}</span>`
                         : `<span style="color:#475569;font-size:0.7rem;">-</span>`;
                     return `
                     <tr data-slot-key="${key}" class="${checkedRowStyle}">
@@ -11158,16 +11585,9 @@
                             <table class="yt-live-slots-table">
                                 <thead>
                                     <tr>
-                                        <th>Slot</th>
-                                        <th>Video</th>
-                                        <th>Tipe</th>
-                                        <th>Stream Key</th>
-                                        <th>Mulai WIB</th>
-                                        <th>Selesai WIB</th>
-                                        <th>Mulai EST</th>
-                                        <th>Selesai EST</th>
-                                        <th>Durasi</th>
-                                        <th>Status</th>
+                                        <th>Slot</th><th>Video</th><th>Tipe</th><th>Stream Key</th>
+                                        <th>Mulai WIB</th><th>Selesai WIB</th><th>Mulai EST</th><th>Selesai EST</th>
+                                        <th>Durasi</th><th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>${slotsHtml}</tbody>
@@ -11181,12 +11601,14 @@
         // --- Download Backup ---
         const downloadYtLiveBackup = () => {
             const cfg = readYtLiveFormConfig();
-            const payload = { config: cfg, schedule: ytLiveScheduleData, exportedAt: new Date().toISOString() };
+            const activeChannel = ytLiveChannels.find(c => c.id === currentYtLiveChannelId);
+            const payload = { channelName: activeChannel?.name || 'unknown', config: cfg, schedule: ytLiveScheduleData, exportedAt: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `yt-live-backup-${new Date().toISOString().slice(0,10)}.json`;
+            const safeName = (activeChannel?.name || 'channel').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            a.download = `yt-live-backup-${safeName}-${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showNotification('Backup berhasil diunduh!');
@@ -11198,64 +11620,51 @@
                 const text = await file.text();
                 const data = JSON.parse(text);
                 if (!data.config || !data.schedule) throw new Error('Format JSON tidak valid.');
-                const confirmed = await showConfirmModal('Import backup? Jadwal aktif di Firebase akan ditimpa dengan data dari file ini.');
+                const confirmed = await showConfirmModal('Import backup? Jadwal aktif channel ini akan ditimpa dengan data dari file.');
                 if (!confirmed) return;
                 populateYtLiveForm(data.config);
                 ytLiveScheduleData = data.schedule;
                 const lastGen = await saveYtLiveToFirebase(data.schedule, data.config);
                 renderYtLiveSchedule(data.schedule, lastGen || data.exportedAt || '-');
-                showNotification('Backup berhasil diimpor dan disinkronkan ke Firebase!');
+                showNotification('Backup berhasil diimpor!');
             } catch (err) {
                 console.error('YT Live import error:', err);
                 showNotification('Gagal import: ' + err.message, true);
             }
         };
 
-        // --- Save Stream Keys: update existing schedule slots without re-generating ---
+        // --- Save Stream Keys ---
         const saveYtLiveStreamKeys = async () => {
             const btn = document.getElementById('ytlive-save-streamkeys-btn');
             if (!ytLiveScheduleData || ytLiveScheduleData.length === 0) {
                 showNotification('Belum ada jadwal aktif. Generate jadwal terlebih dahulu.', true);
                 return;
             }
-            const videoList = ytliveReadVideoRows(); // [{name, pubKey, unlKey}]
-            if (videoList.length === 0) {
-                showNotification('Tidak ada data video untuk disimpan.', true);
-                return;
-            }
+            const videoList = ytliveReadVideoRows();
+            if (videoList.length === 0) { showNotification('Tidak ada data video untuk disimpan.', true); return; }
 
-            // Build lookup map: videoName -> {pubKey, unlKey}
             const keyMap = {};
             videoList.forEach(v => { if (v.name) keyMap[v.name] = { pubKey: v.pubKey, unlKey: v.unlKey }; });
-
-            // Patch streamKey in every slot of every day
             const updatedSchedule = ytLiveScheduleData.map(day => ({
                 ...day,
                 slots: day.slots.map(slot => {
                     const entry = keyMap[slot.videoName];
                     if (!entry) return slot;
-                    return {
-                        ...slot,
-                        streamKey: slot.isPublic ? (entry.pubKey || '') : (entry.unlKey || '')
-                    };
+                    return { ...slot, streamKey: slot.isPublic ? (entry.pubKey || '') : (entry.unlKey || '') };
                 })
             }));
 
-            // Save config (masterVideos) + updated schedule to Firebase
             if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...'; }
             try {
-                // Save config masterVideos
-                await setDoc(YT_LIVE_CONFIG_REF, { ...ytLiveConfig, masterVideos: videoList, updatedAt: new Date() });
-                // Merge-update schedule slots (preserve checkedSlots & lastGenerated)
-                await setDoc(YT_LIVE_SCHEDULE_REF, { schedule: updatedSchedule }, { merge: true });
+                await setDoc(ytLiveChannelConfigRef(currentYtLiveChannelId), { ...ytLiveConfig, masterVideos: videoList, updatedAt: new Date() });
+                await setDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), { schedule: updatedSchedule }, { merge: true });
                 ytLiveScheduleData = updatedSchedule;
                 ytLiveConfig = { ...ytLiveConfig, masterVideos: videoList };
-                // Re-render schedule table with updated stream keys
-                const schSnap = await getDoc(YT_LIVE_SCHEDULE_REF);
+                const schSnap = await getDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId));
                 const checkedSlots = schSnap.exists() ? (schSnap.data().checkedSlots || {}) : {};
                 const lastGen = schSnap.exists() ? schSnap.data().lastGenerated : null;
                 renderYtLiveSchedule(updatedSchedule, lastGen, checkedSlots);
-                showNotification('Stream keys berhasil disimpan dan jadwal diperbarui!');
+                showNotification('Stream keys berhasil disimpan!');
             } catch (err) {
                 console.error('YT Live save stream keys error:', err);
                 showNotification('Gagal menyimpan stream keys.', true);
@@ -11266,66 +11675,55 @@
 
         // --- Wire Live Tab Event Listeners ---
         const initYtLiveTab = () => {
-            // Init video rows with 1 empty row if empty
             const rowsContainer = document.getElementById('ytlive-video-rows');
             if (rowsContainer && rowsContainer.children.length === 0) {
                 rowsContainer.appendChild(ytliveMakeVideoRow('', '', '', 0));
             }
 
-            // Save Stream Keys button
-            const saveSkBtn = document.getElementById('ytlive-save-streamkeys-btn');
-            if (saveSkBtn) saveSkBtn.addEventListener('click', saveYtLiveStreamKeys);
+            document.getElementById('ytlive-save-streamkeys-btn')?.addEventListener('click', saveYtLiveStreamKeys);
 
-            // Add Video button
-            const addVideoBtn = document.getElementById('ytlive-add-video-btn');
-            if (addVideoBtn) {
-                addVideoBtn.addEventListener('click', () => {
-                    const container = document.getElementById('ytlive-video-rows');
-                    if (container) {
-                        const idx = container.children.length;
-                        container.appendChild(ytliveMakeVideoRow('', '', '', idx));
-                        // Scroll to the newly added row
-                        container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        container.lastElementChild.querySelector('.ytlive-vid-name')?.focus();
-                    }
-                });
-            }
+            document.getElementById('ytlive-add-video-btn')?.addEventListener('click', () => {
+                const container = document.getElementById('ytlive-video-rows');
+                if (container) {
+                    const idx = container.children.length;
+                    container.appendChild(ytliveMakeVideoRow('', '', '', idx));
+                    container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    container.lastElementChild.querySelector('.ytlive-vid-name')?.focus();
+                }
+            });
 
-            // Generate button
-            const genBtn = document.getElementById('ytlive-generate-btn');
-            if (genBtn) {
-                genBtn.addEventListener('click', async () => {
-                    const confirmed = await showConfirmModal('Generate jadwal baru? Jadwal aktif yang ada di Firebase akan ditimpa. Lanjutkan?');
-                    if (!confirmed) return;
-                    const cfg = readYtLiveFormConfig();
-                    if (cfg.masterVideos.length === 0) {
-                        showNotification('Tambahkan setidaknya 1 nama video master.', true);
-                        return;
-                    }
-                    genBtn.disabled = true;
-                    genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-                    try {
-                        const schedule = generateYtLiveScheduleData(cfg);
-                        if (!schedule) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule'; return; }
-                        ytLiveScheduleData = schedule;
-                        const lastGen = await saveYtLiveToFirebase(schedule, cfg);
-                        renderYtLiveSchedule(schedule, lastGen);
-                        showNotification('Jadwal berhasil di-generate dan disimpan ke Firebase!');
-                    } catch (err) {
-                        console.error('YT Live generate error:', err);
-                        showNotification('Terjadi kesalahan saat generate.', true);
-                    } finally {
-                        genBtn.disabled = false;
-                        genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule';
-                    }
-                });
-            }
+            // Add Channel button
+            document.getElementById('ytlive-add-channel-btn')?.addEventListener('click', async () => {
+                const name = prompt('Nama channel YouTube:');
+                if (name && name.trim()) await addYtLiveChannel(name.trim());
+            });
 
-            // Download backup
-            const dlBtn = document.getElementById('ytlive-download-btn');
-            if (dlBtn) dlBtn.addEventListener('click', downloadYtLiveBackup);
+            document.getElementById('ytlive-generate-btn')?.addEventListener('click', async () => {
+                if (!currentYtLiveChannelId) { showNotification('Pilih channel terlebih dahulu.', true); return; }
+                const activeChannel = ytLiveChannels.find(c => c.id === currentYtLiveChannelId);
+                const confirmed = await showConfirmModal(`Generate jadwal baru untuk "${activeChannel?.name || 'channel ini'}"?\n\nJadwal aktif channel ini akan ditimpa. Lanjutkan?`);
+                if (!confirmed) return;
+                const cfg = readYtLiveFormConfig();
+                if (cfg.masterVideos.length === 0) { showNotification('Tambahkan setidaknya 1 nama video master.', true); return; }
+                const genBtn = document.getElementById('ytlive-generate-btn');
+                if (genBtn) { genBtn.disabled = true; genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
+                try {
+                    const schedule = generateYtLiveScheduleData(cfg);
+                    if (!schedule) { if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule'; } return; }
+                    ytLiveScheduleData = schedule;
+                    const lastGen = await saveYtLiveToFirebase(schedule, cfg);
+                    renderYtLiveSchedule(schedule, lastGen);
+                    showNotification('Jadwal berhasil di-generate!');
+                } catch (err) {
+                    console.error('YT Live generate error:', err);
+                    showNotification('Terjadi kesalahan saat generate.', true);
+                } finally {
+                    if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule'; }
+                }
+            });
 
-            // Import trigger
+            document.getElementById('ytlive-download-btn')?.addEventListener('click', downloadYtLiveBackup);
+
             const importTrigger = document.getElementById('ytlive-import-trigger');
             const importInput = document.getElementById('ytlive-import-input');
             if (importTrigger && importInput) {
@@ -11337,15 +11735,10 @@
                 });
             }
 
-            // Kirim Jadwal Live ke Telegram
-            const liveTgBtn = document.getElementById('ytlive-send-telegram-btn');
-            if (liveTgBtn) {
-                liveTgBtn.addEventListener('click', () => {
-                    // Use patched version if available (updates subtitle)
-                    const opener = window._tgModalOpenPatch || openTelegramReportModal;
-                    opener('live', null);
-                });
-            }
+            document.getElementById('ytlive-send-telegram-btn')?.addEventListener('click', () => {
+                const opener = window._tgModalOpenPatch || openTelegramReportModal;
+                opener('live', null);
+            });
         };
 
         // Initialize Live Tab
@@ -11355,15 +11748,15 @@
         // TELEGRAM REPORT MODAL LOGIC
         // =====================================================================
         (() => {
-            const modal     = document.getElementById('tg-report-modal');
-            const closeBtn  = document.getElementById('tg-modal-close-btn');
+            const modal = document.getElementById('tg-report-modal');
+            const closeBtn = document.getElementById('tg-modal-close-btn');
             const cancelBtn = document.getElementById('tg-modal-cancel-btn');
-            const sendBtn   = document.getElementById('tg-modal-send-btn');
-            const tokenInp  = document.getElementById('tg-bot-token-input');
-            const chatInp   = document.getElementById('tg-chat-id-input');
-            const remChk    = document.getElementById('tg-remember-chk');
-            const statusEl  = document.getElementById('tg-modal-status');
-            const subtitle  = document.getElementById('tg-modal-subtitle');
+            const sendBtn = document.getElementById('tg-modal-send-btn');
+            const tokenInp = document.getElementById('tg-bot-token-input');
+            const chatInp = document.getElementById('tg-chat-id-input');
+            const remChk = document.getElementById('tg-remember-chk');
+            const statusEl = document.getElementById('tg-modal-status');
+            const subtitle = document.getElementById('tg-modal-subtitle');
             if (!modal || !sendBtn) return;
 
             // --- Restore saved credentials ---
@@ -11372,10 +11765,10 @@
                 const saved = JSON.parse(localStorage.getItem(TG_LS_KEY) || 'null');
                 if (saved) {
                     if (tokenInp) tokenInp.value = saved.token || '';
-                    if (chatInp)  chatInp.value  = saved.chatId || '';
-                    if (remChk)   remChk.checked  = true;
+                    if (chatInp) chatInp.value = saved.chatId || '';
+                    if (remChk) remChk.checked = true;
                 }
-            } catch (_) {}
+            } catch (_) { }
 
             // --- Update subtitle based on mode ---
             const updateSubtitle = (mode) => {
@@ -11404,11 +11797,10 @@
                 if (!statusEl) return;
                 if (!msg) { statusEl.classList.add('hidden'); return; }
                 statusEl.textContent = msg;
-                statusEl.className = `text-xs px-3 py-2 rounded-lg ${
-                    type === 'error'   ? 'bg-red-900/50 text-red-300 border border-red-700/40' :
-                    type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700/40' :
-                    'bg-blue-900/40 text-blue-300 border border-blue-700/30'
-                }`;
+                statusEl.className = `text-xs px-3 py-2 rounded-lg ${type === 'error' ? 'bg-red-900/50 text-red-300 border border-red-700/40' :
+                        type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700/40' :
+                            'bg-blue-900/40 text-blue-300 border border-blue-700/30'
+                    }`;
                 statusEl.classList.remove('hidden');
             };
 
@@ -11418,14 +11810,14 @@
                 modal.classList.remove('flex');
                 showStatus('', '');
             };
-            if (closeBtn)  closeBtn.addEventListener('click', closeModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
             if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
             modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
             // --- Send ---
             sendBtn.addEventListener('click', async () => {
                 const botToken = (tokenInp?.value || '').trim();
-                const chatId   = (chatInp?.value  || '').trim();
+                const chatId = (chatInp?.value || '').trim();
                 if (!botToken || !chatId) {
                     showStatus('⚠️ Bot Token dan Chat ID wajib diisi.', 'error');
                     return;
@@ -11433,9 +11825,9 @@
 
                 // Save credentials if requested
                 if (remChk?.checked) {
-                    try { localStorage.setItem(TG_LS_KEY, JSON.stringify({ token: botToken, chatId })); } catch (_) {}
+                    try { localStorage.setItem(TG_LS_KEY, JSON.stringify({ token: botToken, chatId })); } catch (_) { }
                 } else {
-                    try { localStorage.removeItem(TG_LS_KEY); } catch (_) {}
+                    try { localStorage.removeItem(TG_LS_KEY); } catch (_) { }
                 }
 
                 // Loading state
@@ -11451,7 +11843,7 @@
                     } else {
                         // Parse channels from dataset
                         let channels = [];
-                        try { channels = JSON.parse(modal.dataset.channelsJson || '[]'); } catch (_) {}
+                        try { channels = JSON.parse(modal.dataset.channelsJson || '[]'); } catch (_) { }
                         await sendScheduleReportToTelegram(botToken, chatId, channels);
                     }
                     showStatus('✅ Laporan berhasil dikirim ke Telegram!', 'success');
@@ -12524,7 +12916,10 @@
             ytBoardListeners.push(colListener, taskListener);
         };
 
+        let ytBoardSeeding = false;
         const seedYtBoardColumns = async () => {
+            if (ytBoardSeeding) return; // prevent double-seed
+            ytBoardSeeding = true;
             const defaults = [
                 { name: 'Plan', color: 'blue', order: 1 },
                 { name: 'In Progress', color: 'yellow', order: 2 },
@@ -12533,6 +12928,7 @@
             for (const col of defaults) {
                 await addDoc(collection(db, 'hubs', 'youtube', 'board_columns'), { ...col, createdAt: Date.now() });
             }
+            ytBoardSeeding = false;
         };
 
         // ---- Helper: detect dark mode ----
@@ -12992,7 +13388,18 @@
             // Archive column name
             const ARCHIVE_COL_NAMES = ['close', 'done', 'closed', 'archive'];
 
-            ytBoardColumns.forEach((col) => {
+            // Deduplicate columns by name (case-insensitive) — keeps first occurrence by order
+            const seenColNames = new Set();
+            const uniqueColumns = [...ytBoardColumns]
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .filter(col => {
+                    const key = (col.name || '').toLowerCase().trim();
+                    if (seenColNames.has(key)) return false;
+                    seenColNames.add(key);
+                    return true;
+                });
+
+            uniqueColumns.forEach((col) => {
                 const tasks = ytBoardTasks.filter(t => t.columnId === col.id).sort((a, b) => (a.order || 0) - (b.order || 0));
 
                 // WIP limit check
