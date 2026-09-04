@@ -2083,7 +2083,8 @@
         #trade-btn.active,
         #skills-btn.active,
         #youtube-btn.active,
-        #tiktok-btn.active {
+        #tiktok-btn.active,
+        #ide-btn.active {
             background-color: var(--accent) !important;
             color: white !important;
         }
@@ -2091,16 +2092,57 @@
         /* Focus and animation for header buttons */
         .mode-toggle button,
         #trade-btn,
-        #skills-btn {
+        #skills-btn,
+        #youtube-btn,
+        #tiktok-btn,
+        #ide-btn,
+        #settings-btn {
             transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
         }
 
         .mode-toggle button:focus,
         #trade-btn:focus,
-        #skills-btn:focus {
+        #skills-btn:focus,
+        #youtube-btn:focus,
+        #tiktok-btn:focus,
+        #ide-btn:focus,
+        #settings-btn:focus {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(79, 70, 229, 0.18);
             outline: 2px solid rgba(79, 70, 229, 0.18);
+        }
+
+        /* Settings Toggle Switch Styles */
+        .settings-toggle-input:checked ~ .settings-toggle-track {
+            background-color: #4f46e5 !important;
+        }
+        .settings-toggle-input:checked ~ .settings-toggle-dot {
+            transform: translateX(1.25rem) !important;
+        }
+
+        /* Bank Ide Custom Component Styles */
+        .ide-card {
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+        }
+        .ide-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 6px 12px -4px rgba(0, 0, 0, 0.08);
+        }
+        .dark .ide-card:hover {
+            box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.4), 0 6px 12px -4px rgba(0, 0, 0, 0.3);
+        }
+        .ide-kanban-col {
+            min-width: 290px;
+            max-width: 340px;
+        }
+        .ide-tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 600;
         }
 
         .mode-toggle button.p-2 i {
@@ -2434,43 +2476,54 @@
             </a>
 
             <!-- Desktop Navigation -->
-            <div class="hidden md:flex items-center gap-6 ml-4">
-                <a href="#project-board-section" class="text-sm text-gray-600 hover:text-indigo-500">Project Board</a>
-                <a href="#daily-routine-section" class="text-sm text-gray-600 hover:text-indigo-500">Daily Routine</a>
-                <a href="#important-notes-section" class="text-sm text-gray-600 hover:text-indigo-500">Notes</a>
+            <div class="hidden md:flex items-center gap-6 ml-4" id="desktop-nav-links">
+                <a href="#project-board-section" data-nav-menu="workspace" class="text-sm text-gray-600 hover:text-indigo-500">Project Board</a>
+                <a href="#daily-routine-section" data-nav-menu="workspace" class="text-sm text-gray-600 hover:text-indigo-500">Daily Routine</a>
+                <a href="#important-notes-section" data-nav-menu="workspace" class="text-sm text-gray-600 hover:text-indigo-500">Notes</a>
+                <a href="#ide-section" data-nav-menu="ide" class="text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 flex items-center gap-1.5"><i class="fas fa-lightbulb"></i> Bank Ide</a>
             </div>
 
             <!-- Right controls: desktop theme toggle, personal/working icon toggles, mobile menu button -->
-            <div class="flex items-center gap-3 ml-auto">
+            <div class="flex items-center gap-2 md:gap-2.5 ml-auto">
                 <button id="theme-toggle" title="Toggle theme"
                     class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 hidden md:inline-flex">
                     <i class="fas fa-moon"></i>
                 </button>
-                <button id="trade-btn" title="Trade Journal"
-                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                <button id="ide-btn" data-nav-menu="ide" title="Bank Ide"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Open Bank Ide">
+                    <i class="fas fa-lightbulb text-amber-500"></i>
+                </button>
+                <button id="trade-btn" data-nav-menu="trade" title="Trade Journal"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open Trade Journal">
                     <i class="fas fa-chart-line"></i>
                 </button>
-                <button id="skills-btn" title="Skill Tracking"
-                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                <button id="skills-btn" data-nav-menu="skills" title="Skill Tracking"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open Skill Tracking">
                     <i class="fas fa-brain"></i>
                 </button>
-                <button id="youtube-btn" title="YouTube Inventory"
-                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                <button id="youtube-btn" data-nav-menu="youtube" title="YouTube Inventory"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open YouTube Inventory">
                     <i class="fab fa-youtube"></i>
                 </button>
-                <button id="tiktok-btn" title="TikTok Affiliate"
-                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2 hidden md:inline-flex"
+                <button id="tiktok-btn" data-nav-menu="tiktok" title="TikTok Affiliate"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open TikTok Affiliate">
                     <i class="fab fa-tiktok"></i>
                 </button>
-                <div class="mode-toggle flex items-center gap-2" role="tablist" aria-label="Workspace modes">
-                    <button id="personal-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
-                        title="Personal" aria-pressed="false" aria-label="Switch to personal workspace" role="tab"> <i
+                <button id="settings-btn" title="Pengaturan Tampilan Menu"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 dark:text-gray-300 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Open Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="mode-toggle flex items-center gap-1.5" role="tablist" aria-label="Workspace modes">
+                    <button id="personal-mode-btn" data-nav-menu="personal" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200"
+                        title="Personal Workspace" aria-pressed="false" aria-label="Switch to personal workspace" role="tab"> <i
                             class="fas fa-user" aria-hidden="true"></i></button>
-                    <button id="working-mode-btn" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Working"
+                    <button id="working-mode-btn" data-nav-menu="working" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Working Workspace"
                         aria-pressed="false" aria-label="Switch to working workspace" role="tab"> <i
                             class="fas fa-briefcase" aria-hidden="true"></i></button>
                 </div>
@@ -2483,16 +2536,18 @@
             </div>
         </nav>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-            <a href="#project-board-section" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Project
-                Board</a>
-            <a href="#daily-routine-section" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Daily
-                Routine</a>
-            <a href="#important-notes-section" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">Notes</a>
-            <a href="#" id="mobile-youtube-btn" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">YouTube
-                Inventory</a>
-            <a href="#" id="mobile-tiktok-btn" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100">TikTok
-                Affiliate</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700">
+            <a href="#project-board-section" data-nav-menu="workspace" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Project Board</a>
+            <a href="#daily-routine-section" data-nav-menu="workspace" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Daily Routine</a>
+            <a href="#important-notes-section" data-nav-menu="workspace" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Notes</a>
+            <a href="#" id="mobile-personal-btn" data-nav-menu="personal" class="block py-2 px-4 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 flex items-center gap-2"><i class="fas fa-user"></i> Mode Personal</a>
+            <a href="#" id="mobile-working-btn" data-nav-menu="working" class="block py-2 px-4 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2"><i class="fas fa-briefcase"></i> Mode Working</a>
+            <a href="#" id="mobile-ide-btn" data-nav-menu="ide" class="block py-2 px-4 text-sm font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 flex items-center gap-2"><i class="fas fa-lightbulb text-amber-500"></i> Bank Ide</a>
+            <a href="#" id="mobile-trade-btn" data-nav-menu="trade" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-chart-line text-indigo-500"></i> Trade Journal & Spot DCA</a>
+            <a href="#" id="mobile-skills-btn" data-nav-menu="skills" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-brain text-purple-500"></i> Skill Tracking</a>
+            <a href="#" id="mobile-youtube-btn" data-nav-menu="youtube" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-youtube text-red-500"></i> YouTube Inventory</a>
+            <a href="#" id="mobile-tiktok-btn" data-nav-menu="tiktok" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-tiktok"></i> TikTok Affiliate</a>
+            <a href="#" id="mobile-settings-btn" class="block py-2 px-4 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 flex items-center gap-2 border-t dark:border-gray-700"><i class="fas fa-cog"></i> Pengaturan Menu</a>
         </div>
     </header>
 
@@ -3498,9 +3553,294 @@
             </div>
         </div>
 
+        <!-- Bank Ide (Idea Hub) Section -->
+        <div id="ide-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
+            <!-- Header -->
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-gray-100 dark:border-gray-700">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
+                            <i class="fas fa-lightbulb text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight flex items-center gap-2.5">
+                                Bank Ide
+                                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 border border-amber-300/40">Idea Hub</span>
+                            </h2>
+                            <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                                Simpan, kembangkan, dan eksekusi ide bisnis, akun medsos (TikTok, Facebook affiliate, dll.), dan proyek kreatif.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button id="add-ide-btn"
+                        class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-medium px-4 py-2.5 rounded-xl shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 transition-all flex items-center gap-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2">
+                        <i class="fas fa-plus"></i>
+                        <span>Tambah Ide Baru</span>
+                    </button>
+                </div>
+            </div>
 
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+                <div class="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-xl p-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-base font-bold">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Total Ide</div>
+                        <div id="ide-stat-total" class="text-lg font-bold text-gray-900 dark:text-white">0</div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-xl p-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-base font-bold">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Ide Baru</div>
+                        <div id="ide-stat-new" class="text-lg font-bold text-amber-600 dark:text-amber-400">0</div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-xl p-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-base font-bold">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Riset & Validasi</div>
+                        <div id="ide-stat-research" class="text-lg font-bold text-blue-600 dark:text-blue-400">0</div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-xl p-3.5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center text-base font-bold">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Eksekusi</div>
+                        <div id="ide-stat-progress" class="text-lg font-bold text-purple-600 dark:text-purple-400">0</div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700 rounded-xl p-3.5 flex items-center gap-3 col-span-2 sm:col-span-1">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base font-bold">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Selesai/Launch</div>
+                        <div id="ide-stat-completed" class="text-lg font-bold text-emerald-600 dark:text-emerald-400">0</div>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Daily Routine Section -->
+            <!-- Controls & Filters Bar -->
+            <div class="space-y-3 mb-6 bg-gray-50 dark:bg-gray-900/40 p-4 rounded-xl border border-gray-200/70 dark:border-gray-700">
+                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                    <!-- Search Input -->
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                            <i class="fas fa-search text-sm"></i>
+                        </div>
+                        <input id="ide-search-input" type="text"
+                            placeholder="Cari ide, kategori, tag, rencana aksi..."
+                            class="w-full pl-10 pr-10 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all">
+                        <button id="ide-search-clear-btn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hidden">
+                            <i class="fas fa-times-circle text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- View Switcher -->
+                    <div class="flex items-center gap-1 bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-300 dark:border-gray-600 self-start md:self-auto">
+                        <button id="ide-view-grid-btn" title="Grid Card View"
+                            class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors bg-amber-500 text-white shadow-sm">
+                            <i class="fas fa-th-large"></i>
+                            <span class="hidden sm:inline">Cards</span>
+                        </button>
+                        <button id="ide-view-kanban-btn" title="Kanban Board View"
+                            class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-columns"></i>
+                            <span class="hidden sm:inline">Kanban</span>
+                        </button>
+                        <button id="ide-view-list-btn" title="List View"
+                            class="px-3 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-list"></i>
+                            <span class="hidden sm:inline">Tabel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Chips: Categories & Status -->
+                <div class="flex flex-col gap-2 pt-2 border-t border-gray-200 dark:border-gray-700/60">
+                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar" id="ide-category-filters">
+                        <span class="text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider text-[10px] mr-1 shrink-0">Kategori:</span>
+                        <button data-cat="all" class="ide-cat-pill active px-3 py-1 rounded-full font-medium shrink-0 bg-amber-500 text-white">Semua</button>
+                        <button data-cat="TikTok & Medsos" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">📱 TikTok & Medsos</button>
+                        <button data-cat="Facebook Affiliate" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">🛒 FB Affiliate</button>
+                        <button data-cat="YouTube & Konten" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">▶️ YouTube</button>
+                        <button data-cat="E-Commerce & Olshop" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">🛍️ E-Commerce</button>
+                        <button data-cat="Digital Product & SaaS" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">💻 Digital / SaaS</button>
+                        <button data-cat="Freelance & Jasa" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">💼 Jasa & Freelance</button>
+                        <button data-cat="Investasi & Trading" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">📈 Investasi</button>
+                        <button data-cat="Lainnya" class="ide-cat-pill px-3 py-1 rounded-full font-medium shrink-0 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">✨ Lainnya</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area: Grid View -->
+            <div id="ide-grid-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Cards rendered dynamically by JS -->
+            </div>
+
+            <!-- Content Area: Kanban View -->
+            <div id="ide-kanban-view" class="hidden overflow-x-auto pb-4">
+                <div class="flex gap-4 min-w-max">
+                    <!-- Column: Ide Baru -->
+                    <div class="ide-kanban-col bg-gray-50 dark:bg-gray-900/60 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700 flex flex-col">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200">Ide Baru</h4>
+                            </div>
+                            <span id="ide-kb-count-ide-baru" class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-bold">0</span>
+                        </div>
+                        <div id="ide-kb-list-ide-baru" class="space-y-3 flex-1 min-h-[120px]"></div>
+                        <button onclick="openAddIdeModalWithStatus('ide-baru')" class="mt-3 w-full py-2 text-xs font-medium text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400 bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-amber-400 transition-colors flex items-center justify-center gap-1">
+                            <i class="fas fa-plus"></i> Tambah Ide
+                        </button>
+                    </div>
+
+                    <!-- Column: Riset & Validasi -->
+                    <div class="ide-kanban-col bg-gray-50 dark:bg-gray-900/60 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700 flex flex-col">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200">Riset & Validasi</h4>
+                            </div>
+                            <span id="ide-kb-count-riset" class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-bold">0</span>
+                        </div>
+                        <div id="ide-kb-list-riset" class="space-y-3 flex-1 min-h-[120px]"></div>
+                        <button onclick="openAddIdeModalWithStatus('riset')" class="mt-3 w-full py-2 text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-400 transition-colors flex items-center justify-center gap-1">
+                            <i class="fas fa-plus"></i> Tambah Ide
+                        </button>
+                    </div>
+
+                    <!-- Column: Eksekusi -->
+                    <div class="ide-kanban-col bg-gray-50 dark:bg-gray-900/60 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700 flex flex-col">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200">Sedang Eksekusi</h4>
+                            </div>
+                            <span id="ide-kb-count-eksekusi" class="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-bold">0</span>
+                        </div>
+                        <div id="ide-kb-list-eksekusi" class="space-y-3 flex-1 min-h-[120px]"></div>
+                        <button onclick="openAddIdeModalWithStatus('eksekusi')" class="mt-3 w-full py-2 text-xs font-medium text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-purple-400 transition-colors flex items-center justify-center gap-1">
+                            <i class="fas fa-plus"></i> Tambah Ide
+                        </button>
+                    </div>
+
+                    <!-- Column: Selesai / Launch -->
+                    <div class="ide-kanban-col bg-gray-50 dark:bg-gray-900/60 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700 flex flex-col">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200">Selesai / Launch</h4>
+                            </div>
+                            <span id="ide-kb-count-selesai" class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold">0</span>
+                        </div>
+                        <div id="ide-kb-list-selesai" class="space-y-3 flex-1 min-h-[120px]"></div>
+                        <button onclick="openAddIdeModalWithStatus('selesai')" class="mt-3 w-full py-2 text-xs font-medium text-gray-500 hover:text-emerald-600 dark:text-gray-400 dark:hover:text-emerald-400 bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-emerald-400 transition-colors flex items-center justify-center gap-1">
+                            <i class="fas fa-plus"></i> Tambah Ide
+                        </button>
+                    </div>
+
+                    <!-- Column: Ditunda / Arsip -->
+                    <div class="ide-kanban-col bg-gray-50 dark:bg-gray-900/60 rounded-xl p-4 border border-gray-200/80 dark:border-gray-700 flex flex-col">
+                        <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
+                                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-800 dark:text-gray-200">Ditunda / Arsip</h4>
+                            </div>
+                            <span id="ide-kb-count-arsip" class="text-xs px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold">0</span>
+                        </div>
+                        <div id="ide-kb-list-arsip" class="space-y-3 flex-1 min-h-[120px]"></div>
+                        <button onclick="openAddIdeModalWithStatus('arsip')" class="mt-3 w-full py-2 text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-white dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-gray-400 transition-colors flex items-center justify-center gap-1">
+                            <i class="fas fa-plus"></i> Tambah Ide
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area: List View -->
+            <div id="ide-list-view" class="hidden overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 text-gray-600 dark:text-gray-300 uppercase font-semibold text-[11px]">
+                            <th class="p-3">Judul Ide</th>
+                            <th class="p-3">Kategori</th>
+                            <th class="p-3">Prioritas</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Potensi / Modal</th>
+                            <th class="p-3">Progress Aksi</th>
+                            <th class="p-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ide-list-tbody" class="divide-y divide-gray-100 dark:divide-gray-700/60">
+                        <!-- Rendered by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="ide-empty-state" class="hidden text-center py-12 px-4">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/20 text-amber-500 mb-4 shadow-sm">
+                    <i class="fas fa-lightbulb text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Belum Ada Ide Tersimpan</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto mt-1 mb-6">
+                    Punya ide baru seperti membuat akun TikTok jualan, Facebook affiliate, channel YouTube, atau ide bisnis lainnya? Catat sekarang sebelum lupa!
+                </p>
+
+                <!-- Quick Starter Idea Suggestions -->
+                <div class="max-w-2xl mx-auto text-left bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 mb-6">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-1.5">
+                        <i class="fas fa-magic text-amber-500"></i> Rekomendasi Template Ide Cepat (Klik untuk membuat):
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div onclick="applyIdeaTemplate('tiktok')" class="p-3.5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-amber-400 dark:hover:border-amber-400 cursor-pointer transition-all hover:shadow-md">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-black text-white"><i class="fab fa-tiktok"></i> TikTok</span>
+                                <span class="text-xs font-bold text-gray-900 dark:text-white">Akun TikTok Jualan / Affiliate</span>
+                            </div>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Riset produk winning, buat video showcase, daftar TikTok Shop Affiliate.</p>
+                        </div>
+                        <div onclick="applyIdeaTemplate('facebook')" class="p-3.5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-400 cursor-pointer transition-all hover:shadow-md">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white"><i class="fab fa-facebook"></i> FB</span>
+                                <span class="text-xs font-bold text-gray-900 dark:text-white">Facebook Group & Fanpage Affiliate</span>
+                            </div>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Share racun Shopee/Tokped di FB group & fanpage dengan link affiliate.</p>
+                        </div>
+                        <div onclick="applyIdeaTemplate('youtube')" class="p-3.5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-red-400 dark:hover:border-red-400 cursor-pointer transition-all hover:shadow-md">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white"><i class="fab fa-youtube"></i> YT</span>
+                                <span class="text-xs font-bold text-gray-900 dark:text-white">Channel YouTube Faceless AI</span>
+                            </div>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Buat video micro-niche dengan skrip AI & voiceover untuk monetisasi.</p>
+                        </div>
+                        <div onclick="applyIdeaTemplate('saas')" class="p-3.5 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-400 cursor-pointer transition-all hover:shadow-md">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-600 text-white"><i class="fas fa-laptop-code"></i> Digital</span>
+                                <span class="text-xs font-bold text-gray-900 dark:text-white">Produk Digital & Template Notion</span>
+                            </div>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Jual bundle template produktivitas atau mini tools web.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="openAddIdeModal()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-2.5 rounded-xl shadow transition-transform hover:scale-105 inline-flex items-center gap-2 text-sm">
+                    <i class="fas fa-plus"></i> Buat Ide Kustom Sendiri
+                </button>
+            </div>
+        </div>
         <div id="daily-routine-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div class="flex justify-center items-center mb-6 relative">
                 <h2 class="text-3xl font-bold text-gray-800">Daily Routine Calendar</h2>
@@ -4535,6 +4875,361 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Bank Ide Modal (Create / Edit Idea) -->
+    <div id="ide-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-auto overflow-hidden border border-gray-100 dark:border-gray-700 my-8 transition-all">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-transparent border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center text-sm shadow-sm">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 id="ide-modal-title" class="text-lg font-bold text-gray-900 dark:text-white">Tambah Ide Baru</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Tuangkan ide & langkah eksekusi Anda</p>
+                    </div>
+                </div>
+                <button type="button" id="ide-modal-close-btn" class="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="ide-form" class="p-6 space-y-4 max-h-[78vh] overflow-y-auto">
+                <input type="hidden" id="ide-id" value="">
+
+                <!-- Judul Ide -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                        Judul Ide <span class="text-rose-500">*</span>
+                    </label>
+                    <input id="ide-title-input" type="text" required
+                        placeholder="Contoh: Buat Akun TikTok Jualan Hijab & Gamis Muslimah"
+                        class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium">
+                </div>
+
+                <!-- Kategori & Status Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Kategori
+                        </label>
+                        <select id="ide-category-input"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all">
+                            <option value="TikTok & Medsos">📱 TikTok & Medsos</option>
+                            <option value="Facebook Affiliate">🛒 Facebook Affiliate</option>
+                            <option value="YouTube & Konten">▶️ YouTube & Konten</option>
+                            <option value="E-Commerce & Olshop">🛍️ E-Commerce & Toko Online</option>
+                            <option value="Digital Product & SaaS">💻 Digital Product & SaaS</option>
+                            <option value="Freelance & Jasa">💼 Freelance & Jasa</option>
+                            <option value="Investasi & Trading">📈 Investasi & Trading</option>
+                            <option value="Ide Pribadi">🎯 Ide Pribadi / Habit</option>
+                            <option value="Lainnya">✨ Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Status Awal
+                        </label>
+                        <select id="ide-status-input"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all font-medium">
+                            <option value="ide-baru">💡 Ide Baru (Brainstorm)</option>
+                            <option value="riset">🔍 Riset & Validasi</option>
+                            <option value="eksekusi">🚀 Sedang Dikerjakan (Eksekusi)</option>
+                            <option value="selesai">✅ Selesai / Diluncurkan</option>
+                            <option value="arsip">⏸️ Ditunda / Diarsipkan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Prioritas, Potensi & Modal Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Prioritas
+                        </label>
+                        <select id="ide-priority-input"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all">
+                            <option value="sedang">⭐ Sedang</option>
+                            <option value="tinggi">⭐⭐ Tinggi</option>
+                            <option value="mendesak">⭐⭐⭐ Mendesak / Segera</option>
+                            <option value="rendah">Rendah / Santai</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Target / Potensi Hasil
+                        </label>
+                        <input id="ide-potential-input" type="text"
+                            placeholder="Contoh: Omset 10jt/bln"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Estimasi Modal
+                        </label>
+                        <input id="ide-capital-input" type="text"
+                            placeholder="Contoh: Rp 300.000 / Gratis"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all">
+                    </div>
+                </div>
+
+                <!-- Deskripsi -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                        Deskripsi & Catatan Konsep
+                    </label>
+                    <textarea id="ide-desc-input" rows="3"
+                        placeholder="Jelaskan gambaran ide, strategi konten, produk yang dijual, target market..."
+                        class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all"></textarea>
+                </div>
+
+                <!-- Checklist / Langkah Aksi -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300">
+                            Langkah Aksi / Checklist Eksekusi
+                        </label>
+                        <span class="text-[11px] text-gray-400 dark:text-gray-500">Bisa dicentang langsung di kartu</span>
+                    </div>
+                    <div id="ide-modal-checklist-list" class="space-y-2 mb-2">
+                        <!-- Dynamic checklist items -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="ide-modal-new-step-input" type="text"
+                            placeholder="Tambah langkah aksi baru (misal: Beli nomor perdana)..."
+                            class="flex-1 px-3 py-2 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <button type="button" id="ide-modal-add-step-btn"
+                            class="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg text-xs font-semibold flex items-center gap-1 shrink-0">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Link Referensi & Tag -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Link Referensi / Inspirasi (Opsional)
+                        </label>
+                        <input id="ide-ref-input" type="text"
+                            placeholder="https://tiktok.com/@kompetitor atau link riset"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+                            Tags / Kata Kunci
+                        </label>
+                        <input id="ide-tags-input" type="text"
+                            placeholder="tiktok, affiliate, jualan, gamis (pisahkan koma)"
+                            class="w-full px-3.5 py-2.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white dark:focus:bg-gray-800 transition-all">
+                    </div>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end items-center gap-3">
+                    <button type="button" id="ide-cancel-btn"
+                        class="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-xs transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" id="ide-submit-btn"
+                        class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white rounded-xl font-bold text-xs shadow-md shadow-amber-500/20 hover:shadow-lg transition-all flex items-center gap-1.5">
+                        <i class="fas fa-save"></i>
+                        <span>Simpan Ide</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal (Pengaturan Menu Active / Inactive) -->
+    <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-xl mx-auto overflow-hidden border border-gray-100 dark:border-gray-700 my-8 transition-all">
+            <!-- Header -->
+            <div class="px-6 py-4 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-base shadow-md shadow-indigo-500/20">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Pengaturan Tampilan Menu</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Aktifkan atau nonaktifkan menu sesuai kebutuhan</p>
+                    </div>
+                </div>
+                <button type="button" id="settings-modal-close-btn" class="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6 max-h-[75vh] overflow-y-auto space-y-4">
+                <!-- Preset Buttons -->
+                <div class="flex items-center justify-between gap-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200/80 dark:border-gray-700/80 text-xs">
+                    <span class="font-semibold text-gray-600 dark:text-gray-400">Aksi Cepat:</span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="window.setAllMenusActive(true)" class="px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-gray-200 dark:border-gray-700 transition-colors">
+                            Aktifkan Semua
+                        </button>
+                        <button type="button" onclick="window.setCoreMenusOnly()" class="px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors">
+                            Hanya Menu Inti
+                        </button>
+                        <button type="button" onclick="window.resetMenusToDefault()" class="px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 transition-colors">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Menu Items Toggle List -->
+                <div class="space-y-2.5" id="settings-menu-list">
+                    <!-- 1. Personal Workspace -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    Personal Workspace
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.2 bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 rounded">Personal</span>
+                                </div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Board, Daily Routine & Catatan ruang pribadi</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="personal" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('personal', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 2. Working Workspace -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-slate-400 dark:hover:border-slate-500 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center text-sm font-bold">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    Working Workspace
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.2 bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200 rounded">Working</span>
+                                </div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Board, Daily Routine & Catatan pekerjaan / freelance</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="working" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('working', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 3. Bank Ide -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-yellow-300 dark:hover:border-yellow-600 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-yellow-100 dark:bg-yellow-900/50 text-yellow-600 dark:text-yellow-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    Bank Ide
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.2 bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 rounded">Idea Hub</span>
+                                </div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Penyimpanan ide bisnis, affiliate & medsos</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="ide" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('ide', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 4. Trade Journal -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white">Trade Journal & Spot DCA</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Jurnal trading saham/crypto & kalkulator DCA</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="trade" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('trade', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 5. Skill Tracking -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white">Skill Tracking</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Radar chart kemampuan & roadmap skill</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="skills" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('skills', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 6. YouTube Inventory -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white">YouTube Inventory</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Manajemen channel YouTube & content board</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="youtube" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('youtube', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 7. TikTok Affiliate -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white flex items-center justify-center text-sm font-bold">
+                                <i class="fab fa-tiktok"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white">TikTok Affiliate</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Akun TikTok Shop Affiliate & stok video</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="tiktok" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('tiktok', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/60 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                <span class="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                    <i class="fas fa-check-circle text-emerald-500"></i> Tersimpan otomatis
+                </span>
+                <button type="button" id="settings-save-btn" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow transition-colors">
+                    Selesai
+                </button>
+            </div>
         </div>
     </div>
 
@@ -6682,9 +7377,7 @@
                 if (modeLabel) modeLabel.textContent = 'Mode: Working';
             }
         };
-
-        // Wire up the mode buttons so they switch modes when clicked
-        // Navigation helpers: update UI, ARIA, and history
+            // Navigation helpers: update UI, ARIA, and history
         const sections = {
             board: 'project-board-section',
             daily: 'daily-routine-section',
@@ -6692,11 +7385,12 @@
             trade: 'trade-section',
             skills: 'skills-section',
             youtube: 'youtube-section',
-            tiktok: 'tiktok-section'
+            tiktok: 'tiktok-section',
+            ide: 'ide-section'
         };
 
         const applyNavigationState = (target) => {
-            // target: one of 'board'|'daily'|'notes'|'trade'|'skills'|'youtube' or section id
+            // target: one of 'board'|'daily'|'notes'|'trade'|'skills'|'youtube'|'tiktok'|'ide' or section id
             // hide all primary sections first
             Object.values(sections).forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('hidden'); el.classList.remove('flex'); } });
 
@@ -6705,6 +7399,7 @@
             document.getElementById('skills-btn')?.classList.remove('active');
             document.getElementById('youtube-btn')?.classList.remove('active');
             document.getElementById('tiktok-btn')?.classList.remove('active');
+            document.getElementById('ide-btn')?.classList.remove('active');
             document.getElementById('personal-mode-btn')?.classList.remove('active');
             document.getElementById('working-mode-btn')?.classList.remove('active');
             // reset aria
@@ -6712,6 +7407,7 @@
             document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'false');
+            document.getElementById('ide-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed', 'false');
 
@@ -6729,7 +7425,7 @@
 
                     // if there's an inner max-width wrapper, expand it to full width and save its original classes
                     // try to find a child with a 'max-w-' class (covers max-w-4xl, max-w-5xl, etc.)
-                    const inner = Array.from(el.children).find(c => /max-w-/.test(c.className)) || el.querySelector('.max-w-5xl');
+                    const inner = Array.from(el.children).find(c => / max-w-/.test(c.className)) || el.querySelector('.max-w-5xl');
                     if (inner) {
                         if (!inner.dataset._origClass) inner.dataset._origClass = inner.className;
                         inner.classList.remove('max-w-5xl', 'mx-auto');
@@ -6770,11 +7466,35 @@
                 if (el) { el.classList.remove('hidden'); }
                 document.getElementById('tiktok-btn')?.classList.add('active');
                 document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'true');
+            } else if (target === 'ide' || target === sections.ide) {
+                // Show Bank Ide section
+                const el = document.getElementById(sections.ide);
+                if (el) { el.classList.remove('hidden'); }
+                document.getElementById('ide-btn')?.classList.add('active');
+                document.getElementById('ide-btn')?.setAttribute('aria-pressed', 'true');
+                setTimeout(() => { try { renderIdeaBank(); } catch (e) { } }, 100);
             } else {
-                // show all main sections (Project Board + Daily + Notes)
-                const boardEl = document.getElementById(sections.board); if (boardEl) { boardEl.classList.remove('hidden'); }
-                const dailyEl = document.getElementById(sections.daily); if (dailyEl) { dailyEl.classList.remove('hidden'); }
-                const notesEl = document.getElementById(sections.notes); if (notesEl) { notesEl.classList.remove('hidden'); }
+                // show main sections if workspace (personal or working) is active
+                const isPersonalVis = typeof isMenuVisible === 'function' ? isMenuVisible('personal') : true;
+                const isWorkingVis = typeof isMenuVisible === 'function' ? isMenuVisible('working') : true;
+                const isWorkspaceVis = isPersonalVis || isWorkingVis;
+
+                const boardEl = document.getElementById(sections.board);
+                if (boardEl) {
+                    if (isWorkspaceVis) boardEl.classList.remove('hidden');
+                    else boardEl.classList.add('hidden');
+                }
+                const dailyEl = document.getElementById(sections.daily);
+                if (dailyEl) {
+                    if (isWorkspaceVis) dailyEl.classList.remove('hidden');
+                    else dailyEl.classList.add('hidden');
+                }
+                const notesEl = document.getElementById(sections.notes);
+                if (notesEl) {
+                    if (isWorkspaceVis) notesEl.classList.remove('hidden');
+                    else notesEl.classList.add('hidden');
+                }
+
                 // if we left trade view, restore trade section sizing to its original card-like appearance
                 const tradeEl = document.getElementById(sections.trade);
                 if (tradeEl) {
@@ -6847,15 +7567,70 @@
         makeKeyboardClickable(document.getElementById('personal-mode-btn'));
         makeKeyboardClickable(document.getElementById('working-mode-btn'));
 
+        // Mobile workspace & mode buttons
+        document.getElementById('mobile-personal-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchMode('personal');
+            navigateTo('board');
+            document.getElementById('mobile-menu')?.classList.add('hidden');
+        });
+        document.getElementById('mobile-working-btn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchMode('working');
+            navigateTo('board');
+            document.getElementById('mobile-menu')?.classList.add('hidden');
+        });
+
         // (previous helper removed) top nav links use navigateTo to restore main sections
 
         // Wire top nav links to navigate (and sync URL)
         document.querySelectorAll('a[href="#project-board-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('board'); }); });
         document.querySelectorAll('a[href="#daily-routine-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('daily'); }); });
         document.querySelectorAll('a[href="#important-notes-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('notes'); }); });
+        document.querySelectorAll('a[href="#ide-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('ide'); }); });
+
+        // --- Bank Ide Navigation JS ---
+        const ideBtn = document.getElementById('ide-btn');
+        const ideMobileBtn = document.getElementById('mobile-ide-btn');
+        if (ideBtn) {
+            ideBtn.addEventListener('click', () => {
+                const cur = parseHash();
+                if (cur === 'ide') {
+                    navigateTo('board');
+                } else {
+                    navigateTo('ide');
+                }
+            });
+            makeKeyboardClickable(ideBtn);
+        }
+        if (ideMobileBtn) {
+            ideMobileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('ide');
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
+        }
+
+        // --- Settings Navigation JS ---
+        const settingsBtn = document.getElementById('settings-btn');
+        const mobileSettingsBtn = document.getElementById('mobile-settings-btn');
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => {
+                if (typeof window.openSettingsModal === 'function') window.openSettingsModal();
+            });
+            makeKeyboardClickable(settingsBtn);
+        }
+        if (mobileSettingsBtn) {
+            mobileSettingsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof window.openSettingsModal === 'function') window.openSettingsModal();
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
+        }
 
         // --- Trade Journal JS ---
         const tradeBtn = document.getElementById('trade-btn');
+        const mobileTradeBtn = document.getElementById('mobile-trade-btn');
         const tradeSection = document.getElementById('trade-section');
         if (tradeBtn && tradeSection) {
             tradeBtn.addEventListener('click', () => {
@@ -6871,9 +7646,17 @@
             });
             makeKeyboardClickable(tradeBtn);
         }
+        if (mobileTradeBtn) {
+            mobileTradeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('trade');
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
+        }
 
         // --- Skills Tracking JS ---
         const skillsBtn = document.getElementById('skills-btn');
+        const mobileSkillsBtn = document.getElementById('mobile-skills-btn');
         const skillsSection = document.getElementById('skills-section');
         if (skillsBtn && skillsSection) {
             skillsBtn.addEventListener('click', () => {
@@ -6886,6 +7669,13 @@
                 }
             });
             makeKeyboardClickable(skillsBtn);
+        }
+        if (mobileSkillsBtn) {
+            mobileSkillsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('skills');
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
         }
 
         // --- YouTube Inventory JS ---
@@ -14057,6 +14847,1289 @@
                 showNotification(ytShowArchived ? 'Showing archived cards' : 'Archived cards hidden');
             }
         };
+
+        // ==========================================
+        // ===== BANK IDE (IDEA HUB) MANAGEMENT =====
+        // ==========================================
+        let allIdeas = [];
+        let ideActiveCategory = 'all';
+        let ideActiveView = 'grid'; // 'grid' | 'kanban' | 'list'
+        let ideSearchQuery = '';
+        let ideModalChecklist = [];
+        let ideUnsubscribe = null;
+        const IDE_STORAGE_KEY = 'project_board_idea_bank_data_v1';
+
+        // Helper: Category metadata (Colors, Icons)
+        const getCategoryMeta = (cat) => {
+            const map = {
+                'TikTok & Medsos': {
+                    badge: 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+                    icon: 'fab fa-tiktok',
+                    dot: 'bg-rose-500'
+                },
+                'Facebook Affiliate': {
+                    badge: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+                    icon: 'fab fa-facebook',
+                    dot: 'bg-blue-500'
+                },
+                'YouTube & Konten': {
+                    badge: 'bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300 border-red-200 dark:border-red-800',
+                    icon: 'fab fa-youtube',
+                    dot: 'bg-red-500'
+                },
+                'E-Commerce & Olshop': {
+                    badge: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+                    icon: 'fas fa-shopping-bag',
+                    dot: 'bg-emerald-500'
+                },
+                'Digital Product & SaaS': {
+                    badge: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+                    icon: 'fas fa-laptop-code',
+                    dot: 'bg-indigo-500'
+                },
+                'Freelance & Jasa': {
+                    badge: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+                    icon: 'fas fa-briefcase',
+                    dot: 'bg-amber-500'
+                },
+                'Investasi & Trading': {
+                    badge: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
+                    icon: 'fas fa-chart-line',
+                    dot: 'bg-cyan-500'
+                },
+                'Ide Pribadi': {
+                    badge: 'bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300 border-violet-200 dark:border-violet-800',
+                    icon: 'fas fa-user-astronaut',
+                    dot: 'bg-violet-500'
+                },
+                'Lainnya': {
+                    badge: 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700',
+                    icon: 'fas fa-lightbulb',
+                    dot: 'bg-amber-400'
+                }
+            };
+            return map[cat] || map['Lainnya'];
+        };
+
+        // Helper: Status metadata
+        const getStatusMeta = (status) => {
+            const map = {
+                'ide-baru': { label: '💡 Ide Baru', badge: 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 border-amber-300/60', next: 'riset' },
+                'riset': { label: '🔍 Riset & Validasi', badge: 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 border-blue-300/60', next: 'eksekusi' },
+                'eksekusi': { label: '🚀 Eksekusi', badge: 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-300 border-purple-300/60', next: 'selesai' },
+                'selesai': { label: '✅ Selesai / Launch', badge: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 border-emerald-300/60', next: 'arsip' },
+                'arsip': { label: '⏸️ Ditunda / Arsip', badge: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border-gray-300/60', next: 'ide-baru' }
+            };
+            return map[status] || map['ide-baru'];
+        };
+
+        // Helper: Priority stars & color
+        const getPriorityMeta = (priority) => {
+            switch (priority) {
+                case 'mendesak':
+                    return { label: 'Mendesak', stars: '⭐⭐⭐', badge: 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800' };
+                case 'tinggi':
+                    return { label: 'Tinggi', stars: '⭐⭐', badge: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800' };
+                case 'sedang':
+                    return { label: 'Sedang', stars: '⭐', badge: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800' };
+                default:
+                    return { label: 'Rendah', stars: '⚪', badge: 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700' };
+            }
+        };
+
+        // Load cached ideas from localStorage
+        const loadLocalIdeas = () => {
+            try {
+                const stored = localStorage.getItem(IDE_STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                console.warn('Failed to parse local ideas:', e);
+                return [];
+            }
+        };
+
+        // Save ideas to localStorage
+        const saveLocalIdeas = (ideas) => {
+            try {
+                localStorage.setItem(IDE_STORAGE_KEY, JSON.stringify(ideas));
+            } catch (e) {
+                console.warn('Failed to save local ideas:', e);
+            }
+        };
+
+        // Initialize Firestore listener for Bank Ide
+        const listenIdeas = () => {
+            if (ideUnsubscribe) {
+                ideUnsubscribe();
+                ideUnsubscribe = null;
+            }
+
+            // Populate from local cache first for instant responsiveness
+            allIdeas = loadLocalIdeas();
+            renderIdeaBank();
+
+            try {
+                const q = query(collection(db, "hubs", "ide", "ideas"), orderBy("createdAt", "desc"));
+                ideUnsubscribe = onSnapshot(q, (snapshot) => {
+                    allIdeas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    saveLocalIdeas(allIdeas);
+                    renderIdeaBank();
+                }, (error) => {
+                    console.warn("Firestore listener on hubs/ide/ideas error (using local storage fallback):", error);
+                    // Fallback to local ideas
+                    allIdeas = loadLocalIdeas();
+                    renderIdeaBank();
+                });
+            } catch (err) {
+                console.warn("Error setting up ideas listener:", err);
+                allIdeas = loadLocalIdeas();
+                renderIdeaBank();
+            }
+        };
+
+        // Render Idea Bank UI
+        window.renderIdeaBank = () => {
+            const gridContainer = document.getElementById('ide-grid-view');
+            const kanbanContainer = document.getElementById('ide-kanban-view');
+            const listTbody = document.getElementById('ide-list-tbody');
+            const emptyState = document.getElementById('ide-empty-state');
+
+            // 1. Calculate & Update Stats
+            const totalCount = allIdeas.length;
+            const newCount = allIdeas.filter(i => i.status === 'ide-baru').length;
+            const researchCount = allIdeas.filter(i => i.status === 'riset').length;
+            const progressCount = allIdeas.filter(i => i.status === 'eksekusi').length;
+            const completedCount = allIdeas.filter(i => i.status === 'selesai').length;
+
+            const elTotal = document.getElementById('ide-stat-total'); if (elTotal) elTotal.textContent = totalCount;
+            const elNew = document.getElementById('ide-stat-new'); if (elNew) elNew.textContent = newCount;
+            const elResearch = document.getElementById('ide-stat-research'); if (elResearch) elResearch.textContent = researchCount;
+            const elProg = document.getElementById('ide-stat-progress'); if (elProg) elProg.textContent = progressCount;
+            const elComp = document.getElementById('ide-stat-completed'); if (elComp) elComp.textContent = completedCount;
+
+            // 2. Filter ideas based on search query and category
+            const queryClean = ideSearchQuery.trim().toLowerCase();
+            const filteredIdeas = allIdeas.filter(idea => {
+                const matchCategory = (ideActiveCategory === 'all' || idea.category === ideActiveCategory);
+                if (!matchCategory) return false;
+                if (!queryClean) return true;
+
+                const textToSearch = [
+                    idea.title || '',
+                    idea.category || '',
+                    idea.description || '',
+                    idea.potential || '',
+                    idea.capital || '',
+                    Array.isArray(idea.tags) ? idea.tags.join(' ') : (idea.tags || ''),
+                    Array.isArray(idea.checklist) ? idea.checklist.map(c => c.text).join(' ') : ''
+                ].join(' ').toLowerCase();
+
+                return textToSearch.includes(queryClean);
+            });
+
+            // 3. Handle Empty State
+            if (filteredIdeas.length === 0) {
+                if (gridContainer) gridContainer.innerHTML = '';
+                if (listTbody) listTbody.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+            }
+
+            // 4. Render Grid View Cards
+            if (gridContainer) {
+                gridContainer.innerHTML = '';
+                filteredIdeas.forEach(idea => {
+                    const card = createIdeaCardElement(idea);
+                    gridContainer.appendChild(card);
+                });
+            }
+
+            // 5. Render Kanban View Columns
+            renderIdeaKanbanView(filteredIdeas);
+
+            // 6. Render List View Table Rows
+            if (listTbody) {
+                listTbody.innerHTML = '';
+                filteredIdeas.forEach(idea => {
+                    const row = createIdeaTableRowElement(idea);
+                    listTbody.appendChild(row);
+                });
+            }
+        };
+
+        // Create HTML Element for an Idea Card (Grid View)
+        const createIdeaCardElement = (idea) => {
+            const catMeta = getCategoryMeta(idea.category);
+            const statusMeta = getStatusMeta(idea.status);
+            const priorityMeta = getPriorityMeta(idea.priority);
+
+            const checklist = Array.isArray(idea.checklist) ? idea.checklist : [];
+            const totalSteps = checklist.length;
+            const completedSteps = checklist.filter(c => c.done).length;
+            const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+            const card = document.createElement('div');
+            card.className = 'ide-card bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/90 dark:border-gray-700/80 p-5 flex flex-col justify-between shadow-sm relative overflow-hidden group';
+            card.dataset.id = idea.id;
+
+            // Header tags
+            let tagsHtml = '';
+            if (Array.isArray(idea.tags) && idea.tags.length > 0) {
+                tagsHtml = `<div class="flex flex-wrap gap-1 mt-2.5">
+                    ${idea.tags.map(t => `<span class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300">#${t}</span>`).join('')}
+                </div>`;
+            }
+
+            // Checklist preview (up to 4 items)
+            let checklistHtml = '';
+            if (totalSteps > 0) {
+                const checklistItems = checklist.slice(0, 4).map((item, idx) => `
+                    <div class="flex items-start gap-2 text-xs text-gray-700 dark:text-gray-300 cursor-pointer group/item py-0.5" onclick="window.toggleIdeaChecklistItem('${idea.id}', ${idx})">
+                        <input type="checkbox" ${item.done ? 'checked' : ''} class="mt-0.5 rounded text-amber-500 focus:ring-amber-400 h-3.5 w-3.5 pointer-events-none">
+                        <span class="${item.done ? 'line-through text-gray-400 dark:text-gray-500' : ''} flex-1 break-words">${item.text}</span>
+                    </div>
+                `).join('');
+
+                const moreCount = totalSteps - 4;
+                checklistHtml = `
+                    <div class="mt-3.5 pt-3 border-t border-gray-100 dark:border-gray-700/60">
+                        <div class="flex items-center justify-between text-[11px] font-bold text-gray-500 dark:text-gray-400 mb-1.5">
+                            <span>Langkah Aksi (${completedSteps}/${totalSteps})</span>
+                            <span class="${progressPercent === 100 ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : ''}">${progressPercent}%</span>
+                        </div>
+                        <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 mb-2.5 overflow-hidden">
+                            <div class="bg-gradient-to-r from-amber-500 to-yellow-400 h-1.5 rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="space-y-1">
+                            ${checklistItems}
+                            ${moreCount > 0 ? `<div class="text-[10px] text-amber-600 dark:text-amber-400 font-semibold cursor-pointer" onclick="window.openEditIdeModal('${idea.id}')">+ ${moreCount} langkah lainnya...</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Key Info Pills: Potensi & Modal
+            let infoPillsHtml = '';
+            if (idea.potential || idea.capital) {
+                infoPillsHtml = `
+                    <div class="flex flex-wrap items-center gap-2 mt-3">
+                        ${idea.potential ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"><i class="fas fa-coins text-[10px]"></i> ${idea.potential}</span>` : ''}
+                        ${idea.capital ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-50 text-gray-700 dark:bg-gray-700/60 dark:text-gray-300 border border-gray-200 dark:border-gray-700"><i class="fas fa-wallet text-[10px] text-gray-400"></i> ${idea.capital}</span>` : ''}
+                    </div>
+                `;
+            }
+
+            // Reference URL button
+            let refLinkHtml = '';
+            if (idea.referenceUrl) {
+                const urlClean = idea.referenceUrl.startsWith('http') ? idea.referenceUrl : `https://${idea.referenceUrl}`;
+                refLinkHtml = `
+                    <a href="${urlClean}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1 mt-2">
+                        <i class="fas fa-external-link-alt text-[10px]"></i> Link Riset / Contoh
+                    </a>
+                `;
+            }
+
+            card.innerHTML = `
+                <div>
+                    <!-- Top Category & Priority Bar -->
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                        <span class="ide-tag-pill border ${catMeta.badge}">
+                            <i class="${catMeta.icon} text-[10px]"></i>
+                            <span>${idea.category || 'Lainnya'}</span>
+                        </span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="ide-tag-pill border ${priorityMeta.badge}" title="Prioritas: ${priorityMeta.label}">
+                                <span>${priorityMeta.stars}</span>
+                                <span class="text-[10px] font-bold">${priorityMeta.label}</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white leading-snug mb-1.5 hover:text-amber-600 dark:hover:text-amber-400 cursor-pointer transition-colors" onclick="window.openEditIdeModal('${idea.id}')">
+                        ${idea.title}
+                    </h3>
+
+                    <!-- Description -->
+                    ${idea.description ? `<p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-3 leading-relaxed">${idea.description}</p>` : ''}
+
+                    ${infoPillsHtml}
+                    ${refLinkHtml}
+                    ${tagsHtml}
+                    ${checklistHtml}
+                </div>
+
+                <!-- Footer: Status Selector & Actions -->
+                <div class="mt-4 pt-3.5 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between gap-2">
+                    <!-- Status selector -->
+                    <div class="relative">
+                        <select onchange="window.changeIdeaStatus('${idea.id}', this.value)"
+                            class="text-xs font-bold px-2.5 py-1.5 rounded-lg border focus:outline-none cursor-pointer ${statusMeta.badge}">
+                            <option value="ide-baru" ${idea.status === 'ide-baru' ? 'selected' : ''}>💡 Ide Baru</option>
+                            <option value="riset" ${idea.status === 'riset' ? 'selected' : ''}>🔍 Riset</option>
+                            <option value="eksekusi" ${idea.status === 'eksekusi' ? 'selected' : ''}>🚀 Eksekusi</option>
+                            <option value="selesai" ${idea.status === 'selesai' ? 'selected' : ''}>✅ Selesai</option>
+                            <option value="arsip" ${idea.status === 'arsip' ? 'selected' : ''}>⏸️ Arsip</option>
+                        </select>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-1">
+                        <button onclick="window.convertIdeaToTask('${idea.id}')" title="Kirim Ide ini menjadi Task di Project Board"
+                            class="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/60 transition-colors text-xs font-semibold flex items-center gap-1">
+                            <i class="fas fa-bolt"></i>
+                            <span class="hidden sm:inline text-[11px]">Ke Board</span>
+                        </button>
+                        <button onclick="window.openEditIdeModal('${idea.id}')" title="Edit Ide"
+                            class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="window.deleteIdea('${idea.id}')" title="Hapus Ide"
+                            class="p-2 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            return card;
+        };
+
+        // Render Kanban Board View
+        const renderIdeaKanbanView = (ideas) => {
+            const statuses = ['ide-baru', 'riset', 'eksekusi', 'selesai', 'arsip'];
+            statuses.forEach(st => {
+                const listEl = document.getElementById(`ide-kb-list-${st}`);
+                const countEl = document.getElementById(`ide-kb-count-${st}`);
+                if (!listEl) return;
+
+                const columnIdeas = ideas.filter(i => (i.status || 'ide-baru') === st);
+                if (countEl) countEl.textContent = columnIdeas.length;
+
+                listEl.innerHTML = '';
+                if (columnIdeas.length === 0) {
+                    listEl.innerHTML = `<div class="text-center py-6 text-gray-400 dark:text-gray-500 text-xs italic">Kosong</div>`;
+                    return;
+                }
+
+                columnIdeas.forEach(idea => {
+                    const catMeta = getCategoryMeta(idea.category);
+                    const priorityMeta = getPriorityMeta(idea.priority);
+                    const checklist = Array.isArray(idea.checklist) ? idea.checklist : [];
+                    const completedSteps = checklist.filter(c => c.done).length;
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-white dark:bg-gray-800 p-3.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all space-y-2';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between gap-1">
+                            <span class="ide-tag-pill border text-[10px] ${catMeta.badge}">
+                                <i class="${catMeta.icon} text-[9px]"></i> ${idea.category || 'Lainnya'}
+                            </span>
+                            <span class="text-[10px] font-bold text-gray-400">${priorityMeta.stars}</span>
+                        </div>
+                        <h5 class="text-xs font-bold text-gray-900 dark:text-white leading-snug cursor-pointer hover:text-amber-500 transition-colors" onclick="window.openEditIdeModal('${idea.id}')">
+                            ${idea.title}
+                        </h5>
+                        ${checklist.length > 0 ? `
+                            <div class="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400">
+                                <span><i class="fas fa-check-square mr-1"></i> ${completedSteps}/${checklist.length} Aksi</span>
+                            </div>
+                        ` : ''}
+                        <div class="pt-2 border-t border-gray-100 dark:border-gray-700/60 flex items-center justify-between gap-1">
+                            <div class="flex items-center gap-1">
+                                ${st !== 'ide-baru' ? `<button onclick="window.moveIdeaKanban('${idea.id}', -1)" title="Pindahkan Mundur" class="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-[10px] rounded hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-chevron-left"></i></button>` : ''}
+                                ${st !== 'arsip' ? `<button onclick="window.moveIdeaKanban('${idea.id}', 1)" title="Pindahkan Maju" class="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-[10px] rounded hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-chevron-right"></i></button>` : ''}
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button onclick="window.convertIdeaToTask('${idea.id}')" title="Kirim ke Project Board" class="p-1 text-amber-500 hover:text-amber-600 text-xs"><i class="fas fa-bolt"></i></button>
+                                <button onclick="window.openEditIdeModal('${idea.id}')" title="Edit" class="p-1 text-gray-400 hover:text-gray-600 text-xs"><i class="fas fa-pen"></i></button>
+                                <button onclick="window.deleteIdea('${idea.id}')" title="Hapus" class="p-1 text-gray-400 hover:text-rose-500 text-xs"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            });
+        };
+
+        // Move Idea through Kanban Columns
+        window.moveIdeaKanban = async (ideaId, direction) => {
+            const statuses = ['ide-baru', 'riset', 'eksekusi', 'selesai', 'arsip'];
+            const idea = allIdeas.find(i => i.id === ideaId);
+            if (!idea) return;
+            const curIdx = statuses.indexOf(idea.status || 'ide-baru');
+            const targetIdx = curIdx + direction;
+            if (targetIdx >= 0 && targetIdx < statuses.length) {
+                await window.changeIdeaStatus(ideaId, statuses[targetIdx]);
+            }
+        };
+
+        // Render List Table Row
+        const createIdeaTableRowElement = (idea) => {
+            const catMeta = getCategoryMeta(idea.category);
+            const statusMeta = getStatusMeta(idea.status);
+            const priorityMeta = getPriorityMeta(idea.priority);
+            const checklist = Array.isArray(idea.checklist) ? idea.checklist : [];
+            const completedSteps = checklist.filter(c => c.done).length;
+
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors';
+            tr.innerHTML = `
+                <td class="p-3">
+                    <div class="font-bold text-gray-900 dark:text-white cursor-pointer hover:text-amber-600" onclick="window.openEditIdeModal('${idea.id}')">${idea.title}</div>
+                    ${idea.description ? `<div class="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">${idea.description}</div>` : ''}
+                </td>
+                <td class="p-3 whitespace-nowrap">
+                    <span class="ide-tag-pill border ${catMeta.badge}">
+                        <i class="${catMeta.icon} text-[10px]"></i> ${idea.category || 'Lainnya'}
+                    </span>
+                </td>
+                <td class="p-3 whitespace-nowrap">
+                    <span class="ide-tag-pill border ${priorityMeta.badge}">${priorityMeta.stars} ${priorityMeta.label}</span>
+                </td>
+                <td class="p-3 whitespace-nowrap">
+                    <select onchange="window.changeIdeaStatus('${idea.id}', this.value)"
+                        class="text-xs font-bold px-2 py-1 rounded-lg border focus:outline-none cursor-pointer ${statusMeta.badge}">
+                        <option value="ide-baru" ${idea.status === 'ide-baru' ? 'selected' : ''}>💡 Ide Baru</option>
+                        <option value="riset" ${idea.status === 'riset' ? 'selected' : ''}>🔍 Riset</option>
+                        <option value="eksekusi" ${idea.status === 'eksekusi' ? 'selected' : ''}>🚀 Eksekusi</option>
+                        <option value="selesai" ${idea.status === 'selesai' ? 'selected' : ''}>✅ Selesai</option>
+                        <option value="arsip" ${idea.status === 'arsip' ? 'selected' : ''}>⏸️ Arsip</option>
+                    </select>
+                </td>
+                <td class="p-3 whitespace-nowrap">
+                    <div class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">${idea.potential || '-'}</div>
+                    <div class="text-[10px] text-gray-400">${idea.capital || ''}</div>
+                </td>
+                <td class="p-3 whitespace-nowrap">
+                    ${checklist.length > 0 ? `
+                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">${completedSteps}/${checklist.length}</span>
+                    ` : '<span class="text-gray-400">-</span>'}
+                </td>
+                <td class="p-3 text-right whitespace-nowrap">
+                    <div class="flex items-center justify-end gap-1.5">
+                        <button onclick="window.convertIdeaToTask('${idea.id}')" title="Kirim ke Project Board" class="p-1.5 text-amber-500 hover:text-amber-600 text-xs rounded hover:bg-amber-50 dark:hover:bg-amber-950/30"><i class="fas fa-bolt"></i></button>
+                        <button onclick="window.openEditIdeModal('${idea.id}')" title="Edit" class="p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs rounded hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-pen"></i></button>
+                        <button onclick="window.deleteIdea('${idea.id}')" title="Hapus" class="p-1.5 text-gray-400 hover:text-rose-500 text-xs rounded hover:bg-rose-50 dark:hover:bg-rose-950/30"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>
+            `;
+            return tr;
+        };
+
+        // Open Modal for Creating a New Idea
+        window.openAddIdeModal = (initialStatus = 'ide-baru', initialData = null) => {
+            const modal = document.getElementById('ide-modal');
+            const titleEl = document.getElementById('ide-modal-title');
+            const form = document.getElementById('ide-form');
+            if (!modal || !form) return;
+
+            form.reset();
+            document.getElementById('ide-id').value = '';
+            titleEl.textContent = '💡 Tambah Ide Baru';
+
+            document.getElementById('ide-status-input').value = initialStatus;
+            document.getElementById('ide-priority-input').value = 'sedang';
+            document.getElementById('ide-category-input').value = 'TikTok & Medsos';
+
+            ideModalChecklist = [];
+
+            if (initialData) {
+                if (initialData.title) document.getElementById('ide-title-input').value = initialData.title;
+                if (initialData.category) document.getElementById('ide-category-input').value = initialData.category;
+                if (initialData.status) document.getElementById('ide-status-input').value = initialData.status;
+                if (initialData.priority) document.getElementById('ide-priority-input').value = initialData.priority;
+                if (initialData.potential) document.getElementById('ide-potential-input').value = initialData.potential;
+                if (initialData.capital) document.getElementById('ide-capital-input').value = initialData.capital;
+                if (initialData.description) document.getElementById('ide-desc-input').value = initialData.description;
+                if (initialData.referenceUrl) document.getElementById('ide-ref-input').value = initialData.referenceUrl;
+                if (initialData.tags) document.getElementById('ide-tags-input').value = Array.isArray(initialData.tags) ? initialData.tags.join(', ') : initialData.tags;
+                if (Array.isArray(initialData.checklist)) {
+                    ideModalChecklist = JSON.parse(JSON.stringify(initialData.checklist));
+                }
+            }
+
+            renderModalChecklist();
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => { document.getElementById('ide-title-input')?.focus(); }, 60);
+        };
+
+        window.openAddIdeModalWithStatus = (status) => {
+            window.openAddIdeModal(status);
+        };
+
+        // Open Modal for Editing an Existing Idea
+        window.openEditIdeModal = (ideaId) => {
+            const idea = allIdeas.find(i => i.id === ideaId);
+            if (!idea) return;
+
+            const modal = document.getElementById('ide-modal');
+            const titleEl = document.getElementById('ide-modal-title');
+            if (!modal) return;
+
+            titleEl.textContent = '✏️ Edit Ide';
+            document.getElementById('ide-id').value = idea.id;
+            document.getElementById('ide-title-input').value = idea.title || '';
+            document.getElementById('ide-category-input').value = idea.category || 'TikTok & Medsos';
+            document.getElementById('ide-status-input').value = idea.status || 'ide-baru';
+            document.getElementById('ide-priority-input').value = idea.priority || 'sedang';
+            document.getElementById('ide-potential-input').value = idea.potential || '';
+            document.getElementById('ide-capital-input').value = idea.capital || '';
+            document.getElementById('ide-desc-input').value = idea.description || '';
+            document.getElementById('ide-ref-input').value = idea.referenceUrl || '';
+            document.getElementById('ide-tags-input').value = Array.isArray(idea.tags) ? idea.tags.join(', ') : (idea.tags || '');
+
+            ideModalChecklist = Array.isArray(idea.checklist) ? JSON.parse(JSON.stringify(idea.checklist)) : [];
+            renderModalChecklist();
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => { document.getElementById('ide-title-input')?.focus(); }, 60);
+        };
+
+        // Close Modal
+        const closeIdeModal = () => {
+            const modal = document.getElementById('ide-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        // Render checklist items inside modal form
+        const renderModalChecklist = () => {
+            const container = document.getElementById('ide-modal-checklist-list');
+            if (!container) return;
+            container.innerHTML = '';
+            if (ideModalChecklist.length === 0) {
+                container.innerHTML = `<div class="text-xs text-gray-400 dark:text-gray-500 italic py-1">Belum ada langkah aksi ditambahkan.</div>`;
+                return;
+            }
+
+            ideModalChecklist.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 bg-gray-50 dark:bg-gray-700/60 p-2 rounded-lg border border-gray-200 dark:border-gray-600';
+                row.innerHTML = `
+                    <input type="checkbox" ${item.done ? 'checked' : ''} class="rounded text-amber-500 focus:ring-amber-400 h-4 w-4 cursor-pointer" onchange="window.toggleModalChecklistItem(${index})">
+                    <input type="text" value="${item.text.replace(/"/g, '&quot;')}" class="flex-1 text-xs bg-transparent border-none text-gray-900 dark:text-white focus:outline-none ${item.done ? 'line-through text-gray-400' : ''}" onchange="window.updateModalChecklistItemText(${index}, this.value)">
+                    <button type="button" onclick="window.removeModalChecklistItem(${index})" class="text-gray-400 hover:text-rose-500 p-1 text-xs"><i class="fas fa-times"></i></button>
+                `;
+                container.appendChild(row);
+            });
+        };
+
+        window.toggleModalChecklistItem = (idx) => {
+            if (ideModalChecklist[idx]) {
+                ideModalChecklist[idx].done = !ideModalChecklist[idx].done;
+                renderModalChecklist();
+            }
+        };
+
+        window.updateModalChecklistItemText = (idx, newText) => {
+            if (ideModalChecklist[idx]) {
+                ideModalChecklist[idx].text = newText.trim();
+            }
+        };
+
+        window.removeModalChecklistItem = (idx) => {
+            ideModalChecklist.splice(idx, 1);
+            renderModalChecklist();
+        };
+
+        // Toggle checklist item status directly from card view
+        window.toggleIdeaChecklistItem = async (ideaId, itemIdx) => {
+            const idea = allIdeas.find(i => i.id === ideaId);
+            if (!idea || !Array.isArray(idea.checklist) || !idea.checklist[itemIdx]) return;
+
+            idea.checklist[itemIdx].done = !idea.checklist[itemIdx].done;
+            idea.updatedAt = Date.now();
+
+            // Save to localStorage
+            saveLocalIdeas(allIdeas);
+            renderIdeaBank();
+
+            // Save to Firestore
+            try {
+                const docRef = doc(db, "hubs", "ide", "ideas", ideaId);
+                await updateDoc(docRef, {
+                    checklist: idea.checklist,
+                    updatedAt: Date.now()
+                });
+            } catch (err) {
+                console.warn("Firestore update error for checklist:", err);
+            }
+        };
+
+        // Quick status update from card or kanban
+        window.changeIdeaStatus = async (ideaId, newStatus) => {
+            const idea = allIdeas.find(i => i.id === ideaId);
+            if (!idea) return;
+
+            idea.status = newStatus;
+            idea.updatedAt = Date.now();
+
+            saveLocalIdeas(allIdeas);
+            renderIdeaBank();
+
+            try {
+                const docRef = doc(db, "hubs", "ide", "ideas", ideaId);
+                await updateDoc(docRef, {
+                    status: newStatus,
+                    updatedAt: Date.now()
+                });
+                if (typeof showNotification === 'function') {
+                    showNotification(`Status ide diperbarui ke "${getStatusMeta(newStatus).label}"`);
+                }
+            } catch (err) {
+                console.warn("Firestore update status error:", err);
+            }
+        };
+
+        // Convert Idea to a Task in Project Board
+        window.convertIdeaToTask = async (ideaId) => {
+            const idea = allIdeas.find(i => i.id === ideaId);
+            if (!idea) return;
+
+            try {
+                // Determine column to put task into (first available board column)
+                let targetColId = null;
+                if (typeof boardColumns !== 'undefined' && Array.isArray(boardColumns) && boardColumns.length > 0) {
+                    targetColId = boardColumns[0].id;
+                }
+
+                // Format description with idea details & checklist
+                let taskDesc = (idea.description || '');
+                if (idea.potential) taskDesc += `\n\n🎯 Potensi: ${idea.potential}`;
+                if (idea.capital) taskDesc += `\n💰 Estimasi Modal: ${idea.capital}`;
+                if (idea.referenceUrl) taskDesc += `\n🔗 Referensi: ${idea.referenceUrl}`;
+
+                if (Array.isArray(idea.checklist) && idea.checklist.length > 0) {
+                    taskDesc += `\n\n📋 Rencana Eksekusi:`;
+                    idea.checklist.forEach((chk, i) => {
+                        taskDesc += `\n- [${chk.done ? 'x' : ' '}] ${chk.text}`;
+                    });
+                }
+
+                const currentHubMode = typeof currentMode !== 'undefined' ? currentMode : 'personal';
+
+                if (targetColId) {
+                    await addDoc(collection(db, "hubs", currentHubMode, "tasks"), {
+                        text: `💡 ${idea.title}`,
+                        description: taskDesc,
+                        color: 'amber',
+                        columnId: targetColId,
+                        order: 1,
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    });
+                } else {
+                    // Fallback to general task add function if available
+                    if (typeof addTask === 'function') {
+                        await addTask(`💡 ${idea.title}`, taskDesc, null, 'amber');
+                    }
+                }
+
+                // Automatically update idea status to 'eksekusi' (Sedang Dikerjakan)
+                await window.changeIdeaStatus(ideaId, 'eksekusi');
+
+                if (typeof showNotification === 'function') {
+                    showNotification(`✅ Berhasil! Ide dikirim sebagai Task baru di Project Board (${currentHubMode.toUpperCase()})`);
+                }
+            } catch (err) {
+                console.error("Failed to convert idea to task:", err);
+                if (typeof showNotification === 'function') {
+                    showNotification("Gagal mengirim ide ke Project Board: " + (err.message || err), true);
+                }
+            }
+        };
+
+        // Delete an Idea
+        window.deleteIdea = async (ideaId) => {
+            const confirmed = typeof showConfirmModal === 'function'
+                ? await showConfirmModal('Apakah Anda yakin ingin menghapus ide ini dari Bank Ide?')
+                : confirm('Apakah Anda yakin ingin menghapus ide ini?');
+
+            if (!confirmed) return;
+
+            // Remove locally
+            allIdeas = allIdeas.filter(i => i.id !== ideaId);
+            saveLocalIdeas(allIdeas);
+            renderIdeaBank();
+
+            try {
+                const docRef = doc(db, "hubs", "ide", "ideas", ideaId);
+                await deleteDoc(docRef);
+                if (typeof showNotification === 'function') {
+                    showNotification('Ide berhasil dihapus.');
+                }
+            } catch (err) {
+                console.warn("Firestore delete error:", err);
+            }
+        };
+
+        // Quick Starter Idea Templates
+        window.applyIdeaTemplate = (type) => {
+            const templates = {
+                tiktok: {
+                    title: 'Akun TikTok Jualan / Affiliate (Fashion & Outfit)',
+                    category: 'TikTok & Medsos',
+                    status: 'ide-baru',
+                    priority: 'tinggi',
+                    potential: 'Omset 5-15 Juta/bln',
+                    capital: 'Rp 300.000 (Modal Sampel & Kuota)',
+                    description: 'Membuat akun TikTok spesialis konten outfit muslimah/fashion casual, review gamis & hijab syar\'i. Fokus live stream & showcase produk affiliate TikTok Shop.',
+                    referenceUrl: 'https://tiktok.com',
+                    tags: ['tiktok', 'fashion', 'affiliate', 'fyp'],
+                    checklist: [
+                        { text: 'Beli nomor HP baru & aktivasi kartu perdana', done: false },
+                        { text: 'Riset 5 toko kompetitor & produk winning di TikTok Shop', done: false },
+                        { text: 'Buat profil bio profesional + link showcase affiliate', done: false },
+                        { text: 'Siapkan 10 script video hook viral & rekam konten batch 1', done: false },
+                        { text: 'Daftar TikTok Shop Affiliate & link akun pembayaran', done: false },
+                        { text: 'Mulai upload konsisten 2 video/hari & live stream rutin', done: false }
+                    ]
+                },
+                facebook: {
+                    title: 'Facebook Group & Fanpage Affiliate Racun Shopee',
+                    category: 'Facebook Affiliate',
+                    status: 'ide-baru',
+                    priority: 'sedang',
+                    potential: 'Komisi 3-8 Juta/bln',
+                    capital: 'Gratis (Modal Kuota & Waktu)',
+                    description: 'Membangun ekosistem Facebook Fanpage & Group bertema rekomendasi barang unik, perabotan rumah tangga & diskon Shopee/Tokopedia.',
+                    referenceUrl: 'https://facebook.com',
+                    tags: ['facebook', 'shopee', 'affiliate', 'viral'],
+                    checklist: [
+                        { text: 'Buat Fanpage & Group FB Niche Racun Shopee / Ibu Rumah Tangga', done: false },
+                        { text: 'Daftar Shopee Affiliate Program & dapatkan link affiliate custom', done: false },
+                        { text: 'Jadwalkan posting 5 konten rekomendasi produk per hari', done: false },
+                        { text: 'Share link di grup relevan & bangun interaksi organik', done: false },
+                        { text: 'Gunakan Facebook Reels untuk jangkauan traffic lebih masif', done: false }
+                    ]
+                },
+                youtube: {
+                    title: 'Channel YouTube Faceless AI (Niche Fakta Unik & Finansial)',
+                    category: 'YouTube & Konten',
+                    status: 'ide-baru',
+                    priority: 'tinggi',
+                    potential: 'AdSense & Sponsorship $500+/bln',
+                    capital: 'Rp 200.000 (Langganan AI / Tools)',
+                    description: 'Membuat channel YouTube tanpa wajah dengan topik finansial, motivasi, atau fakta sains menarik menggunakan script ChatGPT, voiceover AI ElevenLabs, dan video footage Pexels/CapCut.',
+                    referenceUrl: 'https://youtube.com',
+                    tags: ['youtube', 'faceless', 'ai', 'adsense'],
+                    checklist: [
+                        { text: 'Tentukan micro-niche (contoh: Kisah Sukses / Fakta Unik Dunia)', done: false },
+                        { text: 'Desain banner & logo channel YouTube dengan Canva', done: false },
+                        { text: 'Generate 10 skrip video dengan ChatGPT/Claude', done: false },
+                        { text: 'Buat voiceover AI & edit dengan CapCut / Premiere', done: false },
+                        { text: 'Buat thumbnail klik-bait profesional dengan Canva', done: false },
+                        { text: 'Upload 3 video panjang + 5 Shorts per minggu secara terjadwal', done: false }
+                    ]
+                },
+                saas: {
+                    title: 'Produk Digital & Template Notion / Canva',
+                    category: 'Digital Product & SaaS',
+                    status: 'ide-baru',
+                    priority: 'tinggi',
+                    potential: 'Passive Income 10-20jt/bln',
+                    capital: 'Rp 150.000 (Domain & Hosting)',
+                    description: 'Menjual template produktivitas Notion untuk freelancer/mahasiswa, bundle Canva feed Instagram, atau mini web tool berbasis AI.',
+                    referenceUrl: 'https://gumroad.com',
+                    tags: ['notion', 'canva', 'digitalproduct', 'passiveincome'],
+                    checklist: [
+                        { text: 'Riset template Notion/Canva yang paling laris di Gumroad/Etsy', done: false },
+                        { text: 'Buat template dengan desain estetik dan fungsional', done: false },
+                        { text: 'Bikin landing page & mockup display produk di Canva', done: false },
+                        { text: 'Setup payment gateway (Lynk.id / Mayar / Gumroad)', done: false },
+                        { text: 'Promosi via TikTok, Twitter/X, dan Instagram Reels', done: false }
+                    ]
+                }
+            };
+
+            const tpl = templates[type] || templates.tiktok;
+            window.openAddIdeModal('ide-baru', tpl);
+        };
+
+        // Initialize Bank Ide Event Listeners
+        const initIdeaBankListeners = () => {
+            // Header Add Idea button
+            document.getElementById('add-ide-btn')?.addEventListener('click', () => {
+                window.openAddIdeModal();
+            });
+
+            // Modal Close & Cancel buttons
+            document.getElementById('ide-modal-close-btn')?.addEventListener('click', closeIdeModal);
+            document.getElementById('ide-cancel-btn')?.addEventListener('click', closeIdeModal);
+
+            // Modal Backdrop Click
+            const ideModal = document.getElementById('ide-modal');
+            if (ideModal) {
+                ideModal.addEventListener('click', (e) => {
+                    if (e.target === ideModal) closeIdeModal();
+                });
+            }
+
+            // Modal Checklist Add Step Button & Enter Key
+            document.getElementById('ide-modal-add-step-btn')?.addEventListener('click', () => {
+                const input = document.getElementById('ide-modal-new-step-input');
+                const val = input ? input.value.trim() : '';
+                if (val) {
+                    ideModalChecklist.push({ text: val, done: false });
+                    input.value = '';
+                    renderModalChecklist();
+                }
+            });
+
+            document.getElementById('ide-modal-new-step-input')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('ide-modal-add-step-btn')?.click();
+                }
+            });
+
+            // Form Submit (Save / Update Idea)
+            document.getElementById('ide-form')?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const id = document.getElementById('ide-id').value.trim();
+                const title = document.getElementById('ide-title-input').value.trim();
+                if (!title) {
+                    if (typeof showNotification === 'function') showNotification('Judul ide wajib diisi!', true);
+                    return;
+                }
+
+                const category = document.getElementById('ide-category-input').value;
+                const status = document.getElementById('ide-status-input').value;
+                const priority = document.getElementById('ide-priority-input').value;
+                const potential = document.getElementById('ide-potential-input').value.trim();
+                const capital = document.getElementById('ide-capital-input').value.trim();
+                const description = document.getElementById('ide-desc-input').value.trim();
+                const referenceUrl = document.getElementById('ide-ref-input').value.trim();
+                const tagsRaw = document.getElementById('ide-tags-input').value;
+
+                const tags = tagsRaw
+                    ? tagsRaw.split(',').map(t => t.trim().toLowerCase().replace(/^#/, '')).filter(t => t)
+                    : [];
+
+                const payload = {
+                    title,
+                    category,
+                    status,
+                    priority,
+                    potential,
+                    capital,
+                    description,
+                    referenceUrl,
+                    tags,
+                    checklist: ideModalChecklist,
+                    updatedAt: Date.now()
+                };
+
+                try {
+                    if (id) {
+                        // Update existing idea
+                        const idx = allIdeas.findIndex(i => i.id === id);
+                        if (idx !== -1) {
+                            allIdeas[idx] = { ...allIdeas[idx], ...payload };
+                        }
+                        saveLocalIdeas(allIdeas);
+                        renderIdeaBank();
+
+                        const docRef = doc(db, "hubs", "ide", "ideas", id);
+                        await updateDoc(docRef, payload);
+
+                        closeIdeModal();
+                        if (typeof showNotification === 'function') showNotification('Ide berhasil diperbarui!');
+                    } else {
+                        // Add new idea
+                        payload.createdAt = Date.now();
+                        const localId = 'ide_' + Date.now();
+                        const newIdeaLocal = { id: localId, ...payload };
+
+                        allIdeas.unshift(newIdeaLocal);
+                        saveLocalIdeas(allIdeas);
+                        renderIdeaBank();
+
+                        const docRef = await addDoc(collection(db, "hubs", "ide", "ideas"), payload);
+                        newIdeaLocal.id = docRef.id;
+                        saveLocalIdeas(allIdeas);
+
+                        closeIdeModal();
+                        if (typeof showNotification === 'function') showNotification('💡 Ide baru berhasil disimpan di Bank Ide!');
+                    }
+                } catch (err) {
+                    console.warn("Firestore save idea error (persisted to localStorage):", err);
+                    closeIdeModal();
+                    if (typeof showNotification === 'function') showNotification('Ide tersimpan secara lokal!');
+                }
+            });
+
+            // Search input live filtering
+            const searchInput = document.getElementById('ide-search-input');
+            const searchClearBtn = document.getElementById('ide-search-clear-btn');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    ideSearchQuery = e.target.value;
+                    if (searchClearBtn) {
+                        searchClearBtn.classList.toggle('hidden', !ideSearchQuery);
+                    }
+                    renderIdeaBank();
+                });
+            }
+
+            if (searchClearBtn) {
+                searchClearBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    ideSearchQuery = '';
+                    searchClearBtn.classList.add('hidden');
+                    renderIdeaBank();
+                    if (searchInput) searchInput.focus();
+                });
+            }
+
+            // Category Filter Pills
+            const categoryContainer = document.getElementById('ide-category-filters');
+            if (categoryContainer) {
+                categoryContainer.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.ide-cat-pill');
+                    if (!btn) return;
+
+                    categoryContainer.querySelectorAll('.ide-cat-pill').forEach(b => {
+                        b.classList.remove('active', 'bg-amber-500', 'text-white');
+                        b.classList.add('bg-white', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300', 'border', 'border-gray-200', 'dark:border-gray-700');
+                    });
+
+                    btn.classList.add('active', 'bg-amber-500', 'text-white');
+                    btn.classList.remove('bg-white', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-700');
+
+                    ideActiveCategory = btn.dataset.cat || 'all';
+                    renderIdeaBank();
+                });
+            }
+
+            // View Mode Switcher
+            const gridBtn = document.getElementById('ide-view-grid-btn');
+            const kanbanBtn = document.getElementById('ide-view-kanban-btn');
+            const listBtn = document.getElementById('ide-view-list-btn');
+
+            const gridView = document.getElementById('ide-grid-view');
+            const kanbanView = document.getElementById('ide-kanban-view');
+            const listView = document.getElementById('ide-list-view');
+
+            const setViewMode = (mode) => {
+                ideActiveView = mode;
+
+                [gridBtn, kanbanBtn, listBtn].forEach(btn => {
+                    if (btn) {
+                        btn.classList.remove('bg-amber-500', 'text-white', 'shadow-sm');
+                        btn.classList.add('text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+                    }
+                });
+
+                if (gridView) gridView.classList.add('hidden');
+                if (kanbanView) kanbanView.classList.add('hidden');
+                if (listView) listView.classList.add('hidden');
+
+                if (mode === 'grid') {
+                    if (gridBtn) { gridBtn.classList.add('bg-amber-500', 'text-white', 'shadow-sm'); gridBtn.classList.remove('hover:bg-gray-100'); }
+                    if (gridView) gridView.classList.remove('hidden');
+                } else if (mode === 'kanban') {
+                    if (kanbanBtn) { kanbanBtn.classList.add('bg-amber-500', 'text-white', 'shadow-sm'); kanbanBtn.classList.remove('hover:bg-gray-100'); }
+                    if (kanbanView) kanbanView.classList.remove('hidden');
+                } else if (mode === 'list') {
+                    if (listBtn) { listBtn.classList.add('bg-amber-500', 'text-white', 'shadow-sm'); listBtn.classList.remove('hover:bg-gray-100'); }
+                    if (listView) listView.classList.remove('hidden');
+                }
+
+                renderIdeaBank();
+            };
+
+            if (gridBtn) gridBtn.addEventListener('click', () => setViewMode('grid'));
+            if (kanbanBtn) kanbanBtn.addEventListener('click', () => setViewMode('kanban'));
+            if (listBtn) listBtn.addEventListener('click', () => setViewMode('list'));
+
+            // Start real-time ideas sync
+            listenIdeas();
+        };
+
+        // Initialize Bank Ide when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initIdeaBankListeners);
+        } else {
+            initIdeaBankListeners();
+        }
+
+        // ==========================================
+        // ===== MENU VISIBILITY SETTINGS MODULE =====
+        // ==========================================
+        const MENU_SETTINGS_KEY = 'app_menu_visibility_config_v2';
+        const DEFAULT_MENU_VISIBILITY = {
+            personal: true,
+            working: true,
+            ide: true,
+            trade: true,
+            skills: true,
+            youtube: true,
+            tiktok: true
+        };
+
+        const MENU_DISPLAY_NAMES = {
+            personal: 'Personal Workspace',
+            working: 'Working Workspace',
+            ide: 'Bank Ide',
+            trade: 'Trade Journal & Spot DCA',
+            skills: 'Skill Tracking',
+            youtube: 'YouTube Inventory',
+            tiktok: 'TikTok Affiliate'
+        };
+
+        let menuVisibility = { ...DEFAULT_MENU_VISIBILITY };
+
+        // Load config from localStorage
+        const loadMenuVisibility = () => {
+            try {
+                const stored = localStorage.getItem(MENU_SETTINGS_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    menuVisibility = { ...DEFAULT_MENU_VISIBILITY, ...parsed };
+                } else {
+                    const oldStored = localStorage.getItem('app_menu_visibility_config_v1');
+                    if (oldStored) {
+                        try {
+                            const oldParsed = JSON.parse(oldStored);
+                            Object.keys(DEFAULT_MENU_VISIBILITY).forEach(k => {
+                                if (typeof oldParsed[k] === 'boolean') {
+                                    menuVisibility[k] = oldParsed[k];
+                                }
+                            });
+                        } catch (err) {}
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to load menu visibility:', e);
+                menuVisibility = { ...DEFAULT_MENU_VISIBILITY };
+            }
+            return menuVisibility;
+        };
+
+        // Save config
+        const saveMenuVisibility = (newConfig) => {
+            try {
+                menuVisibility = { ...newConfig };
+                localStorage.setItem(MENU_SETTINGS_KEY, JSON.stringify(menuVisibility));
+                applyMenuVisibility();
+            } catch (e) {
+                console.warn('Failed to save menu visibility:', e);
+            }
+        };
+
+        // Check if a specific menu is currently visible
+        window.isMenuVisible = (menuKey) => {
+            return menuVisibility[menuKey] !== false;
+        };
+
+        // Apply visibility to all nav buttons, desktop links, mobile links, and page sections
+        const applyMenuVisibility = () => {
+            const isPersonalVis = menuVisibility.personal !== false;
+            const isWorkingVis = menuVisibility.working !== false;
+            const isWorkspaceActive = isPersonalVis || isWorkingVis;
+
+            // 1. Desktop & Mobile Module Nav Buttons / Links for each module
+            Object.keys(DEFAULT_MENU_VISIBILITY).forEach(menuKey => {
+                const isVisible = menuVisibility[menuKey] !== false;
+
+                document.querySelectorAll(`[data-nav-menu="${menuKey}"]`).forEach(el => {
+                    if (isVisible) {
+                        el.classList.remove('hidden');
+                        el.style.display = '';
+                    } else {
+                        el.classList.add('hidden');
+                        el.style.display = 'none';
+                    }
+                });
+
+                // Standalone Module Sections (ide, trade, skills, youtube, tiktok)
+                const secId = sections[menuKey];
+                if (secId) {
+                    const secEl = document.getElementById(secId);
+                    if (secEl && !isVisible) {
+                        secEl.classList.add('hidden');
+                        secEl.classList.remove('flex');
+                    }
+                }
+
+                // Settings modal toggle checkboxes
+                const toggleInput = document.querySelector(`input[data-setting-menu="${menuKey}"]`);
+                if (toggleInput) {
+                    toggleInput.checked = isVisible;
+                }
+            });
+
+            // 2. Mode Toggle Container (hidden if neither personal nor working is active)
+            document.querySelectorAll('.mode-toggle').forEach(el => {
+                if (isWorkspaceActive) {
+                    el.classList.remove('hidden');
+                    el.style.display = '';
+                } else {
+                    el.classList.add('hidden');
+                    el.style.display = 'none';
+                }
+            });
+
+            // 3. Desktop & Mobile Workspace Links (Project Board, Daily Routine, Notes)
+            document.querySelectorAll('[data-nav-menu="workspace"]').forEach(el => {
+                if (isWorkspaceActive) {
+                    el.classList.remove('hidden');
+                    el.style.display = '';
+                } else {
+                    el.classList.add('hidden');
+                    el.style.display = 'none';
+                }
+            });
+
+            // 4. Auto mode adjustment if active mode was disabled
+            if (typeof currentMode !== 'undefined') {
+                if (currentMode === 'personal' && !isPersonalVis && isWorkingVis) {
+                    if (typeof switchMode === 'function') switchMode('working');
+                } else if (currentMode === 'working' && !isWorkingVis && isPersonalVis) {
+                    if (typeof switchMode === 'function') switchMode('personal');
+                }
+            }
+
+            // 5. Ensure valid view / section display
+            const currentHash = parseHash();
+            const isWorkspaceHash = ['board', 'daily', 'notes'].includes(currentHash);
+
+            if (isWorkspaceHash && !isWorkspaceActive) {
+                // Find first active standalone module
+                const activeKey = Object.keys(menuVisibility).find(k => k !== 'personal' && k !== 'working' && menuVisibility[k] !== false);
+                if (activeKey) {
+                    navigateTo(activeKey);
+                }
+            } else if (!isWorkspaceHash && !isMenuVisible(currentHash)) {
+                // Current standalone view is disabled; find fallback
+                if (isWorkspaceActive) {
+                    navigateTo('board');
+                } else {
+                    const activeKey = Object.keys(menuVisibility).find(k => menuVisibility[k] !== false);
+                    if (activeKey) navigateTo(activeKey);
+                }
+            } else {
+                applyNavigationState(currentHash || (isWorkspaceActive ? 'board' : 'ide'));
+            }
+        };
+
+        // Handle single toggle change from Settings modal
+        window.handleMenuToggleChange = (menuKey, isChecked) => {
+            // Safety check: ensure at least one menu remains active
+            if (!isChecked) {
+                const activeCount = Object.keys(menuVisibility).filter(k => k !== menuKey && menuVisibility[k] !== false).length;
+                if (activeCount === 0) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Minimal satu menu harus tetap aktif!', true);
+                    }
+                    const toggleInput = document.querySelector(`input[data-setting-menu="${menuKey}"]`);
+                    if (toggleInput) toggleInput.checked = true;
+                    return;
+                }
+            }
+
+            menuVisibility[menuKey] = isChecked;
+            saveMenuVisibility(menuVisibility);
+
+            const name = MENU_DISPLAY_NAMES[menuKey] || menuKey;
+            if (typeof showNotification === 'function') {
+                showNotification(`Menu "${name}" ${isChecked ? 'diaktifkan' : 'dinonaktifkan'}.`);
+            }
+        };
+
+        // Presets: Activate All Menus
+        window.setAllMenusActive = () => {
+            const newConfig = {};
+            Object.keys(DEFAULT_MENU_VISIBILITY).forEach(k => { newConfig[k] = true; });
+            saveMenuVisibility(newConfig);
+            if (typeof showNotification === 'function') {
+                showNotification('Semua menu telah diaktifkan.');
+            }
+        };
+
+        // Presets: Core Menus Only (Personal & Working Workspaces)
+        window.setCoreMenusOnly = () => {
+            const newConfig = {
+                personal: true,
+                working: true,
+                ide: false,
+                trade: false,
+                skills: false,
+                youtube: false,
+                tiktok: false
+            };
+            saveMenuVisibility(newConfig);
+            if (typeof showNotification === 'function') {
+                showNotification('Menampilkan hanya menu inti (Personal & Working Workspace).');
+            }
+        };
+
+        // Presets: Reset to Default
+        window.resetMenusToDefault = () => {
+            saveMenuVisibility(DEFAULT_MENU_VISIBILITY);
+            if (typeof showNotification === 'function') {
+                showNotification('Pengaturan menu direset ke default.');
+            }
+        };
+
+        // Open Settings Modal
+        window.openSettingsModal = () => {
+            const modal = document.getElementById('settings-modal');
+            if (!modal) return;
+
+            // Sync toggle inputs with current state
+            Object.keys(DEFAULT_MENU_VISIBILITY).forEach(menuKey => {
+                const toggleInput = document.querySelector(`input[data-setting-menu="${menuKey}"]`);
+                if (toggleInput) {
+                    toggleInput.checked = isMenuVisible(menuKey);
+                }
+            });
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        // Close Settings Modal
+        window.closeSettingsModal = () => {
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        // Initialize Settings Modal Listeners
+        const initSettingsListeners = () => {
+            document.getElementById('settings-modal-close-btn')?.addEventListener('click', window.closeSettingsModal);
+            document.getElementById('settings-save-btn')?.addEventListener('click', window.closeSettingsModal);
+
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) window.closeSettingsModal();
+                });
+            }
+
+            // Load saved settings and apply immediately
+            loadMenuVisibility();
+            applyMenuVisibility();
+        };
+
+        // Initialize Settings
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSettingsListeners);
+        } else {
+            initSettingsListeners();
+        }
 
     </script>
 </body>
