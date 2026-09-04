@@ -2527,6 +2527,11 @@
                         aria-pressed="false" aria-label="Switch to working workspace" role="tab"> <i
                             class="fas fa-briefcase" aria-hidden="true"></i></button>
                 </div>
+                <button id="logout-btn" title="Logout / Keluar"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-600 dark:bg-gray-700 dark:hover:bg-red-900/40 text-gray-600 dark:text-gray-300 transition-colors hidden md:inline-flex"
+                    aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
                 <!-- install button removed per request (download icon) -->
                 <div class="md:hidden">
                     <button id="mobile-menu-button" class="text-gray-600 hover:text-indigo-600 focus:outline-none">
@@ -2548,6 +2553,7 @@
             <a href="#" id="mobile-youtube-btn" data-nav-menu="youtube" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-youtube text-red-500"></i> YouTube Inventory</a>
             <a href="#" id="mobile-tiktok-btn" data-nav-menu="tiktok" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-tiktok"></i> TikTok Affiliate</a>
             <a href="#" id="mobile-settings-btn" class="block py-2 px-4 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 flex items-center gap-2 border-t dark:border-gray-700"><i class="fas fa-cog"></i> Pengaturan Menu</a>
+            <a href="#" id="mobile-logout-btn" class="block py-2 px-4 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 border-t dark:border-gray-700"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </header>
 
@@ -5340,21 +5346,46 @@
                 document.querySelector('main').style.display = 'block';
                 document.querySelector('header').style.display = 'block';
 
-                // Add logout button if not exists
-                const nav = document.querySelector('header nav .flex.items-center.gap-3');
-                if (nav && !document.getElementById('logout-btn')) {
-                    const logoutBtn = document.createElement('button');
-                    logoutBtn.id = 'logout-btn';
-                    logoutBtn.className = 'p-2 rounded-full bg-gray-100 hover:bg-gray-200';
-                    logoutBtn.title = 'Logout';
-                    logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
-                    logoutBtn.addEventListener('click', async () => {
-                        if (confirm('Apakah Anda yakin ingin keluar?')) {
+                // Wire logout buttons (desktop and mobile)
+                const handleLogout = async () => {
+                    if (confirm('Apakah Anda yakin ingin keluar?')) {
+                        try {
                             await signOut(auth);
                             location.reload();
+                        } catch (err) {
+                            console.error('Logout error:', err);
+                            alert('Gagal keluar: ' + (err.message || err));
                         }
+                    }
+                };
+
+                const desktopLogoutBtn = document.getElementById('logout-btn');
+                if (desktopLogoutBtn && !desktopLogoutBtn.dataset.authBound) {
+                    desktopLogoutBtn.addEventListener('click', handleLogout);
+                    desktopLogoutBtn.dataset.authBound = 'true';
+                }
+
+                const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+                if (mobileLogoutBtn && !mobileLogoutBtn.dataset.authBound) {
+                    mobileLogoutBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        handleLogout();
                     });
-                    nav.insertBefore(logoutBtn, nav.firstChild);
+                    mobileLogoutBtn.dataset.authBound = 'true';
+                }
+
+                // Fallback: if desktop logout button was not found in DOM, inject it dynamically
+                if (!document.getElementById('logout-btn')) {
+                    const navControls = document.querySelector('header nav .ml-auto') || document.querySelector('header nav');
+                    if (navControls) {
+                        const logoutBtn = document.createElement('button');
+                        logoutBtn.id = 'logout-btn';
+                        logoutBtn.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-50 hover:text-red-600 dark:bg-gray-700 dark:hover:bg-red-900/40 text-gray-600 dark:text-gray-300 transition-colors hidden md:inline-flex';
+                        logoutBtn.title = 'Logout / Keluar';
+                        logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i>';
+                        logoutBtn.addEventListener('click', handleLogout);
+                        navControls.appendChild(logoutBtn);
+                    }
                 }
             } else {
                 // User is signed out
