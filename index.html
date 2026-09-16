@@ -3580,6 +3580,15 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
+                    <span id="ide-cloud-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 transition-all">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" id="ide-cloud-dot"></span>
+                        <span id="ide-cloud-text">Cloud Aktif</span>
+                    </span>
+                    <button id="ide-sync-btn" type="button" title="Sinkronkan dengan Firestore Cloud"
+                        class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 text-xs focus:outline-none border border-gray-200 dark:border-gray-600 shadow-sm">
+                        <i class="fas fa-sync-alt text-xs" id="ide-sync-icon"></i>
+                        <span>Sync Cloud</span>
+                    </button>
                     <button id="add-ide-btn"
                         class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-medium px-4 py-2.5 rounded-xl shadow-md shadow-amber-500/20 hover:shadow-lg hover:shadow-amber-500/30 transition-all flex items-center gap-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2">
                         <i class="fas fa-plus"></i>
@@ -5346,6 +5355,11 @@
                 document.querySelector('main').style.display = 'block';
                 document.querySelector('header').style.display = 'block';
 
+                // Real-time Bank Ide listener hook once user is authenticated
+                if (typeof window.listenIdeas === 'function') {
+                    window.listenIdeas();
+                }
+
                 // Wire logout buttons (desktop and mobile)
                 const handleLogout = async () => {
                     if (confirm('Apakah Anda yakin ingin keluar?')) {
@@ -5389,6 +5403,10 @@
                 }
             } else {
                 // User is signed out
+                if (typeof window._ideUnsubscribe === 'function') {
+                    window._ideUnsubscribe();
+                    window._ideUnsubscribe = null;
+                }
                 document.querySelector('main').style.display = 'none';
                 document.querySelector('header').style.display = 'none';
                 if (!document.getElementById('login-overlay')) {
@@ -7503,7 +7521,11 @@
                 if (el) { el.classList.remove('hidden'); }
                 document.getElementById('ide-btn')?.classList.add('active');
                 document.getElementById('ide-btn')?.setAttribute('aria-pressed', 'true');
-                setTimeout(() => { try { renderIdeaBank(); } catch (e) { } }, 100);
+                if (typeof window.listenIdeas === 'function' && !window._ideListening && (auth.currentUser || currentUserUid)) {
+                    window.listenIdeas();
+                } else {
+                    setTimeout(() => { try { renderIdeaBank(); } catch (e) { } }, 100);
+                }
             } else {
                 // show main sections if workspace (personal or working) is active
                 const isPersonalVis = typeof isMenuVisible === 'function' ? isMenuVisible('personal') : true;
@@ -15094,13 +15116,39 @@
             }
         };
 
+        // Update Cloud Sync status badge
+        const updateCloudSyncStatus = (status, msg = '') => {
+            const dot = document.getElementById('ide-cloud-dot');
+            const text = document.getElementById('ide-cloud-text');
+            const badge = document.getElementById('ide-cloud-status-badge');
+            if (!dot || !text || !badge) return;
+
+            if (status === 'synced') {
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 transition-all';
+                text.textContent = msg || 'Cloud Aktif';
+            } else if (status === 'syncing') {
+                dot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-ping';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 transition-all';
+                text.textContent = msg || 'Menyinkronkan...';
+            } else if (status === 'offline') {
+                dot.className = 'w-2 h-2 rounded-full bg-gray-400';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 transition-all';
+                text.textContent = msg || 'Lokal (Offline)';
+            } else if (status === 'error') {
+                dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+                badge.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60 transition-all';
+                text.textContent = msg || 'Gagal Sync';
+            }
+        };
+
         // Load cached ideas from localStorage
         const loadLocalIdeas = () => {
             try {
                 const stored = localStorage.getItem(IDE_STORAGE_KEY);
                 return stored ? JSON.parse(stored) : [];
             } catch (e) {
-                console.warn('Failed to parse local ideas:', e);
+                console.warn('[Bank Ide] Failed to parse local ideas:', e);
                 return [];
             }
         };
@@ -15110,39 +15158,116 @@
             try {
                 localStorage.setItem(IDE_STORAGE_KEY, JSON.stringify(ideas));
             } catch (e) {
-                console.warn('Failed to save local ideas:', e);
+                console.warn('[Bank Ide] Failed to save local ideas:', e);
+            }
+        };
+
+        // Automatically sync & migrate any local-only / offline ideas to Firestore
+        let _isMigratingIdeas = false;
+        const syncLocalIdeasToFirestore = async (remoteIdeas) => {
+            if (_isMigratingIdeas) return;
+            const localIdeas = loadLocalIdeas();
+            if (!localIdeas || !Array.isArray(localIdeas) || localIdeas.length === 0) return;
+
+            const remoteIdSet = new Set(remoteIdeas.map(r => r.id));
+            const unsyncedIdeas = localIdeas.filter(l => l && l.title && (!remoteIdSet.has(l.id) || (typeof l.id === 'string' && l.id.startsWith('ide_'))));
+            if (unsyncedIdeas.length === 0) return;
+
+            _isMigratingIdeas = true;
+            console.log(`[Bank Ide] Ditemukan ${unsyncedIdeas.length} ide tersimpan lokal. Menyinkronkan ke Firestore Cloud...`);
+
+            try {
+                for (const idea of unsyncedIdeas) {
+                    // Check if an idea with identical title & category is already in Firestore to prevent duplicate
+                    const duplicate = remoteIdeas.find(r => r.title === idea.title && r.category === idea.category);
+                    if (duplicate) continue;
+
+                    // Generate a real Firestore doc reference
+                    const targetRef = (idea.id && !idea.id.startsWith('ide_'))
+                        ? doc(db, "hubs", "ide", "ideas", idea.id)
+                        : doc(collection(db, "hubs", "ide", "ideas"));
+
+                    const cleanData = {
+                        title: idea.title,
+                        category: idea.category || 'Lainnya',
+                        status: idea.status || 'ide-baru',
+                        priority: idea.priority || 'sedang',
+                        potential: idea.potential || '',
+                        capital: idea.capital || '',
+                        description: idea.description || '',
+                        referenceUrl: idea.referenceUrl || '',
+                        tags: Array.isArray(idea.tags) ? idea.tags : [],
+                        checklist: Array.isArray(idea.checklist) ? idea.checklist : [],
+                        createdAt: idea.createdAt || Date.now(),
+                        updatedAt: Date.now()
+                    };
+
+                    await setDoc(targetRef, cleanData, { merge: true });
+                    console.log(`[Bank Ide] Berhasil sync ide "${idea.title}" ke Firestore (${targetRef.id})`);
+                }
+            } catch (err) {
+                console.warn("[Bank Ide] Peringatan saat migrasi ide lokal ke Cloud:", err);
+            } finally {
+                _isMigratingIdeas = false;
             }
         };
 
         // Initialize Firestore listener for Bank Ide
         const listenIdeas = () => {
             if (ideUnsubscribe) {
-                ideUnsubscribe();
+                try { ideUnsubscribe(); } catch (e) { }
                 ideUnsubscribe = null;
             }
+            window._ideUnsubscribe = null;
+            window._ideListening = false;
 
             // Populate from local cache first for instant responsiveness
             allIdeas = loadLocalIdeas();
             renderIdeaBank();
 
+            // Wait if not authenticated yet; will be automatically hooked by onAuthStateChanged
+            const isAuthenticated = !!(auth.currentUser || currentUserUid);
+            if (!isAuthenticated) {
+                updateCloudSyncStatus('offline', 'Menunggu Login...');
+                return;
+            }
+
+            updateCloudSyncStatus('syncing', 'Menghubungkan Cloud...');
+
             try {
-                const q = query(collection(db, "hubs", "ide", "ideas"), orderBy("createdAt", "desc"));
-                ideUnsubscribe = onSnapshot(q, (snapshot) => {
-                    allIdeas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                const ideasCol = collection(db, "hubs", "ide", "ideas");
+                ideUnsubscribe = onSnapshot(ideasCol, async (snapshot) => {
+                    window._ideListening = true;
+                    window._ideUnsubscribe = ideUnsubscribe;
+
+                    const remoteIdeas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Sort client-side by createdAt descending (avoids missing docs if createdAt is null/empty)
+                    remoteIdeas.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+                    // Migrate/sync any pending local items to Firestore
+                    await syncLocalIdeasToFirestore(remoteIdeas);
+
+                    allIdeas = remoteIdeas;
                     saveLocalIdeas(allIdeas);
                     renderIdeaBank();
+                    updateCloudSyncStatus('synced', `Cloud Aktif (${allIdeas.length} Ide)`);
                 }, (error) => {
-                    console.warn("Firestore listener on hubs/ide/ideas error (using local storage fallback):", error);
-                    // Fallback to local ideas
+                    console.warn("[Bank Ide] Firestore listener error:", error);
+                    window._ideListening = false;
+                    updateCloudSyncStatus('error', 'Koneksi Cloud Terputus');
                     allIdeas = loadLocalIdeas();
                     renderIdeaBank();
                 });
             } catch (err) {
-                console.warn("Error setting up ideas listener:", err);
+                console.warn("[Bank Ide] Error setting up ideas listener:", err);
+                window._ideListening = false;
+                updateCloudSyncStatus('error', 'Error Listener');
                 allIdeas = loadLocalIdeas();
                 renderIdeaBank();
             }
         };
+
+        window.listenIdeas = listenIdeas;
 
         // Render Idea Bank UI
         window.renderIdeaBank = () => {
@@ -15611,12 +15736,12 @@
             // Save to Firestore
             try {
                 const docRef = doc(db, "hubs", "ide", "ideas", ideaId);
-                await updateDoc(docRef, {
+                await setDoc(docRef, {
                     checklist: idea.checklist,
                     updatedAt: Date.now()
-                });
+                }, { merge: true });
             } catch (err) {
-                console.warn("Firestore update error for checklist:", err);
+                console.warn("[Bank Ide] Firestore update error for checklist:", err);
             }
         };
 
@@ -15633,15 +15758,15 @@
 
             try {
                 const docRef = doc(db, "hubs", "ide", "ideas", ideaId);
-                await updateDoc(docRef, {
+                await setDoc(docRef, {
                     status: newStatus,
                     updatedAt: Date.now()
-                });
+                }, { merge: true });
                 if (typeof showNotification === 'function') {
                     showNotification(`Status ide diperbarui ke "${getStatusMeta(newStatus).label}"`);
                 }
             } catch (err) {
-                console.warn("Firestore update status error:", err);
+                console.warn("[Bank Ide] Firestore update status error:", err);
             }
         };
 
@@ -15817,6 +15942,21 @@
                 window.openAddIdeModal();
             });
 
+            // Manual Cloud Sync button
+            document.getElementById('ide-sync-btn')?.addEventListener('click', async () => {
+                const icon = document.getElementById('ide-sync-icon');
+                if (icon) icon.classList.add('fa-spin');
+                if (typeof window.listenIdeas === 'function') {
+                    window.listenIdeas();
+                }
+                setTimeout(() => {
+                    if (icon) icon.classList.remove('fa-spin');
+                    if (typeof showNotification === 'function') {
+                        showNotification('🔄 Sinkronisasi Bank Ide Cloud diproses.');
+                    }
+                }, 800);
+            });
+
             // Modal Close & Cancel buttons
             document.getElementById('ide-modal-close-btn')?.addEventListener('click', closeIdeModal);
             document.getElementById('ide-cancel-btn')?.addEventListener('click', closeIdeModal);
@@ -15885,6 +16025,12 @@
                     updatedAt: Date.now()
                 };
 
+                const saveBtn = e.target.querySelector('button[type="submit"]');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.classList.add('opacity-70');
+                }
+
                 try {
                     if (id) {
                         // Update existing idea
@@ -15895,32 +16041,40 @@
                         saveLocalIdeas(allIdeas);
                         renderIdeaBank();
 
+                        // Use setDoc with merge: true so if document was local or offline, it is guaranteed created/merged in Firestore
                         const docRef = doc(db, "hubs", "ide", "ideas", id);
-                        await updateDoc(docRef, payload);
+                        await setDoc(docRef, payload, { merge: true });
 
                         closeIdeModal();
-                        if (typeof showNotification === 'function') showNotification('Ide berhasil diperbarui!');
+                        if (typeof showNotification === 'function') showNotification('Ide berhasil diperbarui dan tersimpan di Cloud!');
                     } else {
                         // Add new idea
                         payload.createdAt = Date.now();
-                        const localId = 'ide_' + Date.now();
-                        const newIdeaLocal = { id: localId, ...payload };
 
-                        allIdeas.unshift(newIdeaLocal);
+                        // Generate a genuine Firestore document reference immediately so we don't rely on temporary local IDs
+                        const docRef = doc(collection(db, "hubs", "ide", "ideas"));
+                        const newIdea = { id: docRef.id, ...payload };
+
+                        allIdeas.unshift(newIdea);
                         saveLocalIdeas(allIdeas);
                         renderIdeaBank();
 
-                        const docRef = await addDoc(collection(db, "hubs", "ide", "ideas"), payload);
-                        newIdeaLocal.id = docRef.id;
-                        saveLocalIdeas(allIdeas);
+                        await setDoc(docRef, payload);
 
                         closeIdeModal();
-                        if (typeof showNotification === 'function') showNotification('💡 Ide baru berhasil disimpan di Bank Ide!');
+                        if (typeof showNotification === 'function') showNotification('💡 Ide baru berhasil disimpan di Bank Ide (Cloud)!');
                     }
                 } catch (err) {
-                    console.warn("Firestore save idea error (persisted to localStorage):", err);
+                    console.error("[Bank Ide] Firestore save idea error:", err);
                     closeIdeModal();
-                    if (typeof showNotification === 'function') showNotification('Ide tersimpan secara lokal!');
+                    if (typeof showNotification === 'function') {
+                        showNotification('Ide tersimpan secara lokal (Sinkronisasi Cloud tertunda: ' + (err.message || 'Koneksi bermasalah') + ')', true);
+                    }
+                } finally {
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                        saveBtn.classList.remove('opacity-70');
+                    }
                 }
             });
 
