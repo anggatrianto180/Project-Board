@@ -12104,28 +12104,150 @@
         // SCHEDULE CORE LOGIC (unchanged, channel-agnostic)
         // ============================================================
 
-        // --- Auto-rotate: shift past-dated days forward by +7 days ---
+        // --- Auto-rotate: maintain rolling N-day schedule without date duplication ---
         const rotatePastDays = (scheduleData, checkedSlots) => {
-            const nowWIB = new Date();
-            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth() + 1).padStart(2, '0')}-${String(nowWIB.getDate()).padStart(2, '0')}`;
+            if (!scheduleData || scheduleData.length === 0) {
+                return { schedule: scheduleData || [], checkedSlots: checkedSlots || {}, changed: false };
+            }
+
             const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             const namaBulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+            const nowWIB = new Date();
+            const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth() + 1).padStart(2, '0')}-${String(nowWIB.getDate()).padStart(2, '0')}`;
+            const [tY, tM, tD] = todayISO.split('-').map(Number);
+            const todayDate = new Date(tY, tM - 1, tD);
+
+            const N = scheduleData.length;
             let changed = false;
-            const newCheckedSlots = { ...checkedSlots };
-            const newSchedule = scheduleData.map(day => {
-                if (!day.isoDate || day.isoDate >= todayISO) return day;
+            const newCheckedSlots = { ...(checkedSlots || {}) };
+
+            const toIsoStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            const toLabelStr = (d) => `${namaHari[d.getDay()]}, ${d.getDate()} ${namaBulan[d.getMonth()]} ${d.getFullYear()}`;
+            const parseIsoDate = (iso) => {
+                const [y, mo, d] = (iso || '').split('-').map(Number);
+                return new Date(y, mo - 1, d);
+            };
+
+            // 1. Detect duplicate or invalid dates in current schedule (self-heal)
+            const seenDates = new Set();
+            let hasDuplicateOrInvalidDates = false;
+            for (const day of scheduleData) {
+                if (!day.isoDate || seenDates.has(day.isoDate)) {
+                    hasDuplicateOrInvalidDates = true;
+                    break;
+                }
+                seenDates.add(day.isoDate);
+            }
+
+            // If duplicate dates are detected (caused by previous faulty +7 rotator):
+            // Immediately repair into a clean consecutive N-day sequence starting from today
+            if (hasDuplicateOrInvalidDates) {
                 changed = true;
-                Object.keys(newCheckedSlots).forEach(k => {
-                    if (k.startsWith(day.isoDate + '_')) delete newCheckedSlots[k];
+                let todayIdx = scheduleData.findIndex(d => d.isoDate === todayISO);
+                if (todayIdx === -1) todayIdx = 0;
+
+                const reordered = [
+                    ...scheduleData.slice(todayIdx),
+                    ...scheduleData.slice(0, todayIdx)
+                ];
+
+                const repairedSchedule = reordered.map((day, i) => {
+                    const dayDate = new Date(todayDate);
+                    dayDate.setDate(todayDate.getDate() + i);
+                    const isoDate = toIsoStr(dayDate);
+                    const dateLabel = toLabelStr(dayDate);
+                    const dayOfWeek = namaHari[dayDate.getDay()];
+                    return {
+                        ...day,
+                        dayNumber: i + 1,
+                        isoDate,
+                        dateLabel,
+                        dayOfWeek
+                    };
                 });
-                const [y, mo, d] = day.isoDate.split('-').map(Number);
-                const newDate = new Date(y, mo - 1, d);
-                newDate.setDate(newDate.getDate() + 7);
-                const newISO = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, '0')}-${String(newDate.getDate()).padStart(2, '0')}`;
-                const newLabel = `${namaHari[newDate.getDay()]}, ${newDate.getDate()} ${namaBulan[newDate.getMonth()]} ${newDate.getFullYear()}`;
-                return { ...day, isoDate: newISO, dateLabel: newLabel, dayOfWeek: namaHari[newDate.getDay()] };
-            });
-            return { schedule: newSchedule, checkedSlots: newCheckedSlots, changed };
+
+                // Clean orphaned checked slots
+                const validDates = new Set(repairedSchedule.map(d => d.isoDate));
+                Object.keys(newCheckedSlots).forEach(k => {
+                    const datePrefix = k.split('_')[0];
+                    if (!validDates.has(datePrefix)) {
+                        delete newCheckedSlots[k];
+                    }
+                });
+
+                return { schedule: repairedSchedule, checkedSlots: newCheckedSlots, changed: true };
+            }
+
+            // 2. Standard clean schedule: rotate past-dated days (< todayISO) forward to the end
+            let workingSchedule = [...scheduleData].sort((a, b) => (a.isoDate || '').localeCompare(b.isoDate || ''));
+            const pastDaysCount = workingSchedule.filter(d => d.isoDate && d.isoDate < todayISO).length;
+
+            if (pastDaysCount > 0) {
+                changed = true;
+
+                if (pastDaysCount >= N) {
+                    // Entire cycle expired: calculate offset from earliest date
+                    const firstDate = parseIsoDate(workingSchedule[0].isoDate);
+                    const msPerDay = 24 * 60 * 60 * 1000;
+                    const daysPassed = Math.round((todayDate - firstDate) / msPerDay);
+                    const offset = ((daysPassed % N) + N) % N;
+
+                    const reordered = [
+                        ...workingSchedule.slice(offset),
+                        ...workingSchedule.slice(0, offset)
+                    ];
+
+                    workingSchedule = reordered.map((day, i) => {
+                        const dayDate = new Date(todayDate);
+                        dayDate.setDate(todayDate.getDate() + i);
+                        const isoDate = toIsoStr(dayDate);
+                        const dateLabel = toLabelStr(dayDate);
+                        const dayOfWeek = namaHari[dayDate.getDay()];
+                        return {
+                            ...day,
+                            dayNumber: i + 1,
+                            isoDate,
+                            dateLabel,
+                            dayOfWeek
+                        };
+                    });
+
+                    // Clear checked slots since the entire cycle has passed
+                    for (const k of Object.keys(newCheckedSlots)) delete newCheckedSlots[k];
+                } else {
+                    // Partially expired (1 to N-1 days): rotate past days one-by-one to end
+                    const maxDate = parseIsoDate(workingSchedule[workingSchedule.length - 1].isoDate);
+
+                    for (let i = 0; i < pastDaysCount; i++) {
+                        const dayToRotate = workingSchedule.shift();
+
+                        // Clean checked slots for the expired day
+                        Object.keys(newCheckedSlots).forEach(k => {
+                            if (k.startsWith(dayToRotate.isoDate + '_')) delete newCheckedSlots[k];
+                        });
+
+                        const nextDate = new Date(maxDate);
+                        nextDate.setDate(maxDate.getDate() + (i + 1));
+                        const nextISO = toIsoStr(nextDate);
+                        const nextLabel = toLabelStr(nextDate);
+                        const nextDayOfWeek = namaHari[nextDate.getDay()];
+
+                        workingSchedule.push({
+                            ...dayToRotate,
+                            isoDate: nextISO,
+                            dateLabel: nextLabel,
+                            dayOfWeek: nextDayOfWeek
+                        });
+                    }
+
+                    workingSchedule.forEach((d, idx) => {
+                        d.dayNumber = idx + 1;
+                    });
+                }
+            }
+
+            return { schedule: workingSchedule, checkedSlots: newCheckedSlots, changed };
         };
 
         // --- Read config from form ---
@@ -12341,7 +12463,9 @@
             const nowWIB = new Date();
             const todayISO = `${nowWIB.getFullYear()}-${String(nowWIB.getMonth() + 1).padStart(2, '0')}-${String(nowWIB.getDate()).padStart(2, '0')}`;
             const sorted = [...scheduleData].sort((a, b) => {
-                const aISO = a.isoDate || ''; const bISO = b.isoDate || '';
+                const aISO = a.isoDate || '';
+                const bISO = b.isoDate || '';
+                if (aISO === bISO) return (a.dayNumber || 0) - (b.dayNumber || 0);
                 if (aISO === todayISO) return -1;
                 if (bISO === todayISO) return 1;
                 return aISO.localeCompare(bISO);
@@ -12444,9 +12568,11 @@
                 const confirmed = await showConfirmModal('Import backup? Jadwal aktif channel ini akan ditimpa dengan data dari file.');
                 if (!confirmed) return;
                 populateYtLiveForm(data.config);
-                ytLiveScheduleData = data.schedule;
-                const lastGen = await saveYtLiveToFirebase(data.schedule, data.config);
-                renderYtLiveSchedule(data.schedule, lastGen || data.exportedAt || '-');
+                const rotated = rotatePastDays(data.schedule, {});
+                const scheduleToSave = rotated.schedule;
+                ytLiveScheduleData = scheduleToSave;
+                const lastGen = await saveYtLiveToFirebase(scheduleToSave, data.config);
+                renderYtLiveSchedule(scheduleToSave, lastGen || data.exportedAt || '-');
                 showNotification('Backup berhasil diimpor!');
             } catch (err) {
                 console.error('YT Live import error:', err);
