@@ -380,6 +380,100 @@
             pointer-events: none;
         }
 
+        /* ===== TikTok Project Board Enhanced UI ===== */
+        #tt-board-header-bar {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tt-brand-logo {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #ffffff, #a8a8b3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tt-board-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            letter-spacing: -0.01em;
+        }
+
+        #tt-filter-dropdown {
+            position: relative;
+        }
+
+        #tt-filter-dropdown-panel {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 500;
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+            padding: 12px;
+            min-width: 240px;
+        }
+
+        /* Show Archived Cards button for TikTok board */
+        #tt-show-archived-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 12px auto 4px;
+            padding: 6px 18px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            color: #a5b4fc;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        #tt-show-archived-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        #tt-board-footer {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0 4px;
+        }
+
+        /* Enhanced search bar for TikTok board */
+        #tt-board-search {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.75rem;
+            padding: 5px 10px 5px 28px;
+            outline: none;
+            width: 160px;
+            transition: all 0.2s;
+        }
+
+        #tt-board-search::placeholder {
+            color: #475569;
+        }
+
+        #tt-board-search:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            width: 200px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
         :root {
             --bg: #f8fafc;
             --card: #ffffff;
@@ -1943,6 +2037,406 @@
 
         .dark .yt-live-slots-table tr.yt-slot-checked {
             background: rgba(34, 197, 94, 0.05);
+        }
+
+        /* ===== TikTok Upload Schedule ===== */
+        .ttsch-section-card {
+            background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(26,26,46,0.9) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .ttsch-section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #a8a8b3;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ttsch-account-tab-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+        }
+
+        .ttsch-account-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .ttsch-account-tab:hover {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
+
+        .ttsch-account-tab.active {
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-color: rgba(255,255,255,0.25);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+
+        .ttsch-view-toggle {
+            display: flex;
+            gap: 4px;
+            padding: 3px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+        }
+
+        .ttsch-view-btn {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: transparent;
+            border: none;
+            color: #64748b;
+        }
+
+        .ttsch-view-btn.active {
+            background: rgba(255,255,255,0.12);
+            color: #e2e8f0;
+        }
+
+        .ttsch-cal-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 4px;
+        }
+
+        .ttsch-cal-day-label {
+            text-align: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 0;
+        }
+
+        .ttsch-cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+
+        .ttsch-cal-cell {
+            min-height: 72px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+
+        .ttsch-cal-cell:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .ttsch-cal-cell.today {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .ttsch-cal-cell.other-month {
+            opacity: 0.35;
+        }
+
+        .ttsch-cal-cell.has-schedule {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .ttsch-date-num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 3px;
+        }
+
+        .ttsch-cal-cell.today .ttsch-date-num {
+            color: #fff;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ttsch-video-chip {
+            display: block;
+            font-size: 0.58rem;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .ttsch-video-chip.recorded {
+            background: rgba(34,197,94,0.2);
+            color: #4ade80;
+        }
+
+        .ttsch-video-chip.uploaded {
+            background: rgba(99,102,241,0.2);
+            color: #818cf8;
+        }
+
+        .ttsch-video-chip.pending {
+            background: rgba(251,191,36,0.15);
+            color: #fbbf24;
+        }
+
+        .ttsch-video-chip.not-started {
+            background: rgba(100,116,139,0.15);
+            color: #94a3b8;
+        }
+
+        .ttsch-week-row {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 4px;
+            align-items: start;
+        }
+
+        .ttsch-week-time-label {
+            font-size: 0.65rem;
+            color: #475569;
+            font-weight: 600;
+            text-align: right;
+            padding-right: 8px;
+            padding-top: 8px;
+        }
+
+        .ttsch-week-cell {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 7px;
+            min-height: 60px;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .ttsch-week-cell:hover {
+            background: rgba(255,255,255,0.07);
+        }
+
+        .ttsch-day-view {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ttsch-day-video-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            padding: 12px 14px;
+            transition: all 0.15s;
+        }
+
+        .ttsch-day-video-row:hover {
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .ttsch-checklist-wrap {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .ttsch-check-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .ttsch-check-item input[type='checkbox'] {
+            width: 15px;
+            height: 15px;
+            accent-color: #818cf8;
+            cursor: pointer;
+        }
+
+        .ttsch-check-item.done {
+            color: #4ade80;
+            text-decoration: line-through;
+        }
+
+        .ttsch-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .ttsch-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 11px;
+        }
+
+        .ttsch-nav-btn:hover {
+            background: rgba(255,255,255,0.12);
+            color: #e2e8f0;
+        }
+
+        .ttsch-add-video-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px dashed rgba(255,255,255,0.2);
+            color: #94a3b8;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .ttsch-add-video-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            border-color: rgba(255,255,255,0.35);
+        }
+
+        /* TikTok schedule summary and recurring schedule form */
+        .ttsch-summary-header { padding:16px 18px; background:linear-gradient(110deg,#07565b 0%,#101820 48%,#751c39 100%); color:#fff; border-top:3px solid #25f4ee; }
+        .ttsch-summary-top, .ttsch-summary-nav, .ttsch-summary-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .ttsch-summary-title { display:flex; align-items:center; gap:10px; min-width:0; }
+        .ttsch-summary-logo { display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.12); text-shadow:2px 1px #fe2c55,-2px -1px #25f4ee; flex-shrink:0; }
+        .ttsch-summary-title h3 { font-size:1rem; font-weight:700; margin:0; }
+        .ttsch-summary-subtitle { font-size:.72rem; color:#d3edef; margin-top:3px; }
+        .ttsch-summary-progress { text-align:right; flex-shrink:0; font-size:1.5rem; font-weight:800; }
+        .ttsch-progress-track { height:5px; width:76px; background:rgba(255,255,255,.2); border-radius:9px; overflow:hidden; margin-top:3px; }
+        .ttsch-progress-track span { display:block; height:100%; background:#25f4ee; }
+        .ttsch-summary-nav { border-top:1px solid rgba(255,255,255,.18); padding-top:12px; margin-top:12px; }
+        .ttsch-summary-nav button, .ttsch-summary-action { border:1px solid rgba(37,244,238,.3); background:rgba(37,244,238,.08); color:#a5f9f5; padding:4px 10px; border-radius:999px; font-size:.68rem; font-weight:600; cursor:pointer; }
+        .ttsch-summary-nav button { color:#fff; background:rgba(255,255,255,.1); border-color:transparent; }
+        .ttsch-summary-nav button:hover, .ttsch-summary-action:hover { background:rgba(37,244,238,.2); }
+        .ttsch-summary-nav-center { text-align:center; font-size:.72rem; }
+        .ttsch-summary-nav-center small { display:block; color:#cbd5e1; font-size:.6rem; text-transform:uppercase; }
+        .ttsch-summary-pills { display:flex; gap:8px; flex-wrap:wrap; padding:9px 16px; border-bottom:1px solid #334155; }
+        .ttsch-summary-pill { font-size:.68rem; padding:3px 9px; border:1px solid #334155; border-radius:999px; color:#cbd5e1; }
+        .ttsch-summary-pill.cyan { color:#25f4ee; border-color:#16656a; }
+        .ttsch-summary-pill.pink { color:#ff8ca4; border-color:#793047; }
+        .ttsch-summary-columns { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); background:#1f2937; }
+        .ttsch-summary-toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+        .ttsch-account-select { max-width:100%; background:#101820; color:#e2e8f0; border:1px solid #315158; border-radius:8px; padding:5px 10px; font-size:.75rem; }
+        .ttsch-details { box-sizing:border-box; width:calc(100% - 32px); max-width:900px; max-height:90vh; margin:auto; padding:0; border:1px solid #315158; border-radius:16px; background:#101820; color:#e2e8f0; }
+        .ttsch-details::backdrop { background:#000a; }
+        .ttsch-details-body { max-height:60vh; overflow-y:auto; background:#1f2937; }
+        .ttsch-details-body .ttsch-summary-day + .ttsch-summary-day { border-left:0; border-top:1px solid #374151; }
+        .ttsch-summary-day { padding:15px; min-width:0; }
+        .ttsch-summary-day + .ttsch-summary-day { border-left:1px solid #374151; }
+        .ttsch-summary-day-heading { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; font-size:.7rem; color:#94a3b8; }
+        .ttsch-summary-day-heading strong { padding:4px 9px; border-radius:999px; background:#25f4ee; color:#082f33; font-size:.65rem; }
+        .ttsch-summary-day + .ttsch-summary-day strong { background:rgba(254,44,85,.15); color:#ff8ca4; border:1px solid #793047; }
+        .ttsch-summary-row { align-items:flex-start; flex-wrap:wrap; padding:8px 0; font-size:.75rem; }
+        .ttsch-summary-video { flex:1; min-width:0; overflow-wrap:anywhere; color:#f1f5f9; }
+        .ttsch-summary-video small { display:block; color:#94a3b8; margin-top:3px; }
+        .ttsch-summary-actions { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+        .ttsch-summary-action.danger { color:#ff8ca4; border-color:#793047; background:rgba(254,44,85,.08); }
+        .ttsch-summary-checks { display:flex; gap:10px; flex-wrap:wrap; font-size:.65rem; color:#cbd5e1; }
+        .ttsch-summary-checks label { display:flex; align-items:center; gap:4px; cursor:pointer; }
+        .ttsch-summary-checks input { accent-color:#25f4ee; width:14px; height:14px; }
+        .ttsch-summary-empty, .ttsch-summary-footer { color:#94a3b8; font-size:.72rem; }
+        .ttsch-summary-empty { font-style:italic; padding:4px 0 12px; }
+        .ttsch-summary-footer { display:flex; flex-wrap:wrap; gap:14px; padding:10px 16px; border-top:1px solid #374151; }
+        .ttsch-form { width:100%; max-width:580px; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; background:#101820; color:#e2e8f0; border:1px solid #315158; border-radius:16px; box-shadow:0 20px 50px #0008; }
+        .ttsch-form-header, .ttsch-form-footer { padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:10px; background:linear-gradient(110deg,#12383e,#241820); }
+        .ttsch-form-header h3 { font-size:1rem; font-weight:700; }
+        .ttsch-form-body { padding:18px 20px; overflow-y:auto; }
+        .ttsch-form-grid { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:12px; }
+        .ttsch-form label { display:block; font-size:.74rem; font-weight:600; color:#cbd5e1; margin-bottom:6px; }
+        .ttsch-form input, .ttsch-form select { width:100%; min-width:0; padding:9px 10px; border:1px solid #374151; border-radius:8px; background:#0b1118; color:#f1f5f9; font-size:.8rem; color-scheme:dark; }
+        .ttsch-form input:focus, .ttsch-form select:focus { outline:2px solid #25f4ee; outline-offset:1px; }
+        .ttsch-form input:disabled { opacity:.6; }
+        .ttsch-form button:disabled { opacity:.5; cursor:wait; }
+        .ttsch-form-hint { font-size:.72rem; color:#94a3b8; line-height:1.5; margin:8px 0 16px; }
+        .ttsch-form-video { padding:12px; margin-bottom:10px; border:1px solid #334155; border-radius:10px; }
+        .ttsch-form-video-heading { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:.74rem; color:#25f4ee; }
+        .ttsch-form-primary { padding:9px 18px; border:0; border-radius:8px; background:#25f4ee; color:#082f33; font-size:.8rem; font-weight:700; cursor:pointer; }
+        .ttsch-form-preview { border:1px solid #315158; border-radius:10px; padding:12px; margin-top:16px; }
+        .ttsch-form-preview h4 { font-size:.78rem; font-weight:700; color:#25f4ee; }
+        .ttsch-form, .ttsch-form * { box-sizing:border-box; }
+        .ttsch-week-scroll { overflow-x:auto; }
+        .ttsch-week-grid { min-width:840px; }
+        .ttsch-preview-line { display:flex; justify-content:space-between; gap:12px; padding:7px 0; font-size:.7rem; color:#cbd5e1; border-bottom:1px solid #ffffff0d; }
+        #ttsch-panel .ttsch-account-tab.active, #ttsch-panel .ttsch-view-btn.active { background:rgba(37,244,238,.12); color:#25f4ee; border-color:#25f4ee; }
+        #ttsch-panel .ttsch-cal-cell.has-schedule { border-color:#16656a; }
+        #ttsch-panel .ttsch-video-chip.uploaded { background:rgba(37,244,238,.15); color:#25f4ee; }
+        #ttsch-panel .ttsch-check-item input { accent-color:#25f4ee; }
+        @media (max-width:640px) {
+            .ttsch-summary-columns { grid-template-columns:minmax(0,1fr); }
+            .ttsch-summary-day + .ttsch-summary-day { border-left:0; border-top:1px solid #374151; }
+            .ttsch-summary-row { flex-wrap:wrap; }
+            .ttsch-summary-checks { width:100%; padding-left:0; }
+            .ttsch-form-grid { grid-template-columns:minmax(0,1fr); }
+            .ttsch-summary-title h3 { font-size:.85rem; }
         }
 
         /* TikTok Tab System */
@@ -3516,6 +4010,156 @@
                     <i class="fas fa-plus"></i>
                     <span>Tambah Akun</span>
                 </button>
+            </div>
+
+            <!-- ===== TikTok Project Board ===== -->
+            <div id="tt-project-board-panel"
+                class="mb-8 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+                style="background:#0a0a0a;">
+
+                <!-- Board Header Bar -->
+                <div id="tt-board-header-bar" class="px-4 py-2.5">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <!-- Brand -->
+                        <div class="flex items-center gap-1.5 mr-2">
+                            <i class="fab fa-tiktok" style="font-size:0.75rem;color:#e2e8f0;"></i>
+                            <span class="tt-board-title">Project Board</span>
+                        </div>
+
+                        <!-- Filter & Search dropdown -->
+                        <div id="tt-filter-dropdown" class="relative">
+                            <button id="tt-filter-dropdown-btn"
+                                class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;">
+                                <i class="fas fa-filter text-[10px]"></i> Filter &amp; Search
+                                <i class="fas fa-chevron-down text-[9px] transition-transform"
+                                    id="tt-filter-chevron"></i>
+                            </button>
+                            <!-- Filter panel -->
+                            <div id="tt-filter-dropdown-panel" class="hidden">
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2"
+                                    style="color:#475569;">
+                                    Active Filters</p>
+                                <div id="tt-active-tags" class="flex flex-wrap gap-1.5 mb-3">
+                                    <span style="font-size:0.68rem;color:#475569;">No active filters</span>
+                                </div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2"
+                                    style="color:#475569;">
+                                    Filter by Tag</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="addTtFilter('tag-creator')"
+                                        class="yt-task-tag-pill yt-tag-orange">Creator</button>
+                                    <button onclick="addTtFilter('tag-editor')"
+                                        class="yt-task-tag-pill yt-tag-blue">Editor</button>
+                                    <button onclick="addTtFilter('tag-design')"
+                                        class="yt-task-tag-pill yt-tag-green">Design</button>
+                                    <button onclick="addTtFilter('tag-urgent')"
+                                        class="yt-task-tag-pill yt-tag-red">Urgent</button>
+                                </div>
+                                <hr style="border-color:rgba(255,255,255,0.07);margin:10px 0;">
+                                <p class="text-[10px] font-bold uppercase tracking-wider mb-2"
+                                    style="color:#475569;">
+                                    Due Date</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button onclick="addTtFilter('due-week')"
+                                        class="yt-task-tag-pill yt-tag-blue">This Week</button>
+                                    <button onclick="addTtFilter('due-today')"
+                                        class="yt-task-tag-pill yt-tag-red">Today</button>
+                                    <button onclick="addTtFilter('due-month')"
+                                        class="yt-task-tag-pill yt-tag-green">This Month</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Search bar -->
+                        <div class="yt-search-wrap">
+                            <i class="fas fa-search yt-search-icon"></i>
+                            <input id="tt-board-search" type="text" placeholder="Search for tasks..."
+                                oninput="filterTtBoard(this.value)">
+                        </div>
+
+                        <!-- Filter icon -->
+                        <button title="Advanced filter"
+                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;transition:all 0.2s;"
+                            onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
+                            <i class="fas fa-sliders-h" style="font-size:11px;"></i>
+                        </button>
+
+                        <!-- Spacer -->
+                        <div class="flex-1"></div>
+
+                        <!-- Settings (size) -->
+                        <div class="relative">
+                            <button id="tt-board-settings-btn" title="Board size settings"
+                                style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;color:#64748b;cursor:pointer;font-size:11px;transition:all 0.2s;"
+                                onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                            </button>
+                            <!-- Settings popover -->
+                            <div id="tt-board-settings-popover"
+                                class="hidden absolute top-9 right-0 z-30 rounded-xl shadow-xl p-4 w-64"
+                                style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);">
+                                <p class="text-xs font-bold mb-3" style="color:#e2e8f0;">Board Size Settings</p>
+                                <div class="mb-3">
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-xs" style="color:#64748b;">Column Width</label>
+                                        <span id="tt-col-width-val" class="text-xs font-semibold"
+                                            style="color:#a8a8b3;">248px</span>
+                                    </div>
+                                    <input id="tt-col-width-slider" type="range" min="120" max="400" step="8"
+                                        value="248" class="w-full cursor-pointer" style="accent-color:#ffffff;">
+                                </div>
+                                <div class="mb-1">
+                                    <div class="flex justify-between mb-1">
+                                        <label class="text-xs" style="color:#64748b;">Task List Height</label>
+                                        <span id="tt-col-height-val" class="text-xs font-semibold"
+                                            style="color:#a8a8b3;">280px</span>
+                                    </div>
+                                    <input id="tt-col-height-slider" type="range" min="80" max="700" step="8"
+                                        value="280" class="w-full cursor-pointer" style="accent-color:#ffffff;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Column button -->
+                        <button id="tt-add-column-btn"
+                            class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:#cbd5e1;"
+                            onmouseenter="this.style.background='rgba(255,255,255,0.14)'"
+                            onmouseleave="this.style.background='rgba(255,255,255,0.08)'">
+                            <i class="fas fa-plus text-[10px]"></i> Add Column
+                        </button>
+
+                        <!-- Add Task button -->
+                        <button id="tt-add-task-btn"
+                            class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                            style="background:linear-gradient(135deg,#2d2d2d,#1a1a1a);border:1px solid rgba(255,255,255,0.2);color:white;box-shadow:0 2px 8px rgba(0,0,0,0.4);"
+                            onmouseenter="this.style.boxShadow='0 4px 16px rgba(255,255,255,0.15)'"
+                            onmouseleave="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.4)'">
+                            <i class="fas fa-plus text-[10px]"></i> Add Task
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Board columns rendered by JS -->
+                <div id="tt-board" class="flex gap-3 overflow-x-auto pb-2" style="padding:12px;"></div>
+
+                <!-- Show Archived Cards footer -->
+                <div id="tt-board-footer">
+                    <button id="tt-show-archived-btn" onclick="toggleTtArchivedCards()">
+                        <i class="fas fa-archive" style="font-size:0.7rem;"></i>
+                        <span>Show Archived Cards</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== Jadwal Upload TikTok ===== -->
+            <div id="ttsch-panel"
+                class="mb-8 rounded-xl overflow-hidden"
+                style="background:#101820;border:1px solid #374151;">
+
+                <div id="ttsch-summary" aria-live="polite"></div>
+
             </div>
 
             <!-- HP Tab Bar -->
@@ -7515,6 +8159,8 @@
                 if (el) { el.classList.remove('hidden'); }
                 document.getElementById('tiktok-btn')?.classList.add('active');
                 document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'true');
+                // Ensure TikTok board is initialized whenever the section becomes visible
+                setTimeout(() => { try { initTtBoard(); initTtBoardSettings(); } catch (e) { } }, 120);
             } else if (target === 'ide' || target === sections.ide) {
                 // Show Bank Ide section
                 const el = document.getElementById(sections.ide);
@@ -15026,6 +15672,1905 @@
                 showNotification(ytShowArchived ? 'Showing archived cards' : 'Archived cards hidden');
             }
         };
+
+        // ===========================================
+        // ===== TIKTOK PROJECT BOARD MANAGEMENT =====
+        // ===========================================
+        let ttBoardColumns = [];
+        let ttBoardTasks = [];
+        let ttBoardListeners = [];
+        let ttBoardInitialized = false;
+        let ttBoardColumnsReady = false;
+        let ttBoardTasksReady = false;
+
+        const initTtBoard = () => {
+            if (ttBoardInitialized) {
+                if (ttBoardColumnsReady) renderTtBoard();
+                return;
+            }
+            ttBoardInitialized = true;
+            ttBoardColumnsReady = false;
+            ttBoardTasksReady = false;
+
+            const boardContainer = document.getElementById('tt-board');
+            if (boardContainer && boardContainer.innerHTML === '') {
+                boardContainer.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:16px;color:#9ca3af;font-size:0.8rem;"><i class="fas fa-spinner fa-spin"></i> Loading board…</div>';
+            }
+
+            const colListener = onSnapshot(
+                query(collection(db, 'hubs', 'tiktok', 'board_columns'), orderBy('order')),
+                (snap) => {
+                    ttBoardColumns = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    ttBoardColumnsReady = true;
+                    if (ttBoardColumns.length === 0) {
+                        seedTtBoardColumns();
+                    } else if (ttBoardTasksReady) {
+                        renderTtBoard();
+                    }
+                }
+            );
+            const taskListener = onSnapshot(
+                query(collection(db, 'hubs', 'tiktok', 'tasks')),
+                (snap) => {
+                    ttBoardTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    ttBoardTasksReady = true;
+                    if (ttBoardColumnsReady) {
+                        renderTtBoard();
+                    }
+                }
+            );
+            ttBoardListeners.push(colListener, taskListener);
+        };
+
+        let ttBoardSeeding = false;
+        const seedTtBoardColumns = async () => {
+            if (ttBoardSeeding) return;
+            ttBoardSeeding = true;
+            const defaults = [
+                { name: 'Plan', color: 'blue', order: 1 },
+                { name: 'In Progress', color: 'yellow', order: 2 },
+                { name: 'Done', color: 'green', order: 3 },
+            ];
+            for (const col of defaults) {
+                await addDoc(collection(db, 'hubs', 'tiktok', 'board_columns'), { ...col, createdAt: Date.now() });
+            }
+            ttBoardSeeding = false;
+        };
+
+        const openTtEditTaskModal = (task) => {
+            document.getElementById('tt-edit-task-modal')?.remove();
+            const dark = isDark();
+            const overlay = document.createElement('div');
+            overlay.id = 'tt-edit-task-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+            const colOptions = ttBoardColumns.map(c =>
+                `<option value="${c.id}" ${c.id === task.columnId ? 'selected' : ''}>${c.name}</option>`
+            ).join('');
+
+            const descVal = (task.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const dueVal = task.dueDate || '';
+            const linkVal = task.driveLink || '';
+            const tagsVal = Array.isArray(task.tags) ? task.tags.join(', ') : '';
+            let currentChecklist = Array.isArray(task.checklist) ? [...task.checklist] : [];
+
+            overlay.innerHTML = `
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+                    <div style="padding:20px 24px 16px;border-bottom:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;align-items:center;">
+                        <h3 style="font-size:1.1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;"><i class="fas fa-edit text-blue-500 mr-2"></i>Edit Task</h3>
+                        <button id="tt-edit-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;line-height:1;">✕</button>
+                    </div>
+                    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+                        <form id="tt-edit-task-form" style="display:flex;flex-direction:column;gap:16px;">
+                            <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task *</label>
+                                    <input id="tt-edit-text" type="text" required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
+                                    <select id="tt-edit-col-sel" style="width:100%;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
+                                        ${colOptions}
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="far fa-calendar mr-1"></i>Due Date</label>
+                                    <input id="tt-edit-due-date" type="date" value="${dueVal}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-link mr-1"></i>External Link</label>
+                                    <input id="tt-edit-link" type="url" placeholder="https://..." value="${linkVal}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-tags mr-1"></i>Tags (comma separated)</label>
+                                <input id="tt-edit-tags" type="text" placeholder="creator, urgent, design..." value="${tagsVal}" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-align-left mr-1"></i>Description</label>
+                                <textarea id="tt-edit-desc" rows="3" placeholder="Task details..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;">${descVal}</textarea>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-check-square mr-1"></i>Checklist</label>
+                                <div style="background:${dark ? '#111827' : '#f9fafb'};border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;padding:12px;">
+                                    <div id="tt-edit-checklist-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+                                    <div style="display:flex;gap:8px;">
+                                        <input id="tt-edit-new-chk" type="text" placeholder="Add an item..." style="flex:1;padding:7px 10px;border:1px solid ${dark ? '#4b5563' : '#d1d5db'};border-radius:6px;font-size:0.8rem;background:${dark ? '#1f2937' : 'white'};color:${dark ? '#e5e7eb' : '#374151'};outline:none;" />
+                                        <button type="button" id="tt-edit-add-chk-btn" style="padding:7px 14px;background:#3b82f6;color:white;border:none;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div style="padding:16px 24px;border-top:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;justify-content:space-between;background:${dark ? '#1f2937' : '#f9fafb'};">
+                        <button type="button" id="tt-edit-delete" style="padding:9px 16px;border-radius:8px;border:1.5px solid #ef4444;background:none;color:#ef4444;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'"><i class="fas fa-trash-alt mr-2"></i>Delete</button>
+                        <div style="display:flex;gap:12px;">
+                            <button type="button" id="tt-edit-cancel" style="padding:9px 16px;border-radius:8px;border:1.5px solid ${dark ? '#4b5563' : '#d1d5db'};background:none;color:${dark ? '#9ca3af' : '#4b5563'};font-size:0.85rem;font-weight:600;cursor:pointer;">Cancel</button>
+                            <button type="button" id="tt-edit-save-btn" style="padding:9px 24px;border-radius:8px;border:none;background:#2563eb;color:white;font-size:0.85rem;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(37,99,235,0.3);">Save Changes</button>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(overlay);
+            const titleInput = document.getElementById('tt-edit-text');
+            if (titleInput) titleInput.value = task.text || '';
+
+            const renderChecklist = () => {
+                const container = document.getElementById('tt-edit-checklist-container');
+                if (!container) return;
+                container.innerHTML = '';
+                if (currentChecklist.length === 0) {
+                    container.innerHTML = `<span style="font-size:0.75rem;color:${dark ? '#6b7280' : '#9ca3af'};">No checklist items yet.</span>`;
+                    return;
+                }
+                currentChecklist.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+                    row.innerHTML = `
+                        <input type="checkbox" id="tt-edit-chk-${idx}" ${item.done ? 'checked' : ''} style="width:14px;height:14px;accent-color:#3b82f6;cursor:pointer;">
+                        <label for="tt-edit-chk-${idx}" style="flex:1;font-size:0.8rem;color:${item.done ? (dark ? '#6b7280' : '#9ca3af') : (dark ? '#d1d5db' : '#374151')};text-decoration:${item.done ? 'line-through' : 'none'};cursor:pointer;word-break:break-word;">${item.text}</label>
+                        <button type="button" class="tt-edit-chk-del-btn" data-idx="${idx}" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:2px 4px;opacity:0.6;"><i class="fas fa-times"></i></button>
+                    `;
+                    container.appendChild(row);
+                    row.querySelector('input').addEventListener('change', (e) => { currentChecklist[idx].done = e.target.checked; renderChecklist(); });
+                    row.querySelector('.tt-edit-chk-del-btn').addEventListener('click', () => { currentChecklist.splice(idx, 1); renderChecklist(); });
+                });
+            };
+            renderChecklist();
+
+            document.getElementById('tt-edit-add-chk-btn').addEventListener('click', () => {
+                const input = document.getElementById('tt-edit-new-chk');
+                const val = input.value.trim();
+                if (val) { currentChecklist.push({ id: 'c_' + Date.now(), text: val, done: false }); input.value = ''; renderChecklist(); }
+            });
+            document.getElementById('tt-edit-new-chk').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); document.getElementById('tt-edit-add-chk-btn').click(); }
+            });
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('tt-edit-close').onclick = close;
+            document.getElementById('tt-edit-cancel').onclick = close;
+
+            document.getElementById('tt-edit-delete').onclick = async () => {
+                const confirmed = await showConfirmModal('Hapus task ini?');
+                if (!confirmed) return;
+                try { await deleteDoc(doc(db, 'hubs', 'tiktok', 'tasks', task.id)); close(); } catch (err) { showNotification('Gagal hapus task.', true); }
+            };
+
+            document.getElementById('tt-edit-save-btn').onclick = async () => {
+                const newText = document.getElementById('tt-edit-text').value.trim();
+                if (!newText) { showNotification('Judul task wajib diisi!', true); return; }
+                const newColId = document.getElementById('tt-edit-col-sel').value;
+                const newDesc = document.getElementById('tt-edit-desc').value.trim();
+                const newDue = document.getElementById('tt-edit-due-date').value;
+                const newLink = document.getElementById('tt-edit-link').value.trim();
+                const tagsStr = document.getElementById('tt-edit-tags').value;
+                const newTags = tagsStr ? tagsStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s) : [];
+                try {
+                    await updateDoc(doc(db, 'hubs', 'tiktok', 'tasks', task.id), {
+                        text: newText, columnId: newColId, description: newDesc, dueDate: newDue,
+                        driveLink: newLink, tags: newTags, checklist: currentChecklist, updatedAt: Date.now()
+                    });
+                    close(); showNotification('Task diperbarui!');
+                } catch (err) { showNotification('Gagal menyimpan task.', true); }
+            };
+
+            setTimeout(() => { if (titleInput) { titleInput.focus(); titleInput.setSelectionRange(titleInput.value.length, titleInput.value.length); } }, 80);
+        };
+
+        const createTtTaskElement = (task, isLocked) => {
+            const dark = isDark();
+            const card = document.createElement('div');
+            card.className = 'task-card cursor-pointer relative group' + (isLocked ? ' yt-task-locked' : '');
+
+            let isPast = false, isToday = false, diffDays = Infinity;
+            if (task.dueDate) {
+                const dDate = new Date(task.dueDate);
+                if (!isNaN(dDate.getTime())) {
+                    const today = new Date(); today.setHours(0, 0, 0, 0);
+                    const taskDate = new Date(dDate); taskDate.setHours(0, 0, 0, 0);
+                    diffDays = Math.ceil((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDays < 0) isPast = true;
+                    else if (diffDays === 0) isToday = true;
+                }
+            }
+
+            let cardBg = dark ? '#1f2937' : 'white';
+            let cardBorder = dark ? '#374151' : '#e5e7eb';
+            if (isPast || isToday) { cardBg = dark ? 'rgba(239,68,68,0.15)' : 'rgba(254,226,226,0.8)'; cardBorder = dark ? 'rgba(239,68,68,0.4)' : '#fca5a5'; }
+            else if (diffDays > 0 && diffDays < 3) { cardBg = dark ? 'rgba(234,179,8,0.15)' : 'rgba(254,249,195,0.8)'; cardBorder = dark ? 'rgba(234,179,8,0.4)' : '#fde047'; }
+            else if (diffDays >= 3 && diffDays < 7) { cardBg = dark ? 'rgba(34,197,94,0.15)' : 'rgba(220,252,231,0.8)'; cardBorder = dark ? 'rgba(34,197,94,0.4)' : '#86efac'; }
+
+            card.style.cssText = `padding:9px 11px;border-radius:9px;background:${cardBg};border:1px solid ${cardBorder};box-shadow:0 1px 4px rgba(0,0,0,${dark ? '0.25' : '0.07'});transition:box-shadow 0.15s,transform 0.1s;position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;`;
+            card.draggable = !isLocked;
+            card.dataset.id = task.id;
+
+            const textEl = document.createElement('span');
+            textEl.className = 'task-text';
+            textEl.setAttribute('data-tt-text', '1');
+            textEl.style.cssText = `font-size:0.75rem;line-height:1.45;color:${dark ? '#d1d5db' : '#374151'};white-space:normal;word-break:break-word;display:block;padding-right:40px;font-weight:500;width:100%;`;
+            textEl.textContent = task.text;
+
+            if (isLocked) {
+                const lockIcon = document.createElement('span');
+                lockIcon.innerHTML = '<i class="fas fa-lock" style="font-size:10px;color:#6b7280;position:absolute;right:8px;top:8px;"></i>';
+                card.appendChild(lockIcon);
+            }
+            card.appendChild(textEl);
+
+            const tagRow = document.createElement('div');
+            tagRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center;width:100%;';
+
+            if (task.dueDate) {
+                const dDate = new Date(task.dueDate);
+                const dateStr = isNaN(dDate.getTime()) ? task.dueDate : dDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                const dueBadge = document.createElement('span');
+                dueBadge.className = 'yt-desc-tag';
+                if (isToday || isPast) { dueBadge.style.background = dark ? 'rgba(239,68,68,0.15)' : 'rgba(254,226,226,1)'; dueBadge.style.color = dark ? '#f87171' : '#ef4444'; dueBadge.style.borderColor = dark ? 'rgba(239,68,68,0.3)' : '#fca5a5'; }
+                else if (diffDays > 0 && diffDays < 3) { dueBadge.style.background = dark ? 'rgba(234,179,8,0.15)' : 'rgba(254,249,195,1)'; dueBadge.style.color = dark ? '#facc15' : '#ca8a04'; dueBadge.style.borderColor = dark ? 'rgba(234,179,8,0.3)' : '#fde047'; }
+                else if (diffDays >= 3 && diffDays < 7) { dueBadge.style.background = dark ? 'rgba(34,197,94,0.15)' : 'rgba(220,252,231,1)'; dueBadge.style.color = dark ? '#4ade80' : '#16a34a'; dueBadge.style.borderColor = dark ? 'rgba(34,197,94,0.3)' : '#86efac'; }
+                else { dueBadge.style.background = dark ? 'rgba(148,163,184,0.1)' : 'rgba(100,116,139,0.08)'; dueBadge.style.color = dark ? '#94a3b8' : '#64748b'; dueBadge.style.borderColor = dark ? 'rgba(148,163,184,0.2)' : 'rgba(100,116,139,0.2)'; }
+                dueBadge.style.whiteSpace = 'nowrap';
+                dueBadge.innerHTML = `<i class="far fa-calendar-alt" style="font-size:0.55rem;"></i> ` + dateStr;
+                tagRow.appendChild(dueBadge);
+            }
+
+            const tags = Array.isArray(task.tags) ? task.tags : [];
+            const tagColorMap = { creator: 'yt-tag-orange', editor: 'yt-tag-blue', design: 'yt-tag-green', urgent: 'yt-tag-red', production: 'yt-tag-purple' };
+            tags.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = `yt-task-tag-pill ${tagColorMap[tag] || 'yt-tag-blue'}`;
+                pill.style.whiteSpace = 'nowrap';
+                pill.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+                tagRow.appendChild(pill);
+            });
+            if (tagRow.children.length > 0) card.appendChild(tagRow);
+
+            const actions = document.createElement('div');
+            actions.style.cssText = 'position:absolute;top:6px;right:6px;display:flex;flex-direction:row;gap:4px;opacity:0;transition:opacity 0.15s;';
+            actions.className = 'tt-card-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.innerHTML = '<i class="fas fa-edit" style="font-size:9px;"></i>';
+            editBtn.title = 'Edit task';
+            editBtn.style.cssText = `background:${dark ? '#374151' : '#f3f4f6'};border:none;border-radius:5px;padding:3px 5px;cursor:pointer;color:${dark ? '#93c5fd' : '#4b5563'};line-height:1;`;
+            editBtn.onclick = (e) => { e.stopPropagation(); openTtEditTaskModal(task); };
+
+            const delBtn = document.createElement('button');
+            delBtn.innerHTML = '<i class="fas fa-times" style="font-size:9px;"></i>';
+            delBtn.title = 'Hapus task';
+            delBtn.style.cssText = `background:${dark ? '#374151' : '#f3f4f6'};border:none;border-radius:5px;padding:3px 5px;cursor:pointer;color:${dark ? '#f87171' : '#ef4444'};line-height:1;`;
+            delBtn.onclick = async (e) => {
+                e.stopPropagation();
+                const confirmed = await showConfirmModal('Hapus task ini?');
+                if (!confirmed) return;
+                try { await deleteDoc(doc(db, 'hubs', 'tiktok', 'tasks', task.id)); } catch (err) { console.warn(err); }
+            };
+
+            actions.appendChild(editBtn);
+            actions.appendChild(delBtn);
+            card.appendChild(actions);
+
+            card.addEventListener('mouseenter', () => { if (!isLocked) actions.style.opacity = '1'; });
+            card.addEventListener('mouseleave', () => { actions.style.opacity = '0'; });
+            card.addEventListener('click', (e) => {
+                if (e.target.closest('.tt-card-actions')) return;
+                if (isLocked) return;
+                openTtEditTaskModal(task);
+            });
+
+            if (!isLocked) {
+                card.addEventListener('dragstart', e => { e.dataTransfer.setData('tt-task-id', task.id); card.style.opacity = '0.5'; });
+                card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+            }
+            return card;
+        };
+
+        const moveTtColumnTo = async (colId, newPos) => {
+            const total = ttBoardColumns.length;
+            if (newPos < 1 || newPos > total) return;
+            const sorted = [...ttBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
+            const idx = sorted.findIndex(c => c.id === colId);
+            if (idx === -1) return;
+            const [moved] = sorted.splice(idx, 1);
+            sorted.splice(newPos - 1, 0, moved);
+            try {
+                const batch = writeBatch(db);
+                sorted.forEach((c, i) => { batch.update(doc(db, 'hubs', 'tiktok', 'board_columns', c.id), { order: i + 1 }); });
+                await batch.commit();
+                showNotification('Kolom dipindahkan!');
+            } catch (err) { showNotification('Gagal memindahkan kolom.', true); }
+        };
+
+        const openTtColPositionPicker = (colId, anchorEl) => {
+            document.getElementById('tt-col-pos-picker')?.remove();
+            const total = ttBoardColumns.length;
+            const sorted = [...ttBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
+            const currentPos = sorted.findIndex(c => c.id === colId) + 1;
+            const dark = isDark();
+            const picker = document.createElement('div');
+            picker.id = 'tt-col-pos-picker';
+            picker.style.cssText = `position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:6px;background:${dark ? '#1f2937' : 'white'};border:1px solid ${dark ? '#374151' : '#e5e7eb'};border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.25);padding:12px;z-index:200;min-width:160px;`;
+            const label = document.createElement('p');
+            label.textContent = 'Geser ke posisi:';
+            label.style.cssText = `font-size:0.68rem;font-weight:700;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;`;
+            picker.appendChild(label);
+            const grid = document.createElement('div');
+            grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:5px;';
+            for (let p = 1; p <= total; p++) {
+                const btn = document.createElement('button');
+                btn.textContent = p;
+                const isCurrent = p === currentPos;
+                btn.style.cssText = `width:32px;height:32px;border-radius:8px;border:2px solid ${isCurrent ? '#1a1a2e' : (dark ? '#374151' : '#e5e7eb')};background:${isCurrent ? '#1a1a2e' : 'transparent'};color:${isCurrent ? 'white' : (dark ? '#d1d5db' : '#374151')};font-size:0.8rem;font-weight:${isCurrent ? '700' : '500'};cursor:${isCurrent ? 'default' : 'pointer'};transition:all 0.12s;`;
+                if (!isCurrent) {
+                    btn.onmouseenter = () => { btn.style.background = dark ? '#374151' : '#f3f4f6'; };
+                    btn.onmouseleave = () => { btn.style.background = 'transparent'; };
+                    btn.onclick = () => { picker.remove(); moveTtColumnTo(colId, p); };
+                }
+                grid.appendChild(btn);
+            }
+            picker.appendChild(grid);
+            anchorEl.style.position = 'relative';
+            anchorEl.appendChild(picker);
+            const closeHandler = (e) => { if (!picker.contains(e.target)) { picker.remove(); document.removeEventListener('click', closeHandler, true); } };
+            setTimeout(() => document.addEventListener('click', closeHandler, true), 10);
+        };
+
+        const renderTtBoard = () => {
+            const container = document.getElementById('tt-board');
+            if (!container) return;
+            if (!ttBoardColumnsReady) return;
+            container.innerHTML = '';
+
+            const colWidth = parseInt(localStorage.getItem('ttBoardColWidth') || '248', 10);
+            const colHeight = parseInt(localStorage.getItem('ttBoardColHeight') || '280', 10);
+            const dark = isDark();
+            const WIP_LIMITS = { 'In Progress': 2 };
+            const ARCHIVE_COL_NAMES = ['close', 'done', 'closed', 'archive'];
+
+            const seenColNames = new Set();
+            const uniqueColumns = [...ttBoardColumns]
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .filter(col => {
+                    const key = (col.name || '').toLowerCase().trim();
+                    if (seenColNames.has(key)) return false;
+                    seenColNames.add(key);
+                    return true;
+                });
+
+            uniqueColumns.forEach((col) => {
+                const tasks = ttBoardTasks.filter(t => t.columnId === col.id).sort((a, b) => (a.order || 0) - (b.order || 0));
+                const wipLimit = WIP_LIMITS[col.name] || null;
+                const wipReached = wipLimit !== null && tasks.length >= wipLimit;
+                const isArchiveCol = ARCHIVE_COL_NAMES.includes((col.name || '').toLowerCase());
+
+                const borderColorMap = { red: '#ef4444', blue: '#3b82f6', green: '#22c55e', yellow: '#facc15', purple: '#a855f7' };
+                const borderColor = borderColorMap[col.color] || (dark ? '#4b5563' : '#d1d5db');
+
+                const colEl = document.createElement('div');
+                colEl.style.cssText = `flex-shrink:0;width:${colWidth}px;min-width:${colWidth}px;background:${dark ? '#1f2937' : '#f9fafb'};border-radius:12px;border:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;flex-direction:column;overflow:hidden;transition:transform 0.15s;`;
+                colEl.dataset.ttColId = col.id;
+
+                if (wipReached) {
+                    const wipBar = document.createElement('div');
+                    wipBar.className = 'yt-wip-bar';
+                    wipBar.innerHTML = `<i class="fas fa-exclamation-circle" style="margin-right:4px;"></i>WIP Limit (${tasks.length}/${wipLimit})`;
+                    colEl.appendChild(wipBar);
+                }
+
+                const header = document.createElement('div');
+                header.style.cssText = `padding:10px 12px 9px;border-bottom:2.5px solid ${borderColor};display:flex;align-items:center;gap:6px;`;
+
+                const dragHandle = document.createElement('span');
+                dragHandle.innerHTML = '<i class="fas fa-grip-vertical" style="font-size:9px;"></i>';
+                dragHandle.title = 'Drag untuk geser kolom';
+                dragHandle.style.cssText = `color:${dark ? '#6b7280' : '#9ca3af'};cursor:grab;flex-shrink:0;padding:2px 1px;`;
+                dragHandle.draggable = true;
+                dragHandle.addEventListener('dragstart', e => { e.dataTransfer.setData('tt-col-id', col.id); colEl.style.opacity = '0.5'; e.stopPropagation(); });
+                dragHandle.addEventListener('dragend', () => { colEl.style.opacity = '1'; });
+
+                const nameEl = document.createElement('span');
+                nameEl.textContent = col.name;
+                nameEl.style.cssText = `font-size:0.75rem;font-weight:700;color:${dark ? '#e5e7eb' : '#1f2937'};flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;`;
+
+                if (isArchiveCol) {
+                    const gearIcon = document.createElement('span');
+                    gearIcon.innerHTML = '<i class="fas fa-cog" style="font-size:10px;"></i>';
+                    gearIcon.style.cssText = `color:${dark ? '#6b7280' : '#9ca3af'};margin-right:2px;`;
+                    header.appendChild(dragHandle); header.appendChild(nameEl); header.appendChild(gearIcon);
+                } else {
+                    const badge = document.createElement('span');
+                    badge.textContent = tasks.length;
+                    badge.style.cssText = `font-size:0.65rem;font-weight:600;background:${dark ? '#374151' : '#e5e7eb'};color:${dark ? '#9ca3af' : '#6b7280'};border-radius:999px;padding:1px 7px;flex-shrink:0;`;
+                    if (wipReached) { badge.style.background = '#1a1a2e'; badge.style.color = 'white'; }
+
+                    const posBtn = document.createElement('button');
+                    posBtn.innerHTML = `<i class="fas fa-arrows-alt-h" style="font-size:8px;"></i>`;
+                    posBtn.title = 'Atur posisi kolom';
+                    posBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
+                    posBtn.onclick = (e) => { e.stopPropagation(); openTtColPositionPicker(col.id, header); };
+
+                    const delColBtn = document.createElement('button');
+                    delColBtn.innerHTML = '<i class="fas fa-trash-alt" style="font-size:8px;"></i>';
+                    delColBtn.title = 'Hapus kolom';
+                    delColBtn.style.cssText = `background:none;border:none;cursor:pointer;padding:3px 4px;border-radius:5px;color:${dark ? '#6b7280' : '#9ca3af'};opacity:0;transition:opacity 0.15s,color 0.15s;flex-shrink:0;`;
+                    delColBtn.onclick = (e) => { e.stopPropagation(); deleteTtColumn(col.id); };
+
+                    header.addEventListener('mouseenter', () => { posBtn.style.opacity = '1'; delColBtn.style.opacity = '1'; });
+                    header.addEventListener('mouseleave', () => { posBtn.style.opacity = '0'; delColBtn.style.opacity = '0'; });
+                    header.appendChild(dragHandle); header.appendChild(nameEl); header.appendChild(badge); header.appendChild(posBtn); header.appendChild(delColBtn);
+                }
+
+                const taskList = document.createElement('div');
+                taskList.style.cssText = `display:flex;flex-direction:column;gap:7px;padding:10px;overflow-y:auto;min-height:60px;max-height:${colHeight}px;`;
+                taskList.dataset.ttColId = col.id;
+                taskList.className = 'tt-task-list';
+
+                tasks.forEach((task, taskIdx) => {
+                    const shouldLock = wipReached && taskIdx >= wipLimit;
+                    const cardEl = createTtTaskElement(task, shouldLock);
+                    taskList.appendChild(cardEl);
+                });
+
+                colEl.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const draggingColId = e.dataTransfer.types.includes('tt-col-id') ? 'col' : null;
+                    if (!draggingColId) { taskList.style.background = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'; }
+                    else { colEl.style.outline = `2px dashed ${borderColor}`; }
+                });
+                colEl.addEventListener('dragleave', (e) => {
+                    if (!colEl.contains(e.relatedTarget)) { taskList.style.background = ''; colEl.style.outline = ''; }
+                });
+                colEl.addEventListener('drop', async e => {
+                    e.preventDefault();
+                    taskList.style.background = ''; colEl.style.outline = '';
+                    const colId = e.dataTransfer.getData('tt-col-id');
+                    if (colId && colId !== col.id) {
+                        const sorted = [...ttBoardColumns].sort((a, b) => (a.order || 0) - (b.order || 0));
+                        const fromIdx = sorted.findIndex(c => c.id === colId);
+                        const toIdx = sorted.findIndex(c => c.id === col.id);
+                        if (fromIdx !== -1 && toIdx !== -1) {
+                            const [moved] = sorted.splice(fromIdx, 1);
+                            sorted.splice(toIdx, 0, moved);
+                            try {
+                                const batch = writeBatch(db);
+                                sorted.forEach((c, i) => batch.update(doc(db, 'hubs', 'tiktok', 'board_columns', c.id), { order: i + 1 }));
+                                await batch.commit();
+                            } catch (err) { console.error(err); }
+                        }
+                        return;
+                    }
+                    const taskId = e.dataTransfer.getData('tt-task-id');
+                    if (!taskId) return;
+                    try { await updateDoc(doc(db, 'hubs', 'tiktok', 'tasks', taskId), { columnId: col.id }); } catch (err) { console.warn(err); }
+                });
+
+                colEl.appendChild(header);
+                colEl.appendChild(taskList);
+
+                if (isArchiveCol) {
+                    const archiveInfo = document.createElement('div');
+                    archiveInfo.className = 'yt-archive-info';
+                    archiveInfo.innerHTML = `<i class="fas fa-clock" style="font-size:10px;flex-shrink:0;margin-top:1px;"></i><span>Automatically archive cards older than 14 days.</span>`;
+                    colEl.appendChild(archiveInfo);
+                }
+
+                container.appendChild(colEl);
+            });
+        };
+
+        const openTtAddTaskModal = () => {
+            if (ttBoardColumns.length === 0) { showNotification('No columns yet. Please wait...', true); return; }
+            const dark = isDark();
+            const colOptions = ttBoardColumns.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            let currentChecklist = [];
+
+            const overlay = document.createElement('div');
+            overlay.id = 'tt-task-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+            overlay.innerHTML = `
+                <div style="background:${dark ? '#1f2937' : 'white'};border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);width:100%;max-width:500px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+                    <div style="padding:20px 24px 16px;border-bottom:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;align-items:center;">
+                        <h3 style="font-size:1.1rem;font-weight:700;color:${dark ? '#f3f4f6' : '#1f2937'};flex:1;"><i class="fab fa-tiktok mr-2"></i>Add New Task</h3>
+                        <button id="tt-task-close" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:${dark ? '#9ca3af' : '#6b7280'};padding:4px;line-height:1;">✕</button>
+                    </div>
+                    <div style="padding:20px 24px;overflow-y:auto;flex:1;">
+                        <form id="tt-task-form" style="display:flex;flex-direction:column;gap:16px;">
+                            <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Judul Task *</label>
+                                    <input id="tt-task-text-input" type="text" placeholder="Nama task..." required style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;font-family:inherit;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;">Column</label>
+                                    <select id="tt-task-col-select" style="width:100%;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;">
+                                        ${colOptions}
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="far fa-calendar mr-1"></i>Due Date</label>
+                                    <input id="tt-task-due-date" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                                <div>
+                                    <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-link mr-1"></i>External Link</label>
+                                    <input id="tt-task-link" type="url" placeholder="https://..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                                </div>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-tags mr-1"></i>Tags (comma separated)</label>
+                                <input id="tt-task-tags" type="text" placeholder="creator, urgent, design..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};outline:none;" />
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-align-left mr-1"></i>Description</label>
+                                <textarea id="tt-task-desc" rows="3" placeholder="Task details..." style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;font-size:0.85rem;color:${dark ? '#e5e7eb' : '#374151'};background:${dark ? '#111827' : '#f9fafb'};resize:vertical;outline:none;font-family:inherit;"></textarea>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:0.75rem;font-weight:600;color:${dark ? '#9ca3af' : '#6b7280'};margin-bottom:6px;"><i class="fas fa-check-square mr-1"></i>Checklist</label>
+                                <div style="background:${dark ? '#111827' : '#f9fafb'};border:1.5px solid ${dark ? '#374151' : '#d1d5db'};border-radius:8px;padding:12px;">
+                                    <div id="tt-task-checklist-container" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+                                    <div style="display:flex;gap:8px;">
+                                        <input id="tt-task-new-chk" type="text" placeholder="Add an item..." style="flex:1;padding:7px 10px;border:1px solid ${dark ? '#4b5563' : '#d1d5db'};border-radius:6px;font-size:0.8rem;background:${dark ? '#1f2937' : 'white'};color:${dark ? '#e5e7eb' : '#374151'};outline:none;" />
+                                        <button type="button" id="tt-task-add-chk-btn" style="padding:7px 14px;background:#2d2d2d;color:white;border:none;border-radius:6px;font-size:0.8rem;font-weight:600;cursor:pointer;">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div style="padding:16px 24px;border-top:1px solid ${dark ? '#374151' : '#e5e7eb'};display:flex;justify-content:flex-end;background:${dark ? '#1f2937' : '#f9fafb'};">
+                        <div style="display:flex;gap:12px;">
+                            <button type="button" id="tt-task-cancel-btn" style="padding:9px 16px;border-radius:8px;border:1.5px solid ${dark ? '#4b5563' : '#d1d5db'};background:none;color:${dark ? '#9ca3af' : '#4b5563'};font-size:0.85rem;font-weight:600;cursor:pointer;">Cancel</button>
+                            <button type="button" id="tt-task-submit-btn" style="padding:9px 24px;border-radius:8px;border:none;background:#1a1a1a;color:white;font-size:0.85rem;font-weight:600;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.4);">Create Task</button>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(overlay);
+
+            const renderChecklist = () => {
+                const container = document.getElementById('tt-task-checklist-container');
+                if (!container) return;
+                container.innerHTML = '';
+                if (currentChecklist.length === 0) {
+                    container.innerHTML = `<span style="font-size:0.75rem;color:${dark ? '#6b7280' : '#9ca3af'};">No checklist items yet.</span>`;
+                    return;
+                }
+                currentChecklist.forEach((item, idx) => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+                    row.innerHTML = `
+                        <input type="checkbox" id="tt-task-chk-${idx}" ${item.done ? 'checked' : ''} style="width:14px;height:14px;accent-color:#2d2d2d;cursor:pointer;">
+                        <label for="tt-task-chk-${idx}" style="flex:1;font-size:0.8rem;color:${item.done ? (dark ? '#6b7280' : '#9ca3af') : (dark ? '#d1d5db' : '#374151')};text-decoration:${item.done ? 'line-through' : 'none'};cursor:pointer;word-break:break-word;">${item.text}</label>
+                        <button type="button" class="tt-task-chk-del-btn" data-idx="${idx}" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:2px 4px;opacity:0.6;"><i class="fas fa-times"></i></button>
+                    `;
+                    container.appendChild(row);
+                    row.querySelector('input').addEventListener('change', (e) => { currentChecklist[idx].done = e.target.checked; renderChecklist(); });
+                    row.querySelector('.tt-task-chk-del-btn').addEventListener('click', () => { currentChecklist.splice(idx, 1); renderChecklist(); });
+                });
+            };
+            renderChecklist();
+
+            document.getElementById('tt-task-add-chk-btn').addEventListener('click', () => {
+                const input = document.getElementById('tt-task-new-chk');
+                const val = input.value.trim();
+                if (val) { currentChecklist.push({ id: 'c_' + Date.now(), text: val, done: false }); input.value = ''; renderChecklist(); }
+            });
+            document.getElementById('tt-task-new-chk').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); document.getElementById('tt-task-add-chk-btn').click(); }
+            });
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('tt-task-close').onclick = close;
+            document.getElementById('tt-task-cancel-btn').onclick = close;
+
+            document.getElementById('tt-task-submit-btn').onclick = async () => {
+                const text = document.getElementById('tt-task-text-input').value.trim();
+                if (!text) { showNotification('Judul task wajib diisi!', true); return; }
+                const colId = document.getElementById('tt-task-col-select').value;
+                const description = document.getElementById('tt-task-desc').value.trim();
+                const dueDate = document.getElementById('tt-task-due-date').value;
+                const driveLink = document.getElementById('tt-task-link').value.trim();
+                const tagsStr = document.getElementById('tt-task-tags').value;
+                const tags = tagsStr ? tagsStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s) : [];
+                try {
+                    const order = ttBoardTasks.filter(t => t.columnId === colId).length + 1;
+                    await addDoc(collection(db, 'hubs', 'tiktok', 'tasks'), {
+                        text, description, columnId: colId, order, dueDate, driveLink, tags,
+                        checklist: currentChecklist, createdAt: Date.now()
+                    });
+                    close();
+                    showNotification('Task berhasil ditambahkan!');
+                } catch (err) { showNotification('Gagal menambah task.', true); }
+            };
+
+            setTimeout(() => { const inp = document.getElementById('tt-task-text-input'); if (inp) inp.focus(); }, 80);
+        };
+
+        document.getElementById('tt-add-task-btn')?.addEventListener('click', openTtAddTaskModal);
+
+        const openTtAddColumnModal = () => {
+            document.getElementById('tt-col-modal')?.remove();
+            const colors = [
+                { val: 'blue', cls: 'bg-blue-500' }, { val: 'yellow', cls: 'bg-yellow-400' },
+                { val: 'green', cls: 'bg-green-500' }, { val: 'red', cls: 'bg-red-500' },
+                { val: 'purple', cls: 'bg-purple-500' }, { val: 'gray', cls: 'bg-gray-400' },
+            ];
+            const overlay = document.createElement('div');
+            overlay.id = 'tt-col-modal';
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            const panel = document.createElement('div');
+            panel.className = 'modal-panel bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-sm';
+            const title = document.createElement('h3');
+            title.className = 'text-lg font-bold text-gray-800 dark:text-white mb-4';
+            title.textContent = 'Add Column';
+            const form = document.createElement('form');
+            form.id = 'tt-col-form';
+            form.className = 'flex flex-col gap-3';
+            const nameInput = document.createElement('input');
+            nameInput.id = 'tt-col-name-input';
+            nameInput.type = 'text';
+            nameInput.placeholder = 'Column name...';
+            nameInput.required = true;
+            nameInput.className = 'w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:bg-gray-700 dark:text-white';
+            const colorWrap = document.createElement('div');
+            const colorLabel = document.createElement('p');
+            colorLabel.className = 'text-xs text-gray-500 dark:text-gray-400 mb-2';
+            colorLabel.textContent = 'Column color';
+            const swatchRow = document.createElement('div');
+            swatchRow.className = 'flex gap-2 flex-wrap';
+            let selectedColor = 'blue';
+            colors.forEach(c => {
+                const lbl = document.createElement('label');
+                lbl.className = 'cursor-pointer'; lbl.title = c.val;
+                const radio = document.createElement('input');
+                radio.type = 'radio'; radio.name = 'tt-col-color'; radio.value = c.val; radio.className = 'sr-only';
+                if (c.val === 'blue') radio.checked = true;
+                const swatch = document.createElement('span');
+                swatch.className = 'block w-7 h-7 rounded-full ' + c.cls + ' transition-all hover:scale-110 border-2 border-transparent';
+                if (c.val === 'blue') swatch.style.outline = '2px solid #1e293b';
+                radio.addEventListener('change', () => { selectedColor = c.val; swatchRow.querySelectorAll('span').forEach(s => s.style.outline = ''); swatch.style.outline = '2px solid #1e293b'; });
+                lbl.appendChild(radio); lbl.appendChild(swatch); swatchRow.appendChild(lbl);
+            });
+            colorWrap.appendChild(colorLabel); colorWrap.appendChild(swatchRow);
+            const btnRow = document.createElement('div');
+            btnRow.className = 'flex gap-2 justify-end mt-1';
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button'; cancelBtn.className = 'px-4 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700';
+            cancelBtn.textContent = 'Cancel'; cancelBtn.onclick = () => overlay.remove();
+            const submitBtn = document.createElement('button');
+            submitBtn.type = 'submit'; submitBtn.className = 'px-4 py-2 text-sm rounded-lg bg-gray-900 text-white hover:bg-gray-700';
+            submitBtn.textContent = 'Add Column';
+            btnRow.appendChild(cancelBtn); btnRow.appendChild(submitBtn);
+            form.appendChild(nameInput); form.appendChild(colorWrap); form.appendChild(btnRow);
+            panel.appendChild(title); panel.appendChild(form);
+            overlay.appendChild(panel); document.body.appendChild(overlay);
+            setTimeout(() => nameInput.focus(), 50);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = nameInput.value.trim();
+                if (!name) return;
+                const color = selectedColor || 'blue';
+                submitBtn.disabled = true; submitBtn.textContent = 'Adding...';
+                try {
+                    const order = ttBoardColumns.length > 0 ? Math.max(...ttBoardColumns.map(c => c.order || 0)) + 1 : 1;
+                    await addDoc(collection(db, 'hubs', 'tiktok', 'board_columns'), { name, color, order, createdAt: Date.now() });
+                    overlay.remove(); showNotification('Column added!');
+                } catch (err) {
+                    console.error('Add column error:', err);
+                    showNotification('Failed to add column: ' + (err.message || err), true);
+                    submitBtn.disabled = false; submitBtn.textContent = 'Add Column';
+                }
+            });
+        };
+
+        const deleteTtColumn = async (colId) => {
+            const confirmed = await showConfirmModal('Delete this column and all its tasks?');
+            if (!confirmed) return;
+            try {
+                const tasksInCol = ttBoardTasks.filter(t => t.columnId === colId);
+                for (const t of tasksInCol) { await deleteDoc(doc(db, 'hubs', 'tiktok', 'tasks', t.id)); }
+                await deleteDoc(doc(db, 'hubs', 'tiktok', 'board_columns', colId));
+                showNotification('Column deleted.');
+            } catch (err) { showNotification('Failed to delete column.', true); }
+        };
+
+        document.getElementById('tt-add-column-btn')?.addEventListener('click', openTtAddColumnModal);
+
+        const initTtBoardSettings = () => {
+            const btn = document.getElementById('tt-board-settings-btn');
+            const popover = document.getElementById('tt-board-settings-popover');
+            const widthSlider = document.getElementById('tt-col-width-slider');
+            const heightSlider = document.getElementById('tt-col-height-slider');
+            const widthVal = document.getElementById('tt-col-width-val');
+            const heightVal = document.getElementById('tt-col-height-val');
+            if (!btn || !popover || !widthSlider || !heightSlider) return;
+
+            const savedW = localStorage.getItem('ttBoardColWidth') || '248';
+            const savedH = localStorage.getItem('ttBoardColHeight') || '280';
+            widthSlider.value = savedW; widthVal.textContent = savedW + 'px';
+            heightSlider.value = savedH; heightVal.textContent = savedH + 'px';
+
+            btn.addEventListener('click', (e) => { e.stopPropagation(); popover.classList.toggle('hidden'); });
+            document.addEventListener('click', (e) => { if (!popover.contains(e.target) && e.target !== btn) { popover.classList.add('hidden'); } });
+
+            widthSlider.addEventListener('input', () => {
+                const val = widthSlider.value;
+                widthVal.textContent = val + 'px';
+                localStorage.setItem('ttBoardColWidth', val);
+                document.querySelectorAll('#tt-board > div[data-tt-col-id]').forEach(col => { col.style.width = val + 'px'; col.style.minWidth = val + 'px'; });
+            });
+            heightSlider.addEventListener('input', () => {
+                const val = heightSlider.value;
+                heightVal.textContent = val + 'px';
+                localStorage.setItem('ttBoardColHeight', val);
+                document.querySelectorAll('#tt-board .tt-task-list').forEach(list => { list.style.maxHeight = val + 'px'; });
+            });
+        };
+
+        document.getElementById('tiktok-btn')?.addEventListener('click', () => {
+            setTimeout(() => { initTtBoard(); initTtBoardSettings(); }, 100);
+        }, true);
+        document.getElementById('mobile-tiktok-btn')?.addEventListener('click', () => {
+            setTimeout(() => { initTtBoard(); initTtBoardSettings(); }, 200);
+        }, true);
+
+        // TikTok Board Filter & Search Helpers
+        let ttActiveFilters = new Set();
+        let ttShowArchived = false;
+
+        (() => {
+            const btn = document.getElementById('tt-filter-dropdown-btn');
+            const panel = document.getElementById('tt-filter-dropdown-panel');
+            const chevron = document.getElementById('tt-filter-chevron');
+            if (!btn || !panel) return;
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = !panel.classList.contains('hidden');
+                if (isOpen) { panel.classList.add('hidden'); if (chevron) chevron.style.transform = 'rotate(0deg)'; }
+                else { panel.classList.remove('hidden'); if (chevron) chevron.style.transform = 'rotate(180deg)'; }
+            });
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== btn) { panel.classList.add('hidden'); if (chevron) chevron.style.transform = 'rotate(0deg)'; }
+            });
+        })();
+
+        window.addTtFilter = (tag) => {
+            ttActiveFilters.add(tag);
+            renderTtActiveTagPills();
+            filterTtBoardByState();
+        };
+
+        window.removeTtFilter = (tag) => {
+            ttActiveFilters.delete(tag);
+            renderTtActiveTagPills();
+            filterTtBoardByState();
+        };
+
+        const renderTtActiveTagPills = () => {
+            const container = document.getElementById('tt-active-tags');
+            if (!container) return;
+            const tagLabels = {
+                'due-week': 'Due: This Week', 'due-today': 'Due: Today',
+                'due-month': 'Due: This Month', 'tag-creator': 'Tag: Creator',
+                'tag-editor': 'Tag: Editor', 'tag-design': 'Tag: Design', 'tag-urgent': 'Tag: Urgent'
+            };
+            container.innerHTML = '';
+            if (ttActiveFilters.size === 0) {
+                container.innerHTML = '<span style="font-size:0.68rem;color:#475569;">No active filters</span>';
+                return;
+            }
+            ttActiveFilters.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = 'yt-active-tag-pill';
+                pill.dataset.tag = tag;
+                pill.innerHTML = `${tagLabels[tag] || tag} <span class="remove-tag" onclick="window.removeTtFilter('${tag}')">✕</span>`;
+                container.appendChild(pill);
+            });
+        };
+
+        window.filterTtBoard = (query) => {
+            const q = (query || '').toLowerCase().trim();
+            document.querySelectorAll('#tt-board .task-card').forEach(card => {
+                const text = (card.querySelector('.task-text')?.textContent || '').toLowerCase();
+                card.style.display = (!q || text.includes(q)) ? '' : 'none';
+            });
+        };
+
+        const filterTtBoardByState = () => {
+            if (ttActiveFilters.size === 0) {
+                document.querySelectorAll('#tt-board .task-card').forEach(card => { card.style.opacity = '1'; });
+            }
+        };
+
+        window.toggleTtArchivedCards = () => {
+            ttShowArchived = !ttShowArchived;
+            const btn = document.getElementById('tt-show-archived-btn');
+            if (btn) {
+                btn.innerHTML = ttShowArchived
+                    ? '<i class="fas fa-archive" style="font-size:0.7rem;"></i><span>Hide Archived Cards</span>'
+                    : '<i class="fas fa-archive" style="font-size:0.7rem;"></i><span>Show Archived Cards</span>';
+            }
+            if (typeof showNotification === 'function') {
+                showNotification(ttShowArchived ? 'Showing archived cards' : 'Archived cards hidden');
+            }
+        };
+
+        // =====================================================
+        // ===== TIKTOK UPLOAD SCHEDULE MANAGEMENT ==========
+        // =====================================================
+        let ttschAccounts = [];        // [{id, name, username, color}]
+        let ttschSchedules = [];       // [{id, accountId, date:'YYYY-MM-DD', videos:[{id,title,recorded,uploaded,uploadTime,notes}]}]
+        let ttschListeners = [];
+        let ttschInitialized = false;
+        let ttschActiveAccountId = null;
+        let ttschView = 'week';        // 'month' | 'week' | 'day'
+        let ttschCursor = new Date();  // current nav cursor
+        let ttschSummaryDate = new Date();
+
+        // ---- Color palette for accounts ----
+        const TTSCH_COLORS = [
+            '#25f4ee','#fe2c55','#f59e0b','#10b981','#3b82f6','#8b5cf6','#ef4444','#06b6d4'
+        ];
+
+        const initTtSchedule = () => {
+            if (ttschInitialized) { ttschRenderAll(); return; }
+            ttschInitialized = true;
+
+            // Listen to accounts
+            const accListener = onSnapshot(
+                collection(db, 'hubs', 'tiktok', 'sch_accounts'),
+                snap => {
+                    ttschAccounts = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+                    if (!ttschActiveAccountId && ttschAccounts.length > 0) ttschActiveAccountId = ttschAccounts[0].id;
+                    ttschRenderAccountTabs();
+                    ttschRenderAll();
+                }
+            );
+            // Listen to schedules
+            const schListener = onSnapshot(
+                collection(db, 'hubs', 'tiktok', 'sch_entries'),
+                snap => {
+                    ttschSchedules = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    ttschRenderAll();
+                    ttschRenderStats();
+                }
+            );
+            ttschListeners.push(accListener, schListener);
+
+            // Wire buttons
+            document.getElementById('ttsch-add-account-btn')?.addEventListener('click', ttschOpenAddAccountModal);
+            document.getElementById('ttsch-add-schedule-btn')?.addEventListener('click', () => ttschOpenAddScheduleModal(null));
+        };
+
+        // ---- Render account tabs ----
+        const ttschRenderAccountTabs = () => {
+            const bar = document.getElementById('ttsch-account-tabs');
+            if (!bar) return;
+            bar.innerHTML = '';
+
+            if (ttschAccounts.length === 0) {
+                bar.innerHTML = `<span style="font-size:0.7rem;color:#475569;">Belum ada akun. Klik <strong style='color:#a5b4fc'>Tambah Akun</strong> untuk mulai.</span>`;
+                return;
+            }
+
+            // "Semua" tab
+            const allBtn = document.createElement('button');
+            allBtn.className = 'ttsch-account-tab' + (!ttschActiveAccountId ? ' active' : '');
+            allBtn.innerHTML = `<i class="fas fa-layer-group" style="font-size:10px;"></i> Semua`;
+            allBtn.onclick = () => { ttschActiveAccountId = null; ttschRenderAccountTabs(); ttschRenderAll(); ttschRenderStats(); };
+            bar.appendChild(allBtn);
+
+            ttschAccounts.forEach(acc => {
+                const btn = document.createElement('button');
+                btn.className = 'ttsch-account-tab' + (acc.id === ttschActiveAccountId ? ' active' : '');
+                btn.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${acc.color || '#6366f1'};flex-shrink:0;display:inline-block;"></span>@${acc.username || acc.name}
+                    <span style="opacity:0.5;font-size:9px;cursor:pointer;margin-left:2px;" title="Edit akun" onclick="event.stopPropagation();ttschOpenEditAccountModal('${acc.id}')"><i class="fas fa-cog"></i></span>`;
+                btn.onclick = () => { ttschActiveAccountId = acc.id; ttschRenderAccountTabs(); ttschRenderAll(); ttschRenderStats(); };
+                bar.appendChild(btn);
+            });
+        };
+
+        // ---- Stats ----
+        const ttschRenderStats = () => {
+            const filtered = ttschActiveAccountId
+                ? ttschSchedules.filter(s => s.accountId === ttschActiveAccountId)
+                : ttschSchedules;
+            let total = 0, recorded = 0, uploaded = 0;
+            filtered.forEach(s => {
+                (s.videos || []).forEach(v => {
+                    total++;
+                    if (v.recorded) recorded++;
+                    if (v.uploaded) uploaded++;
+                });
+            });
+            const el = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+            el('ttsch-stat-total', `${total} video`);
+            el('ttsch-stat-recorded', `${recorded} direkam`);
+            el('ttsch-stat-uploaded', `${uploaded} diupload`);
+        };
+
+        // ---- Period label ----
+        const TTSCH_MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        const TTSCH_DAYS_ID = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+        const ttschUpdatePeriodLabel = () => {
+            const el = document.getElementById('ttsch-period-label');
+            if (!el) return;
+            if (ttschView === 'month') {
+                el.textContent = `${TTSCH_MONTHS_ID[ttschCursor.getMonth()]} ${ttschCursor.getFullYear()}`;
+            } else if (ttschView === 'week') {
+                const mon = new Date(ttschCursor);
+                const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+                el.textContent = `${mon.getDate()} ${TTSCH_MONTHS_ID[mon.getMonth()]} – ${sun.getDate()} ${TTSCH_MONTHS_ID[sun.getMonth()]} ${sun.getFullYear()}`;
+            } else {
+                el.textContent = `${ttschCursor.getDate()} ${TTSCH_MONTHS_ID[ttschCursor.getMonth()]} ${ttschCursor.getFullYear()}`;
+            }
+        };
+
+        // ---- Navigate ----
+        window.ttschNavigate = (dir) => {
+            if (ttschView === 'month') ttschCursor.setMonth(ttschCursor.getMonth() + dir);
+            else if (ttschView === 'week') ttschCursor.setDate(ttschCursor.getDate() + dir * 7);
+            else ttschCursor.setDate(ttschCursor.getDate() + dir);
+            ttschRenderAll();
+        };
+        window.ttschNavigateToday = () => { ttschCursor = new Date(); ttschRenderAll(); };
+        window.ttschSwitchView = (view, btn) => {
+            ttschView = view;
+            document.querySelectorAll('.ttsch-view-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            ttschRenderAll();
+        };
+
+        // ---- Main render dispatcher ----
+        const ttschRenderAll = () => {
+            ttschRenderSummary();
+            ttschRenderDetails();
+        };
+
+        // ---- Helper: date string 'YYYY-MM-DD' ----
+        const ttschDateStr = (d) => {
+            const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+            return `${y}-${m}-${day}`;
+        };
+
+        // ---- Helper: get schedules for date (optionally filtered by account) ----
+        const ttschGetForDate = (dateStr) => {
+            return ttschSchedules.filter(s =>
+                s.date === dateStr && (!ttschActiveAccountId || s.accountId === ttschActiveAccountId)
+            );
+        };
+
+        // Local calendar dates; the end date is exclusive (7 days or one calendar month).
+        const ttschBuildScheduleDates = (startDate, range) => {
+            if (!['month', 'week', 'today'].includes(range)) return [];
+            const dateStr = range === 'today' ? ttschDateStr(new Date()) : startDate;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr || '')) return [];
+            const start = new Date(`${dateStr}T00:00:00`);
+            if (Number.isNaN(start.getTime()) || ttschDateStr(start) !== dateStr) return [];
+            const end = new Date(start);
+            if (range === 'month') {
+                const day = start.getDate();
+                end.setDate(1);
+                end.setMonth(end.getMonth() + 1);
+                const lastDay = new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate();
+                end.setDate(Math.min(day, lastDay));
+            } else {
+                end.setDate(end.getDate() + (range === 'week' ? 7 : 1));
+            }
+            const dates = [];
+            for (const cursor = new Date(start); cursor < end; cursor.setDate(cursor.getDate() + 1)) {
+                dates.push(ttschDateStr(cursor));
+            }
+            return dates;
+        };
+
+        window.ttschNavigateSummary = (offset) => {
+            if (offset === 0) ttschSummaryDate = new Date();
+            else ttschSummaryDate.setDate(ttschSummaryDate.getDate() + offset);
+            ttschRenderSummary();
+        };
+
+        const ttschDateLabel = date => new Date(`${date}T00:00:00`).toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'short', year:'numeric' });
+        const ttschRenderDayDetails = (date, heading) => {
+            const rows = ttschGetForDate(date).flatMap(entry => (entry.videos || []).map(video => ({ entry, video })))
+                .sort((a, b) => (a.video.uploadTime || '99:99').localeCompare(b.video.uploadTime || '99:99'));
+            return `<div class="ttsch-summary-day" data-date="${date}">
+                <div class="ttsch-summary-day-heading"><strong>${heading}</strong><span>${ttschDateLabel(date)}</span><span>${rows.length} video</span></div>
+                ${rows.length ? rows.map(({ entry, video }) => {
+                    const account = ttschAccounts.find(a => a.id === entry.accountId);
+                    return `<div class="ttsch-summary-row">
+                        <div class="ttsch-summary-video"><b>${escapeHtml(video.title || 'Video TikTok')}</b>
+                            <small>@${escapeHtml(account?.username || account?.name || 'Akun')} · ${escapeHtml(video.uploadTime || 'Jam belum diatur')} · ${video.uploaded ? 'Terupload' : video.recorded ? 'Siap Upload' : 'Belum Direkam'}</small>
+                            ${video.notes ? `<small>${escapeHtml(video.notes)}</small>` : ''}
+                            <div class="ttsch-summary-actions"><button class="ttsch-summary-action" data-edit-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}">Edit video</button></div>
+                        </div>
+                        <div class="ttsch-summary-checks">
+                            <label><input type="checkbox" data-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}" data-field="recorded" ${video.recorded ? 'checked' : ''}>Direkam</label>
+                            <label><input type="checkbox" data-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}" data-field="uploaded" ${video.uploaded ? 'checked' : ''}>Upload</label>
+                        </div>
+                    </div>`;
+                }).join('') : '<p class="ttsch-summary-empty">Tidak ada jadwal upload.</p>'}
+                <button class="ttsch-summary-action" data-add-date="${date}"><i class="fas fa-plus"></i> Tambah jadwal</button>
+            </div>`;
+        };
+        const ttschRenderSummary = () => {
+            const summary = document.getElementById('ttsch-summary');
+            if (!summary) return;
+            const today = ttschDateStr(new Date());
+            const selected = ttschDateStr(ttschSummaryDate);
+            const dates = Array.from({ length:3 }, (_, offset) => {
+                const date = new Date(`${selected}T00:00:00`);
+                date.setDate(date.getDate() + offset);
+                return ttschDateStr(date);
+            });
+            const filtered = ttschSchedules.filter(s => !ttschActiveAccountId || s.accountId === ttschActiveAccountId);
+            const videos = ttschGetForDate(selected).flatMap(s => s.videos || []);
+            const uploaded = videos.filter(v => v.uploaded).length;
+            const rate = videos.length ? Math.round(uploaded / videos.length * 100) : 0;
+            const monthUploads = filtered.filter(s => s.date.startsWith(selected.slice(0, 7)))
+                .reduce((sum, s) => sum + (s.videos || []).filter(v => v.uploaded).length, 0);
+            summary.innerHTML = `
+                <div class="ttsch-summary-header">
+                    <div class="ttsch-summary-top">
+                        <div class="ttsch-summary-title"><div class="ttsch-summary-logo"><i class="fab fa-tiktok"></i></div><div>
+                            <h3>Jadwal Upload TikTok</h3><p class="ttsch-summary-subtitle">${uploaded}/${videos.length} video sudah upload · ${monthUploads}× bulan ini</p>
+                        </div></div>
+                        <div class="ttsch-summary-progress">${rate}%<div class="ttsch-progress-track"><span style="width:${rate}%"></span></div></div>
+                    </div>
+                    <div class="ttsch-summary-nav">
+                        <button onclick="ttschNavigateSummary(-1)" aria-label="Hari sebelumnya">❮</button>
+                        <div class="ttsch-summary-nav-center">${ttschDateLabel(selected)}<small>Preview 3 hari</small></div>
+                        <button onclick="ttschNavigateSummary(0)" title="Kembali ke 3 hari mulai hari ini">Sekarang</button>
+                        <button onclick="ttschNavigateSummary(1)" aria-label="Hari berikutnya">❯</button>
+                    </div>
+                    <div class="ttsch-summary-toolbar" aria-label="Detail jadwal berdasarkan periode">
+                        <button class="ttsch-summary-action" data-period="today">Hari Ini</button>
+                        <button class="ttsch-summary-action" data-period="week">Minggu Ini</button>
+                        <button class="ttsch-summary-action" data-period="month">Bulan Ini</button>
+                        <select id="ttsch-summary-account" class="ttsch-account-select" aria-label="Filter akun TikTok">
+                            <option value="">Semua akun</option>
+                            ${ttschAccounts.map(a => `<option value="${escapeHtml(a.id)}" ${a.id === ttschActiveAccountId ? 'selected' : ''}>@${escapeHtml(a.username || a.name || 'Akun')}</option>`).join('')}
+                        </select>
+                        <button id="ttsch-summary-add-account" class="ttsch-summary-action">+ Akun</button>
+                        ${ttschActiveAccountId ? '<button id="ttsch-summary-edit-account" class="ttsch-summary-action">Edit Akun</button>' : ''}
+                        <button class="ttsch-summary-action" data-add-date="${selected}">+ Jadwal</button>
+                    </div>
+                </div>
+                <div class="ttsch-summary-pills"><span class="ttsch-summary-pill cyan">${videos.length - uploaded} menunggu upload</span><span class="ttsch-summary-pill pink">${videos.filter(v => v.recorded && !v.uploaded).length} siap upload</span><span class="ttsch-summary-pill">${ttschActiveAccountId ? 'Akun terpilih' : 'Semua akun'}</span></div>
+                <div class="ttsch-summary-columns">${dates.map((date, i) => ttschRenderDayDetails(date, selected === today ? ['HARI INI', 'BESOK', 'LUSA'][i] : ['TANGGAL PILIHAN', 'HARI BERIKUTNYA', '2 HARI BERIKUTNYA'][i])).join('')}</div>`;
+            summary.querySelectorAll('[data-period]').forEach(button => {
+                button.onclick = () => ttschOpenDetails(button.dataset.period);
+            });
+            summary.querySelector('#ttsch-summary-account').onchange = event => {
+                ttschActiveAccountId = event.target.value || null;
+                ttschRenderAll();
+            };
+            summary.querySelector('#ttsch-summary-add-account').onclick = ttschOpenAddAccountModal;
+            const editAccount = summary.querySelector('#ttsch-summary-edit-account');
+            if (editAccount) editAccount.onclick = () => ttschOpenEditAccountModal(ttschActiveAccountId);
+            ttschBindDayActions(summary);
+        };
+
+        const ttschBindDayActions = (summary) => {
+            summary.querySelectorAll('[data-add-date]').forEach(button => {
+                button.onclick = () => {
+                    document.getElementById('ttsch-details-modal')?.close();
+                    ttschOpenAddScheduleModal(button.dataset.addDate);
+                };
+            });
+            summary.querySelectorAll('[data-edit-entry]').forEach(button => {
+                button.onclick = () => {
+                    document.getElementById('ttsch-details-modal')?.close();
+                    ttschOpenEditVideoModal(button.dataset.editEntry, button.dataset.video);
+                };
+            });
+            summary.querySelectorAll('input[data-field]').forEach(input => {
+                input.onchange = async () => {
+                    input.disabled = true;
+                    await ttschToggleVideo(input.dataset.entry, input.dataset.video, input.dataset.field);
+                    ttschRenderAll();
+                };
+            });
+        };
+
+        // Current calendar periods in local time. Weeks run Monday through Sunday.
+        const ttschGetDetailDates = (period, now = new Date()) => {
+            if (!['today', 'week', 'month'].includes(period)) return [];
+            const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            if (period === 'week') start.setDate(start.getDate() - (start.getDay() + 6) % 7);
+            if (period === 'month') start.setDate(1);
+            const end = new Date(start);
+            if (period === 'month') end.setMonth(end.getMonth() + 1);
+            else end.setDate(end.getDate() + (period === 'week' ? 7 : 1));
+            const dates = [];
+            for (const date = new Date(start); date < end; date.setDate(date.getDate() + 1)) {
+                dates.push(ttschDateStr(date));
+            }
+            return dates;
+        };
+
+        const ttschRenderDetails = () => {
+            const modal = document.getElementById('ttsch-details-modal');
+            if (!modal?.open) return;
+            const dates = ttschGetDetailDates(modal.dataset.period);
+            const videos = dates.flatMap(date => ttschGetForDate(date).flatMap(entry => entry.videos || []));
+            const account = ttschAccounts.find(a => a.id === ttschActiveAccountId);
+            modal.querySelector('#ttsch-details-range').textContent = `${ttschDateLabel(dates[0])} — ${ttschDateLabel(dates.at(-1))} · ${account ? '@' + (account.username || account.name) : 'Semua akun'}`;
+            modal.querySelector('#ttsch-details-stats').textContent = `${videos.length} video · ${videos.filter(v => v.recorded).length} direkam · ${videos.filter(v => v.uploaded).length} diupload`;
+            const body = modal.querySelector('.ttsch-details-body');
+            const scrollTop = body.scrollTop;
+            body.innerHTML = dates.map(date => ttschRenderDayDetails(date, date === ttschDateStr(new Date()) ? 'HARI INI' : 'JADWAL')).join('');
+            body.scrollTop = scrollTop;
+            ttschBindDayActions(body);
+        };
+
+        const ttschOpenDetails = (period) => {
+            const titles = { today:'Hari Ini', week:'Minggu Ini', month:'Bulan Ini' };
+            if (!titles[period]) return;
+            document.getElementById('ttsch-details-modal')?.remove();
+            const modal = document.createElement('dialog');
+            modal.id = 'ttsch-details-modal';
+            modal.className = 'ttsch-details';
+            modal.dataset.period = period;
+            modal.setAttribute('aria-labelledby', 'ttsch-details-title');
+            modal.innerHTML = `<div class="ttsch-form-header">
+                <h3 id="ttsch-details-title">Jadwal Upload TikTok — ${titles[period]}</h3>
+                <button type="button" class="ttsch-summary-action" data-close aria-label="Tutup detail">✕</button>
+                </div><div style="padding:12px 16px;">
+                <p id="ttsch-details-range" class="ttsch-summary-subtitle"></p>
+                <p id="ttsch-details-stats" class="ttsch-summary-subtitle"></p>
+                </div><div class="ttsch-details-body"></div>`;
+            modal.querySelector('[data-close]').onclick = () => modal.close();
+            modal.addEventListener('close', () => modal.remove(), { once:true });
+            modal.addEventListener('click', event => {
+                const rect = modal.getBoundingClientRect();
+                if (event.target === modal && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) modal.close();
+            });
+            document.body.appendChild(modal);
+            modal.showModal();
+            ttschRenderDetails();
+        };
+
+        // ---- Get video status CSS class ----
+        const ttschVideoClass = (v) => {
+            if (v.uploaded) return 'uploaded';
+            if (v.recorded) return 'pending';
+            return 'not-started';
+        };
+        const ttschVideoStatusLabel = (v) => {
+            if (v.uploaded) return {label:'Terupload', cls:'background:rgba(37,244,238,0.15);color:#25f4ee;'};
+            if (v.recorded) return {label:'Siap Upload', cls:'background:rgba(251,191,36,0.15);color:#fbbf24;'};
+            return {label:'Belum Direkam', cls:'background:rgba(100,116,139,0.15);color:#94a3b8;'};
+        };
+
+        // ---- Month View ----
+        const ttschRenderMonth = () => {
+            const body = document.getElementById('ttsch-body');
+            if (!body) return;
+
+            const year = ttschCursor.getFullYear(), month = ttschCursor.getMonth();
+            const today = ttschDateStr(new Date());
+            const firstDay = new Date(year, month, 1);
+            const startDow = firstDay.getDay(); // 0=Sun
+            const daysInMonth = new Date(year, month+1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            let html = `<div class="ttsch-cal-header">`;
+            TTSCH_DAYS_ID.forEach(d => html += `<div class="ttsch-cal-day-label">${d}</div>`);
+            html += `</div><div class="ttsch-cal-grid">`;
+
+            // prev month overflow
+            for (let i = startDow - 1; i >= 0; i--) {
+                const d = daysInPrevMonth - i;
+                const dt = ttschDateStr(new Date(year, month-1, d));
+                html += ttschMonthCell(dt, d, true, today);
+            }
+            // current month
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dt = ttschDateStr(new Date(year, month, d));
+                html += ttschMonthCell(dt, d, false, today);
+            }
+            // next month overflow
+            const total = startDow + daysInMonth;
+            const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+            for (let d = 1; d <= remaining; d++) {
+                const dt = ttschDateStr(new Date(year, month+1, d));
+                html += ttschMonthCell(dt, d, true, today);
+            }
+
+            html += `</div>`;
+            body.innerHTML = html;
+        };
+
+        const ttschMonthCell = (dateStr, dayNum, otherMonth, today) => {
+            const entries = ttschGetForDate(dateStr);
+            const hasData = entries.some(e => (e.videos||[]).length > 0);
+            let cls = 'ttsch-cal-cell';
+            if (otherMonth) cls += ' other-month';
+            if (dateStr === today) cls += ' today';
+            if (hasData) cls += ' has-schedule';
+
+            let chips = '';
+            let total = 0;
+            entries.forEach(e => {
+                (e.videos || []).forEach(v => {
+                    if (total >= 3) return;
+                    chips += `<span class="ttsch-video-chip ${ttschVideoClass(v)}">${escapeHtml(v.title || 'Video')}</span>`;
+                    total++;
+                });
+            });
+            const more = entries.reduce((s,e) => s + (e.videos||[]).length, 0) - total;
+            if (more > 0) chips += `<span class="ttsch-video-chip not-started">+${more} lainnya</span>`;
+
+            return `<div class="${cls}" onclick="ttschOpenDayModal('${dateStr}')">
+                <div class="ttsch-date-num">${dayNum}</div>
+                ${chips}
+                ${hasData ? '' : `<span style="font-size:9px;color:rgba(71,85,105,0.6);position:absolute;bottom:4px;right:5px;"><i class="fas fa-plus"></i></span>`}
+            </div>`;
+        };
+
+        // ---- Week View ----
+        const ttschRenderWeek = () => {
+            const body = document.getElementById('ttsch-body');
+            if (!body) return;
+            const today = ttschDateStr(new Date());
+            const weekStart = new Date(ttschCursor);
+
+            let html = `<div class="ttsch-week-scroll"><div class="ttsch-week-grid">`;
+            // Day headers
+            html += `<div style="display:grid;grid-template-columns:80px repeat(7,1fr);gap:4px;margin-bottom:6px;">`;
+            html += `<div></div>`;
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(weekStart); d.setDate(d.getDate() + i);
+                const ds = ttschDateStr(d);
+                const isToday = ds === today;
+                html += `<div style="text-align:center;padding:6px 4px;">
+                    <div style="font-size:0.62rem;font-weight:700;color:#475569;text-transform:uppercase;">${TTSCH_DAYS_ID[d.getDay()]}</div>
+                    <div style="font-size:0.9rem;font-weight:700;${isToday ? 'color:#fff;background:rgba(255,255,255,0.2);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin:2px auto 0;' : 'color:#94a3b8;margin-top:2px;'}">${d.getDate()}</div>
+                </div>`;
+            }
+            html += `</div>`;
+
+            // Slot rows — collect all videos for the week grouped by day
+            const dayEntries = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(weekStart); d.setDate(d.getDate() + i);
+                dayEntries.push({ date: ttschDateStr(d), entries: ttschGetForDate(ttschDateStr(d)) });
+            }
+
+            // Find max videos per day to determine row count
+            const maxVideos = Math.max(1, ...dayEntries.map(de => de.entries.reduce((s,e)=>(e.videos||[]).length+s, 0)));
+
+            for (let slot = 0; slot < maxVideos; slot++) {
+                html += `<div style="display:grid;grid-template-columns:80px repeat(7,1fr);gap:4px;margin-bottom:4px;align-items:start;">`;
+                html += `<div class="ttsch-week-time-label">${slot === 0 ? 'Slot '+(slot+1) : 'Slot '+(slot+1)}</div>`;
+                for (let i = 0; i < 7; i++) {
+                    const de = dayEntries[i];
+                    const allVids = de.entries.flatMap(e => (e.videos||[]).map(v=>({...v,entryId:e.id,accountId:e.accountId})));
+                    const vid = allVids[slot];
+                    const isToday = de.date === today;
+                    if (vid) {
+                        const st = ttschVideoStatusLabel(vid);
+                        const account = ttschAccounts.find(a => a.id === vid.accountId);
+                        html += `<div class="ttsch-week-cell" style="${isToday ? 'border-color:rgba(255,255,255,0.2);' : ''}"
+                            onclick="ttschOpenDayModal('${de.date}')">
+                            <div style="font-size:0.65rem;font-weight:600;color:#cbd5e1;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(vid.title || 'Video')}</div>
+                            <div style="font-size:0.6rem;color:#94a3b8;margin-bottom:5px;overflow-wrap:anywhere;">${escapeHtml(vid.uploadTime || 'Jam belum diatur')} · @${escapeHtml(account?.username || account?.name || 'Akun')}</div>
+                            <div><span class="ttsch-status-badge" style="${st.cls}">${st.label}</span></div>
+                        </div>`;
+                    } else {
+                        html += `<div class="ttsch-week-cell" style="cursor:pointer;display:flex;align-items:center;justify-content:center;${isToday ? 'border-color:rgba(255,255,255,0.15);' : ''}"
+                            onclick="ttschOpenAddScheduleModal('${de.date}')">
+                            <span style="color:rgba(71,85,105,0.5);font-size:11px;"><i class="fas fa-plus"></i></span>
+                        </div>`;
+                    }
+                }
+                html += `</div>`;
+            }
+
+            // Add row button
+            html += `<div style="display:grid;grid-template-columns:80px repeat(7,1fr);gap:4px;margin-top:6px;">`;
+            html += `<div></div>`;
+            for (let i = 0; i < 7; i++) {
+                const de = dayEntries[i];
+                html += `<div style="text-align:center;">
+                    <button class="ttsch-add-video-btn" onclick="ttschOpenAddScheduleModal('${de.date}')"><i class="fas fa-plus"></i> Tambah</button>
+                </div>`;
+            }
+            html += `</div></div></div>`;
+            body.innerHTML = html;
+        };
+
+        // ---- Day View ----
+        const ttschRenderDay = () => {
+            const body = document.getElementById('ttsch-body');
+            if (!body) return;
+            const dateStr = ttschDateStr(ttschCursor);
+            const entries = ttschGetForDate(dateStr);
+            const allVideos = entries.flatMap(e => (e.videos||[]).map(v => ({...v, entryId:e.id, accountId:e.accountId})));
+
+            const today = new Date(); const todayStr = ttschDateStr(today);
+            const dayName = `${TTSCH_DAYS_ID[ttschCursor.getDay()]}, ${ttschCursor.getDate()} ${TTSCH_MONTHS_ID[ttschCursor.getMonth()]} ${ttschCursor.getFullYear()}`;
+
+            let html = `<div class="ttsch-day-view">`;
+            html += `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <div style="font-size:0.85rem;font-weight:700;color:${dateStr===todayStr ? '#e2e8f0' : '#94a3b8'};">${dayName}</div>
+                <button class="ttsch-add-video-btn" onclick="ttschOpenAddScheduleModal('${dateStr}')"><i class="fas fa-plus"></i> Tambah Video</button>
+            </div>`;
+
+            if (allVideos.length === 0) {
+                html += `<div style="text-align:center;padding:32px;color:#475569;font-size:0.8rem;">
+                    <i class="fas fa-video" style="font-size:1.5rem;margin-bottom:8px;display:block;"></i>
+                    Belum ada jadwal video untuk hari ini.
+                </div>`;
+            } else {
+                allVideos.forEach((v, idx) => {
+                    const acc = ttschAccounts.find(a => a.id === v.accountId);
+                    const st = ttschVideoStatusLabel(v);
+                    html += `<div class="ttsch-day-video-row" id="ttsch-vid-row-${idx}">
+                        <div style="min-width:28px;height:28px;border-radius:50%;background:${acc?.color || '#475569'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0;">
+                            ${(acc?.username || acc?.name || '?')[0].toUpperCase()}
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+                                <span style="font-size:0.82rem;font-weight:700;color:#e2e8f0;flex:1;min-width:0;">${escapeHtml(v.title || 'Tanpa Judul')}</span>
+                                <span class="ttsch-status-badge" style="${st.cls}">${st.label}</span>
+                                ${acc ? `<span style="font-size:0.65rem;color:${acc.color || '#6366f1'};font-weight:600;">@${acc.username || acc.name}</span>` : ''}
+                                ${v.uploadTime ? `<span style="font-size:0.65rem;color:#64748b;"><i class="fas fa-clock" style="margin-right:3px;"></i>${v.uploadTime}</span>` : ''}
+                            </div>
+                            ${v.notes ? `<div style="font-size:0.72rem;color:#64748b;margin-bottom:8px;line-height:1.4;">${v.notes}</div>` : ''}
+                            <div class="ttsch-checklist-wrap">
+                                <label class="ttsch-check-item ${v.recorded ? 'done' : ''}" onclick="ttschToggleVideo('${v.entryId}','${v.id}','recorded')">
+                                    <input type="checkbox" ${v.recorded ? 'checked' : ''} onclick="event.stopPropagation();ttschToggleVideo('${v.entryId}','${v.id}','recorded')">
+                                    <i class="fas fa-film" style="font-size:10px;"></i> Sudah Direkam
+                                </label>
+                                <label class="ttsch-check-item ${v.uploaded ? 'done' : ''}" onclick="ttschToggleVideo('${v.entryId}','${v.id}','uploaded')">
+                                    <input type="checkbox" ${v.uploaded ? 'checked' : ''} onclick="event.stopPropagation();ttschToggleVideo('${v.entryId}','${v.id}','uploaded')">
+                                    <i class="fas fa-upload" style="font-size:10px;"></i> Sudah Diupload
+                                </label>
+                                <button onclick="ttschOpenEditVideoModal('${v.entryId}','${v.id}')"
+                                    style="background:none;border:none;cursor:pointer;color:#64748b;font-size:10px;padding:0 4px;transition:color 0.15s;"
+                                    onmouseenter="this.style.color='#e2e8f0'" onmouseleave="this.style.color='#64748b'"
+                                    title="Edit"><i class="fas fa-pen"></i></button>
+                                <button onclick="ttschDeleteVideo('${v.entryId}','${v.id}')"
+                                    style="background:none;border:none;cursor:pointer;color:#64748b;font-size:10px;padding:0 4px;transition:color 0.15s;"
+                                    onmouseenter="this.style.color='#ef4444'" onmouseleave="this.style.color='#64748b'"
+                                    title="Hapus"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+            html += `</div>`;
+            body.innerHTML = html;
+        };
+
+        // ---- Toggle recorded/uploaded ----
+        window.ttschToggleVideo = async (entryId, videoId, field) => {
+            const entry = ttschSchedules.find(s => s.id === entryId);
+            if (!entry) return;
+            const videos = [...(entry.videos || [])];
+            const idx = videos.findIndex(v => v.id === videoId);
+            if (idx === -1) return;
+            videos[idx] = { ...videos[idx], [field]: !videos[idx][field] };
+            // If marking uploaded, also mark recorded
+            if (field === 'uploaded' && videos[idx].uploaded) videos[idx].recorded = true;
+            try {
+                await updateDoc(doc(db, 'hubs', 'tiktok', 'sch_entries', entryId), { videos });
+                showNotification(videos[idx][field] ? `✓ ${field === 'recorded' ? 'Direkam' : 'Diupload'}!` : 'Diperbarui');
+            } catch(err) { showNotification('Gagal update.', true); }
+        };
+
+        // ---- Delete video from entry ----
+        window.ttschDeleteVideo = async (entryId, videoId) => {
+            const confirmed = await showConfirmModal('Hapus video ini dari jadwal?');
+            if (!confirmed) return;
+            const entry = ttschSchedules.find(s => s.id === entryId);
+            if (!entry) return;
+            const videos = (entry.videos || []).filter(v => v.id !== videoId);
+            try {
+                if (videos.length === 0) {
+                    await deleteDoc(doc(db, 'hubs', 'tiktok', 'sch_entries', entryId));
+                } else {
+                    await updateDoc(doc(db, 'hubs', 'tiktok', 'sch_entries', entryId), { videos });
+                }
+                showNotification('Video dihapus.');
+            } catch(err) { showNotification('Gagal hapus.', true); }
+        };
+
+        // ---- Open Day Modal (click on calendar cell) ----
+        window.ttschOpenDayModal = (dateStr) => {
+            // Switch to day view for that date
+            const [y,m,d] = dateStr.split('-').map(Number);
+            ttschCursor = new Date(y, m-1, d);
+            ttschView = 'day';
+            document.querySelectorAll('.ttsch-view-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.ttschView === 'day');
+            });
+            ttschRenderAll();
+        };
+
+        // ---- Add Schedule Modal ----
+        window.ttschOpenAddScheduleModal = (defaultDate) => {
+            document.getElementById('ttsch-add-modal')?.remove();
+            if (ttschAccounts.length === 0) { showNotification('Tambah akun dulu sebelum membuat jadwal!', true); return; }
+
+            const today = defaultDate || ttschDateStr(new Date());
+
+            const overlay = document.createElement('div');
+            overlay.id = 'ttsch-add-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+            const accOptions = ttschAccounts.map(a =>
+                `<option value="${escapeHtml(a.id)}" ${a.id === ttschActiveAccountId ? 'selected' : ''}>@${escapeHtml(a.username || a.name)}</option>`
+            ).join('');
+
+            overlay.innerHTML = `
+                <div class="ttsch-form" role="dialog" aria-modal="true" aria-labelledby="ttsch-add-title">
+                    <div class="ttsch-form-header">
+                        <h3 id="ttsch-add-title"><i class="fab fa-tiktok mr-2" style="color:#25f4ee;"></i>Tambah Jadwal Upload</h3>
+                        <button type="button" id="ttsch-add-close" class="ttsch-summary-action" aria-label="Tutup">✕</button>
+                    </div>
+                    <div class="ttsch-form-body">
+                        <div class="ttsch-form-grid" style="margin-bottom:14px;">
+                            <div>
+                                <label for="ttsch-sel-account">Akun TikTok *</label>
+                                <select id="ttsch-sel-account">${accOptions}</select>
+                            </div>
+                            <div>
+                                <label for="ttsch-sel-date">Tanggal mulai *</label>
+                                <input id="ttsch-sel-date" type="date" value="${today}" required>
+                            </div>
+                        </div>
+                        <label for="ttsch-sel-range">Buat jadwal untuk</label>
+                        <select id="ttsch-sel-range">
+                            <option value="month" selected>1 bulan ke depan</option>
+                            <option value="week">1 minggu ke depan</option>
+                            <option value="today">Hari ini saja</option>
+                        </select>
+                        <p class="ttsch-form-hint">Daftar video dan jam di bawah diulang setiap hari dalam rentang pilihan. Jadwal yang sudah ada tetap dipertahankan; video baru ditambahkan. Status awal: belum direkam dan belum upload.</p>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                            <label><i class="fas fa-video mr-1"></i>Video per hari</label>
+                            <button type="button" id="ttsch-modal-add-vid" class="ttsch-summary-action">
+                                <i class="fas fa-plus" style="font-size:9px;"></i> Tambah Video
+                            </button>
+                        </div>
+                        <div id="ttsch-video-list-container"></div>
+                        <div class="ttsch-form-preview">
+                            <h4>Preview jadwal 1 minggu ke depan</h4>
+                            <p class="ttsch-form-hint">Maksimal 7 hari pertama dari tanggal mulai.</p>
+                            <div id="ttsch-add-preview" aria-live="polite"></div>
+                            <p id="ttsch-add-total" class="ttsch-form-hint"></p>
+                        </div>
+                    </div>
+                    <div class="ttsch-form-footer">
+                        <button type="button" id="ttsch-add-cancel" class="ttsch-summary-action">Batal</button>
+                        <button type="button" id="ttsch-add-submit" class="ttsch-form-primary">Simpan Jadwal</button>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(overlay);
+
+            let videoEntries = [{ title:'', uploadTime:'' }];
+            const dateInput = document.getElementById('ttsch-sel-date');
+            const rangeInput = document.getElementById('ttsch-sel-range');
+            let selectedStartDate = dateInput.value;
+            const renderPreview = () => {
+                const dates = ttschBuildScheduleDates(dateInput.value, rangeInput.value);
+                const validVideos = videoEntries.filter(v => v.title.trim());
+                document.getElementById('ttsch-add-preview').innerHTML = dates.slice(0, 7).map(date => `
+                    <div class="ttsch-preview-line"><span>${new Date(`${date}T00:00:00`).toLocaleDateString('id-ID', { weekday:'short', day:'numeric', month:'short' })}</span>
+                    <span>${validVideos.length} video${validVideos.length ? ' · ' + validVideos.map(v => escapeHtml(v.uploadTime || 'Jam belum diatur')).join(', ') : ''}</span></div>
+                `).join('') || '<p class="ttsch-form-hint">Pilih tanggal mulai yang valid.</p>';
+                document.getElementById('ttsch-add-total').textContent = dates.length
+                    ? `Total: ${dates.length} hari × ${validVideos.length} video = ${dates.length * validVideos.length} video (${dates[0]} s.d. ${dates[dates.length - 1]}).`
+                    : 'Belum ada jadwal yang dapat dibuat.';
+            };
+            rangeInput.onchange = () => {
+                const todayOnly = rangeInput.value === 'today';
+                dateInput.disabled = todayOnly;
+                dateInput.value = todayOnly ? ttschDateStr(new Date()) : selectedStartDate;
+                renderPreview();
+            };
+            dateInput.onchange = () => { selectedStartDate = dateInput.value; renderPreview(); };
+
+            const renderVideoList = () => {
+                const container = document.getElementById('ttsch-video-list-container');
+                if (!container) return;
+                container.innerHTML = '';
+                videoEntries.forEach((v, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'ttsch-form-video';
+                    row.innerHTML = `
+                        <div class="ttsch-form-video-heading">
+                            <span>Video ${idx+1}</span>
+                            ${idx > 0 ? `<button type="button" data-rm="${idx}" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:11px;padding:2px 4px;"><i class="fas fa-times"></i></button>` : ''}
+                        </div>
+                        <div class="ttsch-form-grid">
+                            <div>
+                                <label for="ttsch-title-${idx}">Judul / Tema *</label>
+                                <input id="ttsch-title-${idx}" type="text" data-field="title" data-idx="${idx}" placeholder="Review produk, tutorial, video pendek..." value="${escapeHtml(v.title)}">
+                            </div>
+                            <div>
+                                <label for="ttsch-time-${idx}">Jam Upload</label>
+                                <input id="ttsch-time-${idx}" type="time" data-field="uploadTime" data-idx="${idx}" value="${escapeHtml(v.uploadTime)}">
+                            </div>
+                        </div>
+                    `;
+
+                    // Wire input events
+                    row.querySelectorAll('input[data-field]').forEach(inp => {
+                        const update = () => {
+                            videoEntries[idx][inp.dataset.field] = inp.value;
+                            renderPreview();
+                        };
+                        inp.addEventListener('input', update);
+                        inp.addEventListener('change', update);
+                    });
+
+                    // Wire remove button
+                    const rmBtn = row.querySelector('[data-rm]');
+                    if (rmBtn) rmBtn.addEventListener('click', () => { videoEntries.splice(idx, 1); renderVideoList(); });
+
+                    container.appendChild(row);
+                });
+                renderPreview();
+            };
+            renderVideoList();
+
+            document.getElementById('ttsch-modal-add-vid').addEventListener('click', () => {
+                videoEntries.push({ title:'', uploadTime:'' });
+                renderVideoList();
+            });
+
+            let saving = false;
+            const close = () => { if (!saving) overlay.remove(); };
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('ttsch-add-close').onclick = close;
+            document.getElementById('ttsch-add-cancel').onclick = close;
+
+            document.getElementById('ttsch-add-submit').onclick = async () => {
+                if (saving) return;
+                const accountId = document.getElementById('ttsch-sel-account').value;
+                const dates = ttschBuildScheduleDates(dateInput.value, rangeInput.value);
+                if (!dates.length || !ttschAccounts.some(a => a.id === accountId)) { showNotification('Pilih akun dan tanggal yang valid!', true); return; }
+
+                const validVids = videoEntries.filter(v => v.title.trim());
+                if (validVids.length === 0) { showNotification('Minimal satu judul video harus diisi!', true); return; }
+
+                saving = true;
+                const submit = document.getElementById('ttsch-add-submit');
+                submit.disabled = true;
+                submit.textContent = 'Menyimpan...';
+                try {
+                    const batch = writeBatch(db);
+                    const createdAt = Date.now();
+                    dates.forEach(date => {
+                        const videos = validVids.map(v => ({
+                            id: doc(collection(db, 'hubs', 'tiktok', 'sch_entries')).id,
+                            title: v.title.trim(), uploadTime: v.uploadTime,
+                            recorded: false, uploaded: false
+                        }));
+                        const existing = ttschSchedules.find(s => s.accountId === accountId && s.date === date);
+                        if (existing) {
+                            batch.update(doc(db, 'hubs', 'tiktok', 'sch_entries', existing.id), {
+                                videos: [...(existing.videos || []), ...videos], updatedAt: createdAt
+                            });
+                        } else {
+                            batch.set(doc(collection(db, 'hubs', 'tiktok', 'sch_entries')), { accountId, date, videos, createdAt });
+                        }
+                    });
+                    await batch.commit();
+                    saving = false;
+                    close();
+                    ttschCursor = new Date(`${dates[0]}T00:00:00`);
+                    ttschSummaryDate = new Date(ttschCursor);
+                    ttschRenderAll();
+                    showNotification(`${validVids.length * dates.length} video dijadwalkan untuk ${dates.length} hari!`);
+                } catch(err) {
+                    showNotification('Gagal simpan jadwal. Silakan coba lagi.', true);
+                } finally {
+                    saving = false;
+                    submit.disabled = false;
+                    submit.textContent = 'Simpan Jadwal';
+                }
+            };
+
+            setTimeout(() => overlay.querySelector('input[data-field="title"]')?.focus(), 100);
+        };
+
+        // ---- Edit single video ----
+        window.ttschOpenEditVideoModal = (entryId, videoId) => {
+            const entry = ttschSchedules.find(s => s.id === entryId);
+            if (!entry) return;
+            const vidIdx = (entry.videos||[]).findIndex(v => v.id === videoId);
+            if (vidIdx === -1) return;
+            const vid = entry.videos[vidIdx];
+            const dark = isDark();
+
+            document.getElementById('ttsch-edit-vid-modal')?.remove();
+            const overlay = document.createElement('div');
+            overlay.id = 'ttsch-edit-vid-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+            overlay.innerHTML = `
+                <div style="background:${dark ? '#1a1a2e' : 'white'};border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,0.5);width:100%;max-width:440px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);">
+                    <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;">
+                        <h3 style="font-size:0.95rem;font-weight:700;color:${dark?'#f1f5f9':'#1f2937'};flex:1;"><i class="fas fa-pen text-indigo-400 mr-2"></i>Edit Video</h3>
+                        <button id="ttsch-ev-close" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#64748b;">✕</button>
+                    </div>
+                    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Judul / Tema *</label>
+                            <input id="ttsch-ev-title" type="text" value="${escapeHtml(vid.title||'')}" placeholder="Judul konten..."
+                                style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.82rem;color:#e2e8f0;background:#0a0a14;outline:none;">
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div>
+                                <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;"><i class="fas fa-clock mr-1"></i>Jam Upload</label>
+                                <input id="ttsch-ev-time" type="time" value="${vid.uploadTime||''}"
+                                    style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.82rem;color:#e2e8f0;background:#0a0a14;outline:none;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Catatan / Konsep</label>
+                            <textarea id="ttsch-ev-notes" rows="2" placeholder="Hashtag, audio, konsep..."
+                                style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.82rem;color:#e2e8f0;background:#0a0a14;resize:vertical;outline:none;font-family:inherit;">${vid.notes||''}</textarea>
+                        </div>
+                        <div style="display:flex;gap:16px;">
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.78rem;color:#94a3b8;">
+                                <input id="ttsch-ev-recorded" type="checkbox" ${vid.recorded?'checked':''} style="accent-color:#4ade80;width:14px;height:14px;"> <i class="fas fa-film" style="font-size:10px;"></i> Direkam
+                            </label>
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.78rem;color:#94a3b8;">
+                                <input id="ttsch-ev-uploaded" type="checkbox" ${vid.uploaded?'checked':''} style="accent-color:#818cf8;width:14px;height:14px;"> <i class="fas fa-upload" style="font-size:10px;"></i> Diupload
+                            </label>
+                        </div>
+                    </div>
+                    <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;justify-content:flex-end;gap:8px;background:${dark?'#12121f':'#f9fafb'};">
+                        <button id="ttsch-ev-cancel" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:#64748b;font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
+                        <button id="ttsch-ev-save" style="padding:7px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#4338ca,#6366f1);color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Simpan</button>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(overlay);
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('ttsch-ev-close').onclick = close;
+            document.getElementById('ttsch-ev-cancel').onclick = close;
+
+            document.getElementById('ttsch-ev-save').onclick = async () => {
+                const newTitle = document.getElementById('ttsch-ev-title').value.trim();
+                if (!newTitle) { showNotification('Judul wajib diisi!', true); return; }
+                const updatedVids = [...(entry.videos||[])];
+                updatedVids[vidIdx] = {
+                    ...updatedVids[vidIdx],
+                    title: newTitle,
+                    uploadTime: document.getElementById('ttsch-ev-time').value,
+                    notes: document.getElementById('ttsch-ev-notes').value.trim(),
+                    recorded: document.getElementById('ttsch-ev-recorded').checked,
+                    uploaded: document.getElementById('ttsch-ev-uploaded').checked,
+                };
+                if (updatedVids[vidIdx].uploaded) updatedVids[vidIdx].recorded = true;
+                try {
+                    await updateDoc(doc(db, 'hubs', 'tiktok', 'sch_entries', entryId), { videos: updatedVids, updatedAt: Date.now() });
+                    close();
+                    showNotification('Video diperbarui!');
+                } catch(err) { showNotification('Gagal update video.', true); }
+            };
+            setTimeout(() => document.getElementById('ttsch-ev-title')?.focus(), 60);
+        };
+
+        // ---- Add Account Modal ----
+        const ttschOpenAddAccountModal = () => {
+            document.getElementById('ttsch-acc-modal')?.remove();
+            const dark = isDark();
+            const usedColors = ttschAccounts.map(a => a.color);
+            const nextColor = TTSCH_COLORS.find(c => !usedColors.includes(c)) || TTSCH_COLORS[ttschAccounts.length % TTSCH_COLORS.length];
+
+            const overlay = document.createElement('div');
+            overlay.id = 'ttsch-acc-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+            overlay.innerHTML = `
+                <div style="background:${dark?'#1a1a2e':'white'};border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,0.5);width:100%;max-width:400px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);">
+                    <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;">
+                        <h3 style="font-size:0.95rem;font-weight:700;color:${dark?'#f1f5f9':'#1f2937'};flex:1;"><i class="fab fa-tiktok mr-2"></i>Tambah Akun TikTok</h3>
+                        <button id="ttsch-acc-close" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#64748b;">✕</button>
+                    </div>
+                    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Nama Akun *</label>
+                            <input id="ttsch-acc-name" type="text" placeholder="Misal: Toko Fashion Kita"
+                                style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:0.85rem;color:#e2e8f0;background:#0a0a14;outline:none;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Username TikTok *</label>
+                            <div style="position:relative;">
+                                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748b;font-size:0.85rem;">@</span>
+                                <input id="ttsch-acc-username" type="text" placeholder="username_tiktok"
+                                    style="width:100%;box-sizing:border-box;padding:9px 11px 9px 22px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:0.85rem;color:#e2e8f0;background:#0a0a14;outline:none;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:8px;">Warna Akun</label>
+                            <div id="ttsch-acc-colors" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+                        </div>
+                    </div>
+                    <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;justify-content:flex-end;gap:8px;background:${dark?'#12121f':'#f9fafb'};">
+                        <button id="ttsch-acc-cancel" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:#64748b;font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
+                        <button id="ttsch-acc-save" style="padding:7px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#1a1a1a,#333);color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Tambah Akun</button>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(overlay);
+
+            // Color swatches
+            let selectedColor = nextColor;
+            const colorContainer = document.getElementById('ttsch-acc-colors');
+            TTSCH_COLORS.forEach(c => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.style.cssText = `width:26px;height:26px;border-radius:50%;background:${c};border:3px solid ${c === selectedColor ? 'white' : 'transparent'};cursor:pointer;transition:all 0.15s;`;
+                btn.onclick = () => {
+                    selectedColor = c;
+                    colorContainer.querySelectorAll('button').forEach(b => b.style.borderColor = 'transparent');
+                    btn.style.borderColor = 'white';
+                };
+                colorContainer.appendChild(btn);
+            });
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('ttsch-acc-close').onclick = close;
+            document.getElementById('ttsch-acc-cancel').onclick = close;
+
+            document.getElementById('ttsch-acc-save').onclick = async () => {
+                const name = document.getElementById('ttsch-acc-name').value.trim();
+                const username = document.getElementById('ttsch-acc-username').value.trim().replace('@','');
+                if (!name || !username) { showNotification('Nama dan username wajib diisi!', true); return; }
+                try {
+                    const docRef = await addDoc(collection(db, 'hubs', 'tiktok', 'sch_accounts'), {
+                        name, username, color: selectedColor, createdAt: Date.now()
+                    });
+                    ttschActiveAccountId = docRef.id;
+                    close();
+                    showNotification(`Akun @${username} ditambahkan!`);
+                } catch(err) { showNotification('Gagal tambah akun.', true); }
+            };
+            setTimeout(() => document.getElementById('ttsch-acc-name')?.focus(), 60);
+        };
+
+        // ---- Edit Account Modal ----
+        window.ttschOpenEditAccountModal = (accId) => {
+            const acc = ttschAccounts.find(a => a.id === accId);
+            if (!acc) return;
+            document.getElementById('ttsch-editacc-modal')?.remove();
+            const dark = isDark();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'ttsch-editacc-modal';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+            overlay.innerHTML = `
+                <div style="background:${dark?'#1a1a2e':'white'};border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,0.5);width:100%;max-width:400px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);">
+                    <div style="padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;">
+                        <h3 style="font-size:0.95rem;font-weight:700;color:${dark?'#f1f5f9':'#1f2937'};flex:1;"><i class="fas fa-user-edit mr-2" style="color:#a5b4fc;"></i>Edit Akun TikTok</h3>
+                        <button id="ttsch-ea-close" style="background:none;border:none;cursor:pointer;font-size:1rem;color:#64748b;">✕</button>
+                    </div>
+                    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Nama Akun</label>
+                            <input id="ttsch-ea-name" type="text" value="${acc.name||''}"
+                                style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:0.85rem;color:#e2e8f0;background:#0a0a14;outline:none;">
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Username TikTok</label>
+                            <div style="position:relative;">
+                                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#64748b;">@</span>
+                                <input id="ttsch-ea-username" type="text" value="${acc.username||''}"
+                                    style="width:100%;box-sizing:border-box;padding:9px 11px 9px 22px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:0.85rem;color:#e2e8f0;background:#0a0a14;outline:none;">
+                            </div>
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem;font-weight:600;color:#64748b;display:block;margin-bottom:8px;">Warna Akun</label>
+                            <div id="ttsch-ea-colors" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+                        </div>
+                    </div>
+                    <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;background:${dark?'#12121f':'#f9fafb'};">
+                        <button id="ttsch-ea-delete" style="padding:7px 14px;border-radius:8px;border:1.5px solid #ef4444;background:none;color:#ef4444;font-size:0.8rem;font-weight:600;cursor:pointer;"><i class="fas fa-trash mr-1"></i>Hapus Akun</button>
+                        <div style="display:flex;gap:8px;">
+                            <button id="ttsch-ea-cancel" style="padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:#64748b;font-size:0.8rem;font-weight:600;cursor:pointer;">Batal</button>
+                            <button id="ttsch-ea-save" style="padding:7px 20px;border-radius:8px;border:none;background:linear-gradient(135deg,#4338ca,#6366f1);color:white;font-size:0.8rem;font-weight:700;cursor:pointer;">Simpan</button>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.body.appendChild(overlay);
+
+            let selectedColor = acc.color || TTSCH_COLORS[0];
+            const colorContainer = document.getElementById('ttsch-ea-colors');
+            TTSCH_COLORS.forEach(c => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.style.cssText = `width:26px;height:26px;border-radius:50%;background:${c};border:3px solid ${c === selectedColor ? 'white' : 'transparent'};cursor:pointer;transition:all 0.15s;`;
+                btn.onclick = () => { selectedColor = c; colorContainer.querySelectorAll('button').forEach(b => b.style.borderColor = 'transparent'); btn.style.borderColor = 'white'; };
+                colorContainer.appendChild(btn);
+            });
+
+            const close = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+            document.getElementById('ttsch-ea-close').onclick = close;
+            document.getElementById('ttsch-ea-cancel').onclick = close;
+
+            document.getElementById('ttsch-ea-delete').onclick = async () => {
+                const confirmed = await showConfirmModal(`Hapus akun @${acc.username}? Semua jadwal akun ini juga akan terhapus.`);
+                if (!confirmed) return;
+                try {
+                    // Delete all entries for this account
+                    const entries = ttschSchedules.filter(s => s.accountId === accId);
+                    for (const e of entries) await deleteDoc(doc(db, 'hubs', 'tiktok', 'sch_entries', e.id));
+                    await deleteDoc(doc(db, 'hubs', 'tiktok', 'sch_accounts', accId));
+                    if (ttschActiveAccountId === accId) ttschActiveAccountId = null;
+                    close();
+                    showNotification('Akun dihapus.');
+                } catch(err) { showNotification('Gagal hapus akun.', true); }
+            };
+
+            document.getElementById('ttsch-ea-save').onclick = async () => {
+                const name = document.getElementById('ttsch-ea-name').value.trim();
+                const username = document.getElementById('ttsch-ea-username').value.trim().replace('@','');
+                if (!name || !username) { showNotification('Nama dan username wajib diisi!', true); return; }
+                try {
+                    await updateDoc(doc(db, 'hubs', 'tiktok', 'sch_accounts', accId), { name, username, color: selectedColor, updatedAt: Date.now() });
+                    close(); showNotification('Akun diperbarui!');
+                } catch(err) { showNotification('Gagal update akun.', true); }
+            };
+        };
+
+        // ---- Initialize on nav to TikTok ----
+        // (already handled by initTtBoard call; wire separately)
+        (() => {
+            // Wire initTtSchedule into the existing tiktok navigation
+            const _origTiktokClick = document.getElementById('tiktok-btn')?.onclick;
+            const wireScheduleInit = () => setTimeout(() => { try { initTtSchedule(); } catch(e){} }, 150);
+            document.getElementById('tiktok-btn')?.addEventListener('click', wireScheduleInit, true);
+            document.getElementById('mobile-tiktok-btn')?.addEventListener('click', wireScheduleInit, true);
+            // Init on direct URL load (#/tiktok)
+            if (document.getElementById('tiktok-section') && !document.getElementById('tiktok-section').classList.contains('hidden')) {
+                setTimeout(() => { try { initTtSchedule(); } catch(e){} }, 300);
+            }
+        })();
+
+        // Also init when applyNavigationState shows tiktok section
+        const _origApplyNav = window.applyNavigationState;
+        // Hook into existing navigation — already handled above by addEventListener
 
         // ==========================================
         // ===== BANK IDE (IDEA HUB) MANAGEMENT =====
