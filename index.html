@@ -2395,12 +2395,19 @@
         .ttsch-summary-day-heading { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px; font-size:.7rem; color:#94a3b8; }
         .ttsch-summary-day-heading strong { padding:4px 9px; border-radius:999px; background:#25f4ee; color:#082f33; font-size:.65rem; }
         .ttsch-summary-day + .ttsch-summary-day strong { background:rgba(254,44,85,.15); color:#ff8ca4; border:1px solid #793047; }
-        .ttsch-summary-row { align-items:flex-start; flex-wrap:wrap; padding:8px 0; font-size:.75rem; }
-        .ttsch-summary-video { flex:1; min-width:0; overflow-wrap:anywhere; color:#f1f5f9; }
+        .ttsch-summary-account-group { margin-bottom:14px; }
+        .ttsch-summary-account-heading { margin:0 0 4px; padding-bottom:6px; border-bottom:1px solid #334155; font-size:.75rem; font-weight:700; color:#a5f9f5; overflow-wrap:anywhere; }
+        .ttsch-summary-account-videos { padding-left:10px; border-left:2px solid #315158; }
+        .ttsch-summary-row { align-items:flex-start; flex-wrap:wrap; gap:4px 10px; padding:6px 0; font-size:.75rem; }
+        .ttsch-summary-video { flex:1 1 120px; min-width:0; overflow-wrap:anywhere; color:#f1f5f9; }
+        .ttsch-summary-video-heading { display:flex; align-items:center; gap:5px; }
+        .ttsch-summary-video-heading b { min-width:0; }
+        .ttsch-summary-edit { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; width:28px; height:28px; padding:0; border:0; border-radius:6px; background:transparent; color:#94a3b8; cursor:pointer; font-size:.7rem; }
+        .ttsch-summary-edit:hover { color:#25f4ee; background:rgba(37,244,238,.1); }
+        .ttsch-summary-edit:focus-visible { outline:2px solid #25f4ee; outline-offset:2px; }
         .ttsch-summary-video small { display:block; color:#94a3b8; margin-top:3px; }
-        .ttsch-summary-actions { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
         .ttsch-summary-action.danger { color:#ff8ca4; border-color:#793047; background:rgba(254,44,85,.08); }
-        .ttsch-summary-checks { display:flex; gap:10px; flex-wrap:wrap; font-size:.65rem; color:#cbd5e1; }
+        .ttsch-summary-checks { display:flex; gap:10px; flex-wrap:wrap; padding-top:7px; font-size:.65rem; color:#cbd5e1; }
         .ttsch-summary-checks label { display:flex; align-items:center; gap:4px; cursor:pointer; }
         .ttsch-summary-checks input { accent-color:#25f4ee; width:14px; height:14px; }
         .ttsch-summary-empty, .ttsch-summary-footer { color:#94a3b8; font-size:.72rem; }
@@ -2434,7 +2441,6 @@
             .ttsch-summary-columns { grid-template-columns:minmax(0,1fr); }
             .ttsch-summary-day + .ttsch-summary-day { border-left:0; border-top:1px solid #374151; }
             .ttsch-summary-row { flex-wrap:wrap; }
-            .ttsch-summary-checks { width:100%; padding-left:0; }
             .ttsch-form-grid { grid-template-columns:minmax(0,1fr); }
             .ttsch-summary-title h3 { font-size:.85rem; }
         }
@@ -10658,12 +10664,15 @@
             const realToday = new Date(now);
             const today = new Date(now); today.setDate(now.getDate() + dayOffset);
             const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + dayOffset + 1);
+            const dayAfterTomorrow = new Date(now); dayAfterTomorrow.setDate(now.getDate() + dayOffset + 2);
             const todayStr = toDateStr(today);
             const tomorrowStr = toDateStr(tomorrow);
+            const dayAfterTomorrowStr = toDateStr(dayAfterTomorrow);
             const realTodayStr = toDateStr(realToday);
             const isViewingToday = (dayOffset === 0);
             const todayLabel = formatDateLabel(today);
             const tomorrowLabel = formatDateLabel(tomorrow);
+            const dayAfterTomorrowLabel = formatDateLabel(dayAfterTomorrow);
 
             // Stats pills (all channels)
             const totalChannels = channels.length;
@@ -10756,7 +10765,7 @@
                                             <i class="fas fa-times text-[8px]"></i> Batalkan
                                         </button>` : '';
                         items.push(`
-                            <div class="flex items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0${isUploaded ? ' opacity-60' : ''}" data-item-channel="${c.id}" data-item-date="${dateStr}">
+                            <div class="flex flex-wrap items-start gap-2.5 py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0${isUploaded ? ' opacity-60' : ''}" data-item-channel="${c.id}" data-item-date="${dateStr}">
                                 <span class="mt-0.5 text-base leading-none select-none flex-shrink-0">${statusIcon}</span>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center flex-wrap gap-1">
@@ -10780,6 +10789,7 @@
 
             const todayItems = buildDayList(todayStr);
             const tomorrowItems = buildDayList(tomorrowStr);
+            const dayAfterTomorrowItems = buildDayList(dayAfterTomorrowStr);
 
             // Header stats (combined channels only)
             const uploadedTodayCount = combinedChannels.filter(c => c.uploads && c.uploads[todayStr]).length;
@@ -10799,6 +10809,7 @@
             const hasTomorrowPending = tomorrowItems.length > 0;
             const todayEmptyHtml = `<p class="text-sm text-gray-400 dark:text-gray-500 italic py-1">${scheduledTodayCount > 0 ? '🎉 Semua jadwal hari ini sudah diupload!' : 'Tidak ada jadwal upload hari ini.'}</p>`;
             const tomorrowEmptyHtml = `<p class="text-sm text-gray-400 dark:text-gray-500 italic py-1">Tidak ada jadwal upload besok.</p>`;
+            const dayAfterTomorrowEmptyHtml = `<p class="text-sm text-gray-400 dark:text-gray-500 italic py-1">${isViewingToday ? 'Tidak ada jadwal upload lusa.' : 'Tidak ada jadwal upload pada tanggal ini.'}</p>`;
 
             summaryEl.innerHTML = `
                 <!-- Telegram-style Header — same logic as notify-youtube-upload.mjs -->
@@ -10859,12 +10870,12 @@
                     ${belumChannels.length > 0 ? `<span class="inline-flex items-center gap-1 text-xs font-semibold bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 px-2.5 py-1 rounded-full shadow-sm">⬜ ${belumChannels.length} Belum Dikerjakan</span>` : ''}
                 </div>
 
-                <!-- Two-column body: Today | Tomorrow -->
-                <div class="bg-white dark:bg-gray-800 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
+                <!-- Three-day preview: Today | Tomorrow | Day after tomorrow -->
+                <div class="yt-summary-columns bg-white dark:bg-gray-800 grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
 
                     <!-- HARI INI / TANGGAL DIPILIH -->
-                    <div class="p-4">
-                        <div class="flex items-center gap-2 mb-3">
+                    <div class="p-4 min-w-0" data-summary-date="${todayStr}">
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
                             <span class="inline-flex items-center gap-1.5 ${isViewingToday ? 'bg-red-600' : 'bg-purple-600'} text-white text-xs font-bold px-2.5 py-1 rounded-full">
                                 <i class="fas fa-calendar-day text-[10px]"></i> ${isViewingToday ? '📌 HARI INI' : '📅 DIPILIH'}
                             </span>
@@ -10877,8 +10888,8 @@
                     </div>
 
                     <!-- BESOK / HARI BERIKUTNYA -->
-                    <div class="p-4">
-                        <div class="flex items-center gap-2 mb-3">
+                    <div class="p-4 min-w-0" data-summary-date="${tomorrowStr}">
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
                             <span class="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
                                 <i class="fas fa-calendar-plus text-[10px]"></i> ${isViewingToday ? '⏰ BESOK' : '⏰ BERIKUTNYA'}
                             </span>
@@ -10887,6 +10898,19 @@
                         ${hasTomorrowPending
                     ? `<div>${tomorrowItems.join('')}</div>`
                     : tomorrowEmptyHtml
+                }
+                    </div>
+                    <!-- LUSA / DUA HARI BERIKUTNYA -->
+                    <div class="p-4 min-w-0" data-summary-date="${dayAfterTomorrowStr}">
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                            <span class="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                                <i class="fas fa-calendar-plus text-[10px]"></i> ${isViewingToday ? '📅 LUSA' : '📅 2 HARI BERIKUTNYA'}
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">${dayAfterTomorrowLabel}</span>
+                        </div>
+                        ${dayAfterTomorrowItems.length
+                    ? `<div>${dayAfterTomorrowItems.join('')}</div>`
+                    : dayAfterTomorrowEmptyHtml
                 }
                     </div>
                 </div>
@@ -16547,7 +16571,8 @@
                 collection(db, 'hubs', 'tiktok', 'sch_accounts'),
                 snap => {
                     ttschAccounts = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
-                    if (!ttschActiveAccountId && ttschAccounts.length > 0) ttschActiveAccountId = ttschAccounts[0].id;
+                    // Keep "Semua akun" as the default; preserve a manually selected account.
+                    if (ttschActiveAccountId && !ttschAccounts.some(a => a.id === ttschActiveAccountId)) ttschActiveAccountId = null;
                     ttschRenderAccountTabs();
                     ttschRenderAll();
                 }
@@ -16611,7 +16636,7 @@
             });
             const el = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
             el('ttsch-stat-total', `${total} video`);
-            el('ttsch-stat-recorded', `${recorded} direkam`);
+            el('ttsch-stat-recorded', `${recorded} dibuat`);
             el('ttsch-stat-uploaded', `${uploaded} diupload`);
         };
 
@@ -16701,21 +16726,29 @@
         const ttschRenderDayDetails = (date, heading) => {
             const rows = ttschGetForDate(date).flatMap(entry => (entry.videos || []).map(video => ({ entry, video })))
                 .sort((a, b) => (a.video.uploadTime || '99:99').localeCompare(b.video.uploadTime || '99:99'));
+            const accountGroups = new Map();
+            rows.forEach(row => {
+                const accountId = row.entry.accountId;
+                if (!accountGroups.has(accountId)) accountGroups.set(accountId, []);
+                accountGroups.get(accountId).push(row);
+            });
             return `<div class="ttsch-summary-day" data-date="${date}">
                 <div class="ttsch-summary-day-heading"><strong>${heading}</strong><span>${ttschDateLabel(date)}</span><span>${rows.length} video</span></div>
-                ${rows.length ? rows.map(({ entry, video }) => {
-                    const account = ttschAccounts.find(a => a.id === entry.accountId);
-                    return `<div class="ttsch-summary-row">
-                        <div class="ttsch-summary-video"><b>${escapeHtml(video.title || 'Video TikTok')}</b>
-                            <small>@${escapeHtml(account?.username || account?.name || 'Akun')} · ${escapeHtml(video.uploadTime || 'Jam belum diatur')} · ${video.uploaded ? 'Terupload' : video.recorded ? 'Siap Upload' : 'Belum Direkam'}</small>
+                ${rows.length ? [...accountGroups].map(([accountId, accountRows]) => {
+                    const account = ttschAccounts.find(a => a.id === accountId);
+                    return `<section class="ttsch-summary-account-group">
+                        <h4 class="ttsch-summary-account-heading">${escapeHtml(account?.name || (account?.username ? '@' + account.username : 'Akun tidak tersedia'))}</h4>
+                        <div class="ttsch-summary-account-videos">${accountRows.map(({ entry, video }) => `<div class="ttsch-summary-row">
+                        <div class="ttsch-summary-video">
+                            <div class="ttsch-summary-video-heading"><b>${escapeHtml(video.title || 'Video TikTok')}</b><button type="button" class="ttsch-summary-edit" data-edit-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}" title="Edit video" aria-label="Edit video: ${escapeHtml(video.title || 'Video TikTok')}"><i class="fas fa-pen" aria-hidden="true"></i></button></div>
+                            <small>${escapeHtml(video.uploadTime || 'Jam belum diatur')} · ${video.uploaded ? 'Terupload' : video.recorded ? 'Siap Upload' : 'Belum Dibuat'}</small>
                             ${video.notes ? `<small>${escapeHtml(video.notes)}</small>` : ''}
-                            <div class="ttsch-summary-actions"><button class="ttsch-summary-action" data-edit-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}">Edit video</button></div>
                         </div>
                         <div class="ttsch-summary-checks">
-                            <label><input type="checkbox" data-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}" data-field="recorded" ${video.recorded ? 'checked' : ''}>Direkam</label>
+                            <label><input type="checkbox" data-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}" data-field="recorded" ${video.recorded ? 'checked' : ''}>Dibuat</label>
                             <label><input type="checkbox" data-entry="${escapeHtml(entry.id)}" data-video="${escapeHtml(video.id)}" data-field="uploaded" ${video.uploaded ? 'checked' : ''}>Upload</label>
                         </div>
-                    </div>`;
+                    </div>`).join('')}</div></section>`;
                 }).join('') : '<p class="ttsch-summary-empty">Tidak ada jadwal upload.</p>'}
                 <button class="ttsch-summary-action" data-add-date="${date}"><i class="fas fa-plus"></i> Tambah jadwal</button>
             </div>`;
@@ -16823,7 +16856,7 @@
             const videos = dates.flatMap(date => ttschGetForDate(date).flatMap(entry => entry.videos || []));
             const account = ttschAccounts.find(a => a.id === ttschActiveAccountId);
             modal.querySelector('#ttsch-details-range').textContent = `${ttschDateLabel(dates[0])} — ${ttschDateLabel(dates.at(-1))} · ${account ? '@' + (account.username || account.name) : 'Semua akun'}`;
-            modal.querySelector('#ttsch-details-stats').textContent = `${videos.length} video · ${videos.filter(v => v.recorded).length} direkam · ${videos.filter(v => v.uploaded).length} diupload`;
+            modal.querySelector('#ttsch-details-stats').textContent = `${videos.length} video · ${videos.filter(v => v.recorded).length} dibuat · ${videos.filter(v => v.uploaded).length} diupload`;
             const body = modal.querySelector('.ttsch-details-body');
             const scrollTop = body.scrollTop;
             body.innerHTML = dates.map(date => ttschRenderDayDetails(date, date === ttschDateStr(new Date()) ? 'HARI INI' : 'JADWAL')).join('');
@@ -16867,7 +16900,7 @@
         const ttschVideoStatusLabel = (v) => {
             if (v.uploaded) return {label:'Terupload', cls:'background:rgba(37,244,238,0.15);color:#25f4ee;'};
             if (v.recorded) return {label:'Siap Upload', cls:'background:rgba(251,191,36,0.15);color:#fbbf24;'};
-            return {label:'Belum Direkam', cls:'background:rgba(100,116,139,0.15);color:#94a3b8;'};
+            return {label:'Belum Dibuat', cls:'background:rgba(100,116,139,0.15);color:#94a3b8;'};
         };
 
         // ---- Month View ----
@@ -17049,7 +17082,7 @@
                             <div class="ttsch-checklist-wrap">
                                 <label class="ttsch-check-item ${v.recorded ? 'done' : ''}" onclick="ttschToggleVideo('${v.entryId}','${v.id}','recorded')">
                                     <input type="checkbox" ${v.recorded ? 'checked' : ''} onclick="event.stopPropagation();ttschToggleVideo('${v.entryId}','${v.id}','recorded')">
-                                    <i class="fas fa-film" style="font-size:10px;"></i> Sudah Direkam
+                                    <i class="fas fa-film" style="font-size:10px;"></i> Sudah Dibuat
                                 </label>
                                 <label class="ttsch-check-item ${v.uploaded ? 'done' : ''}" onclick="ttschToggleVideo('${v.entryId}','${v.id}','uploaded')">
                                     <input type="checkbox" ${v.uploaded ? 'checked' : ''} onclick="event.stopPropagation();ttschToggleVideo('${v.entryId}','${v.id}','uploaded')">
@@ -17084,7 +17117,7 @@
             if (field === 'uploaded' && videos[idx].uploaded) videos[idx].recorded = true;
             try {
                 await updateDoc(doc(db, 'hubs', 'tiktok', 'sch_entries', entryId), { videos });
-                showNotification(videos[idx][field] ? `✓ ${field === 'recorded' ? 'Direkam' : 'Diupload'}!` : 'Diperbarui');
+                showNotification(videos[idx][field] ? `✓ ${field === 'recorded' ? 'Dibuat' : 'Diupload'}!` : 'Diperbarui');
             } catch(err) { showNotification('Gagal update.', true); }
         };
 
@@ -17155,7 +17188,7 @@
                             <option value="week">1 minggu ke depan</option>
                             <option value="today">Hari ini saja</option>
                         </select>
-                        <p class="ttsch-form-hint">Daftar video dan jam di bawah diulang setiap hari dalam rentang pilihan. Jadwal yang sudah ada tetap dipertahankan; video baru ditambahkan. Status awal: belum direkam dan belum upload.</p>
+                        <p class="ttsch-form-hint">Daftar video dan jam di bawah diulang setiap hari dalam rentang pilihan. Jadwal yang sudah ada tetap dipertahankan; video baru ditambahkan. Status awal: belum dibuat dan belum upload.</p>
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                             <label><i class="fas fa-video mr-1"></i>Video per hari</label>
                             <button type="button" id="ttsch-modal-add-vid" class="ttsch-summary-action">
@@ -17346,7 +17379,7 @@
                         </div>
                         <div style="display:flex;gap:16px;">
                             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.78rem;color:#94a3b8;">
-                                <input id="ttsch-ev-recorded" type="checkbox" ${vid.recorded?'checked':''} style="accent-color:#4ade80;width:14px;height:14px;"> <i class="fas fa-film" style="font-size:10px;"></i> Direkam
+                                <input id="ttsch-ev-recorded" type="checkbox" ${vid.recorded?'checked':''} style="accent-color:#4ade80;width:14px;height:14px;"> <i class="fas fa-film" style="font-size:10px;"></i> Dibuat
                             </label>
                             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:0.78rem;color:#94a3b8;">
                                 <input id="ttsch-ev-uploaded" type="checkbox" ${vid.uploaded?'checked':''} style="accent-color:#818cf8;width:14px;height:14px;"> <i class="fas fa-upload" style="font-size:10px;"></i> Diupload
@@ -18750,7 +18783,13 @@
                 const stored = localStorage.getItem(MENU_SETTINGS_KEY);
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    menuVisibility = { ...DEFAULT_MENU_VISIBILITY, ...parsed };
+                    // Ignore retired menu keys while preserving supported preferences.
+                    menuVisibility = { ...DEFAULT_MENU_VISIBILITY };
+                    Object.keys(DEFAULT_MENU_VISIBILITY).forEach(k => {
+                        if (typeof parsed?.[k] === 'boolean') {
+                            menuVisibility[k] = parsed[k];
+                        }
+                    });
                 } else {
                     const oldStored = localStorage.getItem('app_menu_visibility_config_v1');
                     if (oldStored) {

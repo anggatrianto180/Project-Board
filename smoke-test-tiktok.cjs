@@ -31,6 +31,12 @@ const escapeHtml = (s = '') => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 const db = {};
 let nextId = 0, commits = 0, failCommit = false;
 const collection = (...parts) => ({ parts });
+const snapshots = {};
+const onSnapshot = (ref, callback) => {
+    snapshots[ref.parts.at(-1)] = callback;
+    return () => {};
+};
+const emitSnapshot = (name, records) => snapshots[name]({ docs:records.map(({ id, ...data }) => ({ id, data:() => data })) });
 const doc = (...parts) => ({ id: typeof parts[parts.length - 1] === 'string' ? parts[parts.length - 1] : 'generated-' + (++nextId) });
 const writeBatch = () => {
     const writes = [];
@@ -68,6 +74,23 @@ const tests = `
         ttschOpenAddScheduleModal(null);
         assert(!el('ttsch-add-modal'), 'require account before adding');
         ttschAccounts = [{ id:'a1', username:'creator' }, { id:'a2', username:'second' }];
+        initTtSchedule();
+        emitSnapshot('sch_accounts', ttschAccounts);
+        assert(ttschActiveAccountId === null && el('ttsch-summary-account').value === '', 'initial account snapshot defaults to all accounts');
+        emitSnapshot('sch_entries', [
+            { id:'init1', accountId:'a1', date:ttschDateStr(new Date()), videos:[{ id:'iv1', title:'First account video' }] },
+            { id:'init2', accountId:'a2', date:ttschDateStr(new Date()), videos:[{ id:'iv2', title:'Second account video' }] }
+        ]);
+        assert(el('ttsch-summary').querySelectorAll('.ttsch-summary-account-group').length === 2, 'initial schedule shows videos from all accounts');
+        emitSnapshot('sch_accounts', ttschAccounts);
+        assert(ttschActiveAccountId === null, 'realtime account refresh keeps all accounts selected');
+        ttschActiveAccountId = 'a2';
+        emitSnapshot('sch_accounts', ttschAccounts);
+        assert(ttschActiveAccountId === 'a2', 'realtime refresh preserves manual filter');
+        ttschActiveAccountId = 'removed-account';
+        emitSnapshot('sch_accounts', ttschAccounts);
+        assert(ttschActiveAccountId === null, 'missing selected account falls back to all');
+        emitSnapshot('sch_entries', []);
         ttschActiveAccountId = 'a1';
         ttschOpenAddScheduleModal('2026-09-26');
         assert(el('ttsch-sel-range').value === 'month', 'month is default');
@@ -172,6 +195,41 @@ const tests = `
         el('ttsch-acc-close').click();
         ttschSummaryDate = new Date(2026, 11, 31); ttschRenderSummary();
         assert(el('ttsch-summary').querySelectorAll('[data-date]')[2].dataset.date === '2027-01-02', 'three day preview crosses year');
+        ttschAccounts = [{ id:'a1', name:'Akun 1 <aman>', username:'creator' }, { id:'a2', name:'Akun 3', username:'second' }];
+        ttschSchedules = [
+            { id:'group1', accountId:'a1', date:'2026-12-31', videos:[{ id:'g1', title:'Tanaman 2', uploadTime:'11:00', recorded:false, uploaded:false }] },
+            { id:'group2', accountId:'a2', date:'2026-12-31', videos:[{ id:'g2', title:'Tanaman 3', uploadTime:'08:00', recorded:true, uploaded:true }] },
+            { id:'group3', accountId:'a1', date:'2026-12-31', videos:[{ id:'g3', title:'Tanaman 1', uploadTime:'06:00', recorded:false, uploaded:false }] }
+        ];
+        ttschActiveAccountId = null; ttschRenderAll();
+        const firstDay = () => el('ttsch-summary').querySelector('.ttsch-summary-day');
+        const groups = firstDay().querySelectorAll('.ttsch-summary-account-group');
+        assert(groups.length === 2, 'one group per account even across separate entries');
+        assert(groups[0].querySelector('h4').textContent === 'Akun 1 <aman>' && !groups[0].querySelector('aman'), 'account label is escaped');
+        assert([...groups[0].querySelectorAll('b')].map(b => b.textContent).join(',') === 'Tanaman 1,Tanaman 2', 'account titles grouped and sorted by upload time');
+        assert(groups[1].querySelectorAll('.ttsch-summary-row').length === 1 && groups[1].textContent.includes('Akun 3'), 'second account has its own titles');
+        assert(!groups[0].querySelector('.ttsch-summary-video').textContent.includes('@creator'), 'account not repeated on each video');
+        const editIcon = groups[0].querySelector('[data-edit-entry]');
+        assert(editIcon.parentElement.classList.contains('ttsch-summary-video-heading') && editIcon.previousElementSibling.tagName === 'B', 'edit beside title');
+        assert(!editIcon.textContent.trim() && editIcon.querySelector('.fa-pen') && editIcon.getAttribute('aria-label').includes('Tanaman 1'), 'icon-only edit has accessible label');
+        editIcon.querySelector('i').click();
+        assert(el('ttsch-ev-title').value === 'Tanaman 1', 'clicking edit icon opens correct video');
+        assert(el('ttsch-ev-recorded').parentElement.textContent.includes('Dibuat'), 'editor uses Dibuat label');
+        el('ttsch-ev-close').click();
+        const madeCheck = firstDay().querySelector('input[data-field=recorded][data-video=g3]');
+        assert(madeCheck.parentElement.textContent === 'Dibuat' && firstDay().textContent.includes('Belum Dibuat'), 'list uses Dibuat labels');
+        await madeCheck.onchange();
+        assert(ttschSchedules[2].videos[0].recorded && firstDay().querySelector('[data-video=g3][data-field=recorded]').checked, 'Dibuat persists using existing recorded field');
+        assert(firstDay().querySelector('[data-video=g3][data-field=recorded]').closest('.ttsch-summary-row').textContent.includes('Siap Upload'), 'made video becomes ready to upload');
+        assert(notifications.at(-1)[0].includes('Dibuat'), 'notification uses Dibuat');
+        assert(firstDay().querySelector('[data-video=g2][data-field=uploaded]').checked, 'other account upload status preserved');
+        const accountFilter = el('ttsch-summary-account');
+        accountFilter.value = 'a2'; accountFilter.onchange({ target:accountFilter });
+        assert(firstDay().querySelectorAll('.ttsch-summary-account-group').length === 1 && !firstDay().textContent.includes('Akun 1'), 'grouped list honors selected account');
+        ttschActiveAccountId = null; ttschRenderAll();
+        for (const row of firstDay().querySelectorAll('.ttsch-summary-row')) {
+            assert(row.scrollWidth <= row.clientWidth, 'grouped row fits viewport');
+        }
         ttschOpenAddScheduleModal(null);
         if (innerWidth <= 640) {
             assert(getComputedStyle(document.querySelector('.ttsch-summary-columns')).gridTemplateColumns.split(' ').length === 1, 'mobile summary stacks');
