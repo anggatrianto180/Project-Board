@@ -2363,6 +2363,13 @@
             border-color: rgba(255,255,255,0.35);
         }
 
+        /* Task keeps both boards and both schedules stacked on every screen size. */
+        #task-section, .task-panel-stack > section { min-width: 0; }
+        .task-panel-stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+        .task-panel-stack > section > div { margin-bottom: 0; }
+        .task-schedule-empty { display: none; }
+        #task-youtube-schedule:has(> #yt-upload-summary.hidden) > .task-schedule-empty { display: block; }
+
         /* TikTok schedule summary and recurring schedule form */
         .ttsch-summary-header { padding:16px 18px; background:linear-gradient(110deg,#07565b 0%,#101820 48%,#751c39 100%); color:#fff; border-top:3px solid #25f4ee; }
         .ttsch-summary-top, .ttsch-summary-nav, .ttsch-summary-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
@@ -3004,6 +3011,11 @@
                     aria-pressed="false" aria-label="Open Skill Tracking">
                     <i class="fas fa-brain"></i>
                 </button>
+                <button id="task-btn" data-nav-menu="task" title="Task"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Buka Task">
+                    <i class="fas fa-tasks" aria-hidden="true"></i>
+                </button>
                 <button id="youtube-btn" data-nav-menu="youtube" title="YouTube Inventory"
                     class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open YouTube Inventory">
@@ -3050,6 +3062,7 @@
             <a href="#" id="mobile-ide-btn" data-nav-menu="ide" class="block py-2 px-4 text-sm font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 flex items-center gap-2"><i class="fas fa-lightbulb text-amber-500"></i> Bank Ide</a>
             <a href="#" id="mobile-trade-btn" data-nav-menu="trade" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-chart-line text-indigo-500"></i> Trade Journal & Spot DCA</a>
             <a href="#" id="mobile-skills-btn" data-nav-menu="skills" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-brain text-purple-500"></i> Skill Tracking</a>
+            <a href="#/task" id="mobile-task-btn" data-nav-menu="task" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-tasks" aria-hidden="true"></i> Task</a>
             <a href="#" id="mobile-youtube-btn" data-nav-menu="youtube" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-youtube text-red-500"></i> YouTube Inventory</a>
             <a href="#" id="mobile-tiktok-btn" data-nav-menu="tiktok" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-tiktok"></i> TikTok Affiliate</a>
             <a href="#" id="mobile-settings-btn" class="block py-2 px-4 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 flex items-center gap-2 border-t dark:border-gray-700"><i class="fas fa-cog"></i> Pengaturan Menu</a>
@@ -3058,6 +3071,26 @@
     </header>
 
     <main class="container mx-auto p-4 md:px-8 flex flex-col gap-8 md:gap-12 mt-2">
+        <!-- Task reuses the live platform panels; no duplicated IDs or records. -->
+        <div id="task-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-8 hidden">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2"><i class="fas fa-tasks mr-2" aria-hidden="true"></i>Task</h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">Project Board dan jadwal upload YouTube & TikTok dalam satu halaman. Perubahan tersinkron dengan menu asal.</p>
+            <div class="task-panel-stack">
+                <section id="task-youtube-board" aria-labelledby="task-youtube-title">
+                    <h3 id="task-youtube-title" class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3"><i class="fab fa-youtube text-red-500 mr-2" aria-hidden="true"></i>Project Board YouTube</h3>
+                </section>
+                <section id="task-tiktok-board" aria-labelledby="task-tiktok-title">
+                    <h3 id="task-tiktok-title" class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3"><i class="fab fa-tiktok mr-2" aria-hidden="true"></i>Project Board TikTok</h3>
+                </section>
+                <section id="task-youtube-schedule" aria-labelledby="task-youtube-schedule-title">
+                    <h3 id="task-youtube-schedule-title" class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">Jadwal Upload YouTube</h3>
+                    <p class="task-schedule-empty text-sm text-gray-500 dark:text-gray-400">Belum ada channel untuk ditampilkan. Jadwal mengikuti data dan filter pada menu YouTube.</p>
+                </section>
+                <section id="task-tiktok-schedule" aria-labelledby="task-tiktok-schedule-title">
+                    <h3 id="task-tiktok-schedule-title" class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">Jadwal Upload TikTok</h3>
+                </section>
+            </div>
+        </div>
         <!-- Project Board Section -->
         <div id="project-board-section" class="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center">Project Board</h2>
@@ -5866,6 +5899,22 @@
                         </label>
                     </div>
 
+                    <!-- Task overview -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center"><i class="fas fa-tasks" aria-hidden="true"></i></div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white">Task</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Project Board & jadwal upload YouTube dan TikTok</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="task" aria-label="Tampilkan menu Task" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('task', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
                     <!-- 7. TikTok Affiliate -->
                     <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all">
                         <div class="flex items-center gap-3">
@@ -8085,11 +8134,43 @@
             skills: 'skills-section',
             youtube: 'youtube-section',
             tiktok: 'tiktok-section',
+            task: 'task-section',
             ide: 'ide-section'
         };
 
+        // Move the original nodes, keeping listeners, input state and realtime updates intact.
+        // Comment anchors restore each panel to its exact position in the source menu.
+        const taskPanelHomes = new Map();
+        const placeTaskPanels = (inTask) => {
+            const panels = {
+                'yt-project-board-panel': 'task-youtube-board',
+                'tt-project-board-panel': 'task-tiktok-board',
+                'yt-upload-summary': 'task-youtube-schedule',
+                'ttsch-panel': 'task-tiktok-schedule'
+            };
+            Object.entries(panels).forEach(([id, slotId]) => {
+                const panel = document.getElementById(id);
+                const slot = document.getElementById(slotId);
+                if (!panel || !slot) return;
+                if (inTask) {
+                    if (!taskPanelHomes.has(id)) {
+                        const anchor = document.createComment(`task-home:${id}`);
+                        panel.before(anchor);
+                        taskPanelHomes.set(id, anchor);
+                    }
+                    if (panel.parentElement !== slot) slot.appendChild(panel);
+                } else {
+                    const anchor = taskPanelHomes.get(id);
+                    if (anchor) { anchor.replaceWith(panel); taskPanelHomes.delete(id); }
+                }
+            });
+        };
+
         const applyNavigationState = (target) => {
-            // target: one of 'board'|'daily'|'notes'|'trade'|'skills'|'youtube'|'tiktok'|'ide' or section id
+            // target: a navigation key or section id
+            const inTask = target === 'task' || target === sections.task;
+            placeTaskPanels(inTask);
+            if (target !== 'trade' && target !== sections.trade) document.body.classList.remove('trade-full');
             // hide all primary sections first
             Object.values(sections).forEach(id => { const el = document.getElementById(id); if (el) { el.classList.add('hidden'); el.classList.remove('flex'); } });
 
@@ -8099,6 +8180,7 @@
             document.getElementById('youtube-btn')?.classList.remove('active');
             document.getElementById('tiktok-btn')?.classList.remove('active');
             document.getElementById('ide-btn')?.classList.remove('active');
+            document.getElementById('task-btn')?.classList.remove('active');
             document.getElementById('personal-mode-btn')?.classList.remove('active');
             document.getElementById('working-mode-btn')?.classList.remove('active');
             // reset aria
@@ -8107,6 +8189,7 @@
             document.getElementById('youtube-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('ide-btn')?.setAttribute('aria-pressed', 'false');
+            document.getElementById('task-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed', 'false');
 
@@ -8151,6 +8234,20 @@
                 }
                 document.getElementById('skills-btn')?.classList.add('active');
                 document.getElementById('skills-btn')?.setAttribute('aria-pressed', 'true');
+            } else if (inTask) {
+                document.getElementById(sections.task)?.classList.remove('hidden');
+                document.getElementById('task-btn')?.classList.add('active');
+                document.getElementById('task-btn')?.setAttribute('aria-pressed', 'true');
+                // Deferred for direct #/task loads: platform declarations occur later in this script.
+                setTimeout(() => {
+                    if (document.getElementById(sections.task)?.classList.contains('hidden')) return;
+                    [initYtBoard, initYtBoardSettings, initTtBoard, initTtBoardSettings, initTtSchedule].forEach(init => {
+                        try { init(); } catch (error) {
+                            console.error('Task panel initialization failed:', error);
+                            showNotification('Gagal memuat panel Task. Silakan buka ulang menu Task.', true);
+                        }
+                    });
+                }, 120);
             } else if (target === 'youtube' || target === sections.youtube) {
                 // Show youtube section
                 const el = document.getElementById(sections.youtube);
@@ -8166,7 +8263,7 @@
                 document.getElementById('tiktok-btn')?.classList.add('active');
                 document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'true');
                 // Ensure TikTok board is initialized whenever the section becomes visible
-                setTimeout(() => { try { initTtBoard(); initTtBoardSettings(); } catch (e) { } }, 120);
+                setTimeout(() => { try { initTtBoard(); initTtBoardSettings(); initTtSchedule(); } catch (e) { } }, 120);
             } else if (target === 'ide' || target === sections.ide) {
                 // Show Bank Ide section
                 const el = document.getElementById(sections.ide);
@@ -8293,6 +8390,14 @@
         document.querySelectorAll('a[href="#daily-routine-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('daily'); }); });
         document.querySelectorAll('a[href="#important-notes-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('notes'); }); });
         document.querySelectorAll('a[href="#ide-section"]').forEach(a => { a.addEventListener('click', (e) => { e.preventDefault(); navigateTo('ide'); }); });
+
+        // --- Task Navigation JS (native button supports Enter/Space) ---
+        document.getElementById('task-btn')?.addEventListener('click', () => navigateTo('task'));
+        document.getElementById('mobile-task-btn')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            navigateTo('task');
+            document.getElementById('mobile-menu')?.classList.add('hidden');
+        });
 
         // --- Bank Ide Navigation JS ---
         const ideBtn = document.getElementById('ide-btn');
@@ -15539,6 +15644,8 @@
             const widthVal = document.getElementById('yt-col-width-val');
             const heightVal = document.getElementById('yt-col-height-val');
             if (!btn || !popover || !widthSlider || !heightSlider) return;
+            if (btn.dataset.settingsBound) return;
+            btn.dataset.settingsBound = 'true';
 
             // Restore saved values (defaults match new wider defaults)
             const savedW = localStorage.getItem('ytBoardColWidth') || '248';
@@ -16434,6 +16541,8 @@
             const widthVal = document.getElementById('tt-col-width-val');
             const heightVal = document.getElementById('tt-col-height-val');
             if (!btn || !popover || !widthSlider || !heightSlider) return;
+            if (btn.dataset.settingsBound) return;
+            btn.dataset.settingsBound = 'true';
 
             const savedW = localStorage.getItem('ttBoardColWidth') || '248';
             const savedH = localStorage.getItem('ttBoardColHeight') || '280';
@@ -18762,7 +18871,8 @@
             trade: true,
             skills: true,
             youtube: true,
-            tiktok: true
+            tiktok: true,
+            task: true
         };
 
         const MENU_DISPLAY_NAMES = {
@@ -18772,7 +18882,8 @@
             trade: 'Trade Journal & Spot DCA',
             skills: 'Skill Tracking',
             youtube: 'YouTube Inventory',
-            tiktok: 'TikTok Affiliate'
+            tiktok: 'TikTok Affiliate',
+            task: 'Task'
         };
 
         let menuVisibility = { ...DEFAULT_MENU_VISIBILITY };
@@ -18960,7 +19071,8 @@
                 trade: false,
                 skills: false,
                 youtube: false,
-                tiktok: false
+                tiktok: false,
+                task: false
             };
             saveMenuVisibility(newConfig);
             if (typeof showNotification === 'function') {
