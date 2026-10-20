@@ -1815,6 +1815,22 @@
             color: #f1f5f9;
         }
 
+        .yt-live-edit-dialog {
+            padding: 0;
+            border: 1px solid #475569;
+            border-radius: 14px;
+            margin: auto;
+            width: min(464px, calc(100vw - 32px));
+            max-height: calc(100dvh - 32px);
+            overflow: auto;
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+
+        .yt-live-edit-dialog::backdrop {
+            background: rgba(2, 6, 23, 0.7);
+        }
+
         /* Schedule display */
         .yt-live-schedule-empty {
             text-align: center;
@@ -3026,6 +3042,11 @@
                     aria-pressed="false" aria-label="Open TikTok Affiliate">
                     <i class="fab fa-tiktok"></i>
                 </button>
+                <button id="bili2-btn" data-nav-menu="bili2" title="Bili2"
+                    class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 hidden md:inline-flex"
+                    aria-pressed="false" aria-label="Open Bili2">
+                    <i class="fas fa-tv text-cyan-500"></i>
+                </button>
                 <button id="settings-btn" title="Pengaturan Tampilan Menu"
                     class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 dark:text-gray-300 hidden md:inline-flex"
                     aria-pressed="false" aria-label="Open Settings">
@@ -3065,6 +3086,7 @@
             <a href="#/task" id="mobile-task-btn" data-nav-menu="task" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-tasks" aria-hidden="true"></i> Task</a>
             <a href="#" id="mobile-youtube-btn" data-nav-menu="youtube" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-youtube text-red-500"></i> YouTube Inventory</a>
             <a href="#" id="mobile-tiktok-btn" data-nav-menu="tiktok" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fab fa-tiktok"></i> TikTok Affiliate</a>
+            <a href="#" id="mobile-bili2-btn" data-nav-menu="bili2" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"><i class="fas fa-tv text-cyan-500"></i> Bili2</a>
             <a href="#" id="mobile-settings-btn" class="block py-2 px-4 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 flex items-center gap-2 border-t dark:border-gray-700"><i class="fas fa-cog"></i> Pengaturan Menu</a>
             <a href="#" id="mobile-logout-btn" class="block py-2 px-4 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 border-t dark:border-gray-700"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
@@ -3922,9 +3944,9 @@
                         </div>
                         <!-- Table header for master video rows -->
                         <div id="ytlive-video-list-wrap"
-                            style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;background:rgba(15,23,42,0.4);">
+                            style="border:1px solid rgba(255,255,255,0.08);border-radius:10px;overflow-x:auto;background:rgba(15,23,42,0.4);">
                             <div
-                                style="display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:0;background:rgba(30,41,59,0.8);border-bottom:1px solid rgba(255,255,255,0.08);padding:7px 12px;">
+                                style="display:grid;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr) minmax(150px,1fr) 76px 36px;gap:0;background:rgba(30,41,59,0.8);border-bottom:1px solid rgba(255,255,255,0.08);padding:7px 12px;">
                                 <span
                                     style="font-size:0.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;">Nama
                                     Video</span>
@@ -3935,16 +3957,17 @@
                                     style="font-size:0.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.06em;padding-left:8px;"><i
                                         class="fas fa-eye-slash" style="margin-right:4px;"></i>Stream Key
                                     Unlisted</span>
+                                <span style="font-size:0.7rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.06em;text-align:center;">Lock</span>
                                 <span></span>
                             </div>
-                            <div id="ytlive-video-rows" style="max-height:320px;overflow-y:auto;"></div>
+                            <div id="ytlive-video-rows" style="min-width:562px;max-height:320px;overflow-y:auto;"></div>
                         </div>
                         <!-- Footer: info + save button -->
                         <div
                             style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:10px;flex-wrap:wrap;">
                             <p style="font-size:0.68rem;color:#64748b;margin:0;"><i class="fas fa-info-circle"
                                     style="margin-right:4px;"></i>Stream key akan otomatis muncul di kolom jadwal sesuai
-                                tipe slot (Public/Unlisted).</p>
+                                tipe slot (Public/Unlisted). Centang Lock untuk mempertahankan semua jadwal video tersebut saat generate ulang. Simpan dengan tombol Simpan Stream Keys atau Generate Schedule.</p>
                             <button type="button" id="ytlive-save-streamkeys-btn"
                                 style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:linear-gradient(135deg,#16a34a,#15803d);border:1px solid rgba(34,197,94,0.4);color:#fff;border-radius:8px;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;"
                                 onmouseover="this.style.filter='brightness(1.15)'"
@@ -4239,6 +4262,25 @@
                         <!-- Notes rendered here -->
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Bili2 Section -->
+        <div id="bili2-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 md:p-8 hidden">
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-gray-100 dark:border-gray-700">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-tv text-2xl text-cyan-500"></i>
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Bili2</h2>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Halaman Bili2 — segera hadir.</p>
+                </div>
+            </div>
+            <!-- Empty content placeholder -->
+            <div class="flex flex-col items-center justify-center py-20 text-gray-400 dark:text-gray-500">
+                <i class="fas fa-tv text-5xl mb-4 opacity-30"></i>
+                <p class="text-lg font-semibold">Belum ada konten</p>
+                <p class="text-sm mt-1">Halaman ini masih kosong.</p>
             </div>
         </div>
 
@@ -5928,6 +5970,24 @@
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" data-setting-menu="tiktok" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('tiktok', this.checked)">
+                            <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
+                            <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
+                        </label>
+                    </div>
+
+                    <!-- 8. Bili2 -->
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200/70 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-cyan-100 dark:bg-cyan-900/40 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-sm font-bold">
+                                <i class="fas fa-tv"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900 dark:text-white">Bili2</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400">Halaman Bili2</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" data-setting-menu="bili2" class="sr-only settings-toggle-input" checked onchange="window.handleMenuToggleChange('bili2', this.checked)">
                             <div class="settings-toggle-track w-11 h-6 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors"></div>
                             <div class="settings-toggle-dot absolute left-0.5 top-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md"></div>
                         </label>
@@ -8135,7 +8195,8 @@
             youtube: 'youtube-section',
             tiktok: 'tiktok-section',
             task: 'task-section',
-            ide: 'ide-section'
+            ide: 'ide-section',
+            bili2: 'bili2-section'
         };
 
         // Move the original nodes, keeping listeners, input state and realtime updates intact.
@@ -8181,6 +8242,7 @@
             document.getElementById('tiktok-btn')?.classList.remove('active');
             document.getElementById('ide-btn')?.classList.remove('active');
             document.getElementById('task-btn')?.classList.remove('active');
+            document.getElementById('bili2-btn')?.classList.remove('active');
             document.getElementById('personal-mode-btn')?.classList.remove('active');
             document.getElementById('working-mode-btn')?.classList.remove('active');
             // reset aria
@@ -8190,6 +8252,7 @@
             document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('ide-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('task-btn')?.setAttribute('aria-pressed', 'false');
+            document.getElementById('bili2-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('personal-mode-btn')?.setAttribute('aria-pressed', 'false');
             document.getElementById('working-mode-btn')?.setAttribute('aria-pressed', 'false');
 
@@ -8264,6 +8327,12 @@
                 document.getElementById('tiktok-btn')?.setAttribute('aria-pressed', 'true');
                 // Ensure TikTok board is initialized whenever the section becomes visible
                 setTimeout(() => { try { initTtBoard(); initTtBoardSettings(); initTtSchedule(); } catch (e) { } }, 120);
+            } else if (target === 'bili2' || target === sections.bili2) {
+                // Show Bili2 section
+                const el = document.getElementById(sections.bili2);
+                if (el) { el.classList.remove('hidden'); }
+                document.getElementById('bili2-btn')?.classList.add('active');
+                document.getElementById('bili2-btn')?.setAttribute('aria-pressed', 'true');
             } else if (target === 'ide' || target === sections.ide) {
                 // Show Bank Ide section
                 const el = document.getElementById(sections.ide);
@@ -12494,16 +12563,19 @@
         };
 
         // --- Master Video Row Builder ---
-        const ytliveMakeVideoRow = (name = '', pubKey = '', unlKey = '', idx) => {
+        const ytliveMakeVideoRow = (name = '', pubKey = '', unlKey = '', idx, locked = false) => {
             const row = document.createElement('div');
             row.className = 'ytlive-video-row';
             row.dataset.idx = idx;
-            row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 36px;gap:0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:center;';
+            row.style.cssText = 'display:grid;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr) minmax(150px,1fr) 76px 36px;gap:0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:center;';
             const inputStyle = 'width:100%;background:transparent;border:none;border-right:1px solid rgba(255,255,255,0.05);outline:none;color:#e2e8f0;font-size:0.78rem;padding:8px 10px;font-family:inherit;';
             row.innerHTML = `
                 <input type="text" class="ytlive-vid-name" placeholder="Nama Video" value="${escHtml(name)}" style="${inputStyle}">
                 <input type="text" class="ytlive-vid-pubkey" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" value="${escHtml(pubKey)}" style="${inputStyle}font-family:monospace;color:#93c5fd;" title="Stream Key untuk slot Public">
                 <input type="text" class="ytlive-vid-unlkey" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx" value="${escHtml(unlKey)}" style="${inputStyle}font-family:monospace;color:#c4b5fd;border-right:none;" title="Stream Key untuk slot Unlisted">
+                <label style="display:flex;align-items:center;justify-content:center;height:100%;cursor:pointer;" title="Kunci video ini pada slot jadwal saat generate ulang">
+                    <input type="checkbox" class="ytlive-vid-lock" aria-label="Lock schedule ${escHtml(name)}" ${locked ? 'checked' : ''} style="width:15px;height:15px;accent-color:#f59e0b;cursor:pointer;">
+                </label>
                 <button type="button" onclick="ytliveRemoveVideoRow(this)" style="display:flex;align-items:center;justify-content:center;width:36px;height:100%;background:transparent;border:none;color:#475569;cursor:pointer;font-size:0.85rem;transition:color 0.15s;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#475569'" title="Hapus">
                     <i class="fas fa-times"></i>
                 </button>
@@ -12524,7 +12596,8 @@
                 const name = row.querySelector('.ytlive-vid-name')?.value.trim() || '';
                 const pubKey = row.querySelector('.ytlive-vid-pubkey')?.value.trim() || '';
                 const unlKey = row.querySelector('.ytlive-vid-unlkey')?.value.trim() || '';
-                if (name) result.push({ name, pubKey, unlKey });
+                const locked = !!row.querySelector('.ytlive-vid-lock')?.checked;
+                if (name) result.push({ name, pubKey, unlKey, locked });
             });
             return result;
         };
@@ -12539,9 +12612,9 @@
             }
             masterVideos.forEach((v, i) => {
                 if (typeof v === 'string') {
-                    container.appendChild(ytliveMakeVideoRow(v, '', '', i));
+                    container.appendChild(ytliveMakeVideoRow(v, '', '', i, false));
                 } else {
-                    container.appendChild(ytliveMakeVideoRow(v.name || '', v.pubKey || '', v.unlKey || '', i));
+                    container.appendChild(ytliveMakeVideoRow(v.name || '', v.pubKey || '', v.unlKey || '', i, !!v.locked));
                 }
             });
         };
@@ -13173,7 +13246,7 @@
                     const dur = randomDuration15(pubMinHours, pubMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
-                    slots.push({ slotNumber: p + 1, videoName: getVideoName(vid), streamKey: getVideoPubKey(vid), isPublic: true, startTimeWIB: anchor + ' WIB', endTimeWIB: endWib + ' WIB', startTimeEST: wibToEst(anchor), endTimeEST: wibToEst(endWib), durationText: fmtHours(dur), durationDecimal: dur });
+                    slots.push({ slotNumber: p + 1, videoName: getVideoName(vid), streamKey: getVideoPubKey(vid), locked: !!vid.locked, isPublic: true, startTimeWIB: anchor + ' WIB', endTimeWIB: endWib + ' WIB', startTimeEST: wibToEst(anchor), endTimeEST: wibToEst(endWib), durationText: fmtHours(dur), durationDecimal: dur });
                 }
                 for (let u = 0; u < unlistedSlotsCount; u++) {
                     const vid = masterVideos[unlistedIndices[u]];
@@ -13181,7 +13254,7 @@
                     const dur = randomDuration15(unlistedMinHours, unlistedMaxHours);
                     const endWib = addHoursToTime(anchor, dur);
                     totalHours += dur;
-                    slots.push({ slotNumber: publicSlotsCount + u + 1, videoName: getVideoName(vid), streamKey: getVideoUnlKey(vid), isPublic: false, startTimeWIB: anchor + ' WIB', endTimeWIB: endWib + ' WIB', startTimeEST: wibToEst(anchor), endTimeEST: wibToEst(endWib), durationText: fmtHours(dur), durationDecimal: dur });
+                    slots.push({ slotNumber: publicSlotsCount + u + 1, videoName: getVideoName(vid), streamKey: getVideoUnlKey(vid), locked: !!vid.locked, isPublic: false, startTimeWIB: anchor + ' WIB', endTimeWIB: endWib + ' WIB', startTimeEST: wibToEst(anchor), endTimeEST: wibToEst(endWib), durationText: fmtHours(dur), durationDecimal: dur });
                 }
 
                 slots.sort((a, b) => {
@@ -13194,13 +13267,146 @@
             return schedule;
         };
 
+        // Keep locked videos in their existing date/slot when generating again.
+        // New videos and all unlocked slots are still generated by the normal rotator.
+        const preserveYtLiveLockedSlots = (newSchedule, oldSchedule, cfg) => {
+            if (!Array.isArray(newSchedule)) return newSchedule;
+            // A first generation has no old schedule, but it must still include
+            // master videos that the fixed-size rotator did not select.
+            oldSchedule = Array.isArray(oldSchedule) ? oldSchedule : [];
+            const lockedNames = new Set((cfg.masterVideos || [])
+                .filter(v => typeof v !== 'string' && v.locked)
+                .map(v => v.name));
+
+            const oldDays = new Map(oldSchedule.map(day => [day.isoDate, day]));
+            const videoByName = new Map((cfg.masterVideos || []).map(v => [typeof v === 'string' ? v : v.name, v]));
+            const lastScheduledDay = new Map();
+            const preservedSchedule = newSchedule.map((day, dayIndex) => {
+                const oldDay = oldDays.get(day.isoDate);
+                if (!oldDay) return day;
+                const oldSlots = new Map((oldDay.slots || []).map(slot => [slot.slotNumber, slot]));
+                const lockedPositions = new Set();
+                const slots = day.slots.map(slot => {
+                    const oldSlot = oldSlots.get(slot.slotNumber);
+                    if (!oldSlot || !lockedNames.has(oldSlot.videoName)) return slot;
+                    lockedPositions.add(slot.slotNumber);
+                    return { ...oldSlot, locked: true };
+                });
+                // Do not let a locked video also appear in a newly generated slot.
+                const used = new Set(slots.filter(slot => lockedPositions.has(slot.slotNumber)).map(slot => slot.videoName));
+            const finalSlots = slots.map(slot => {
+                    if (lockedPositions.has(slot.slotNumber)) return slot;
+                    // Keep the normal rotator result whenever it is usable.
+                    // Previously the fallback below selected the only new video
+                    // repeatedly, filling every unlocked slot with the same name.
+                    const lastSlotDay = lastScheduledDay.get(slot.videoName);
+                    if (!lockedNames.has(slot.videoName) && !used.has(slot.videoName)
+                        && (lastSlotDay == null || dayIndex - lastSlotDay >= 2)) {
+                        used.add(slot.videoName);
+                        lastScheduledDay.set(slot.videoName, dayIndex);
+                        return slot;
+                    }
+                const slotNeedsPublic = slot.isPublic === true;
+                const canUseForSlot = (candidate, allowUsed = false, relaxSpacing = false) => {
+                    const video = videoByName.get(candidate);
+                    if (lockedNames.has(candidate) || (!allowUsed && used.has(candidate))) return false;
+                    // Prefer a video that has the key required by this slot.
+                    // Videos with both keys remain valid for either slot type.
+                    if (video && typeof video !== 'string') {
+                        const hasPub = !!video.pubKey;
+                        const hasUnlisted = !!video.unlKey;
+                        if (slotNeedsPublic && !hasPub && hasUnlisted) return false;
+                        if (!slotNeedsPublic && !hasUnlisted && hasPub) return false;
+                    }
+                    const lastDay = lastScheduledDay.get(candidate);
+                    return relaxSpacing || lastDay == null || dayIndex - lastDay >= 2;
+                };
+                let name = [...videoByName.keys()].find(candidate => canUseForSlot(candidate));
+                // A locked slot may consume the only unique candidate for this
+                // day. Reuse an unlocked video rather than dropping the entire
+                // Public/Unlisted slot, especially when Unlisted slots are set
+                // higher than the number of master videos.
+                if (!name) name = [...videoByName.keys()].find(candidate => canUseForSlot(candidate, true));
+                if (!name) name = [...videoByName.keys()].find(candidate => canUseForSlot(candidate, true, true));
+                // A locked video selected by the fresh generator must never be
+                // added a second time. Drop that generated slot when there is
+                // no unlocked replacement; the old locked slot is preserved
+                // above and remains the source of truth.
+                if (!name && lockedNames.has(slot.videoName)) return null;
+                // If no candidate satisfies the spacing rule, leave an
+                // otherwise valid generated slot unchanged.
+                if (!name) return slot;
+                    used.add(name);
+                    lastScheduledDay.set(name, dayIndex);
+                    const video = videoByName.get(name);
+                    return { ...slot, videoName: name, streamKey: slot.isPublic ? (video?.pubKey || '') : (video?.unlKey || ''), locked: false };
+                });
+                const compactSlots = finalSlots.filter(Boolean).map((slot, index) => ({ ...slot, slotNumber: index + 1 }));
+                return { ...day, slots: compactSlots, totalHoursDecimal: Math.round(compactSlots.reduce((sum, slot) => sum + slot.durationDecimal, 0) * 100) / 100 };
+            });
+
+            // A newly added video can be absent from the fixed-size rotator pool
+            // when most of the existing videos are locked. Add every missing
+            // master video to the least-populated day instead of dropping it.
+            const scheduledNames = new Set(preservedSchedule.flatMap(day => (day.slots || []).map(slot => slot.videoName)));
+            const missingVideos = (cfg.masterVideos || []).filter(video => {
+                const name = typeof video === 'string' ? video : video.name;
+                // Locked videos are allowed to remain outside the newly
+                // generated pool; only unlocked videos need a fallback slot.
+                return name && !lockedNames.has(name) && !scheduledNames.has(name);
+            });
+            const toMinutes = (value) => {
+                const clean = String(value || '').replace(' WIB', '').trim();
+                const [hours, minutes] = clean.split(':').map(Number);
+                return (Number.isFinite(hours) ? hours : 0) * 60 + (Number.isFinite(minutes) ? minutes : 0);
+            };
+            const toTime = (minutes) => {
+                const normalized = ((minutes % 1440) + 1440) % 1440;
+                return `${String(Math.floor(normalized / 60)).padStart(2, '0')}:${String(normalized % 60).padStart(2, '0')}`;
+            };
+            missingVideos.forEach(video => {
+                const name = typeof video === 'string' ? video : video.name;
+                const candidateDays = preservedSchedule
+                    .map((day, index) => ({ day, index }))
+                    .sort((a, b) => (a.day.slots || []).length - (b.day.slots || []).length);
+                let lastAddedDay = -2;
+                for (const { day: targetDay, index: dayIndex } of candidateDays) {
+                    if (dayIndex - lastAddedDay < 2) continue;
+                const isPublic = typeof video === 'string' ? true : (!!video.pubKey || !video.unlKey);
+                const duration = randomDuration15(isPublic ? cfg.pubMinHours : cfg.unlistedMinHours, isPublic ? cfg.pubMaxHours : cfg.unlistedMaxHours);
+                const sortedSlots = [...(targetDay.slots || [])].sort((a, b) => a.slotNumber - b.slotNumber);
+                const lastSlot = sortedSlots[sortedSlots.length - 1];
+                const start = lastSlot ? toTime(toMinutes(lastSlot.endTimeWIB) + 15) : (isPublic ? '17:30' : '00:00');
+                const end = addHoursToTime(start, duration);
+                const slotNumber = (targetDay.slots || []).length + 1;
+                targetDay.slots.push({
+                    slotNumber,
+                    videoName: name,
+                    streamKey: isPublic ? (video.pubKey || '') : (video.unlKey || ''),
+                    locked: !!video.locked,
+                    isPublic,
+                    startTimeWIB: start + ' WIB',
+                    endTimeWIB: end + ' WIB',
+                    startTimeEST: wibToEst(start),
+                    endTimeEST: wibToEst(end),
+                    durationText: fmtHours(duration),
+                    durationDecimal: duration
+                });
+                targetDay.totalHoursDecimal = Math.round(((targetDay.totalHoursDecimal || 0) + duration) * 100) / 100;
+                scheduledNames.add(name);
+                    lastAddedDay = dayIndex;
+                }
+            });
+            return preservedSchedule;
+        };
+
         // --- Save to Firestore (per-channel) ---
         const saveYtLiveToFirebase = async (scheduleData, cfg) => {
             if (!currentYtLiveChannelId) { showNotification('Pilih channel terlebih dahulu.', true); return null; }
             try {
                 await setDoc(ytLiveChannelConfigRef(currentYtLiveChannelId), { ...cfg, updatedAt: new Date() });
                 const lastGenerated = new Date().toLocaleString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                await setDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), { lastGenerated, schedule: scheduleData });
+                await setDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), { lastGenerated, schedule: scheduleData, checkedSlots: ytLiveCheckedSlots });
                 return lastGenerated;
             } catch (err) {
                 console.error('YT Live: failed to save', err);
@@ -13221,6 +13427,195 @@
                     console.error('YT Live: failed to save checked slots', err2);
                 }
             }
+        };
+
+        // Persist a manual change made to the active schedule. Slot numbers are
+        // reindexed after every operation so checklist keys remain stable.
+        const saveYtLiveScheduleChange = async () => {
+            if (!currentYtLiveChannelId || !ytLiveScheduleData) return;
+            await setDoc(ytLiveChannelScheduleRef(currentYtLiveChannelId), {
+                schedule: ytLiveScheduleData,
+                checkedSlots: ytLiveCheckedSlots
+            }, { merge: true });
+        };
+
+        // Apply recurring manual time/type changes to every occurrence of the
+        // same weekday and slot number. The rules live in the channel config so
+        // a newly generated following week gets the same settings.
+        const getYtLiveDayIndex = (day) => {
+            if (day?.isoDate) {
+                const parsed = new Date(`${day.isoDate}T00:00:00`);
+                if (!Number.isNaN(parsed.getTime())) return parsed.getDay();
+            }
+            const names = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            return names.indexOf(day?.dayOfWeek);
+        };
+
+        const applyYtLiveWeekdayEdits = (scheduleData, cfg) => {
+            const rules = cfg?.weekdaySlotEdits || {};
+            if (!Array.isArray(scheduleData)) return scheduleData;
+            return scheduleData.map(day => {
+                const dayRules = rules[String(getYtLiveDayIndex(day))];
+                if (!dayRules) return day;
+                const slots = (day.slots || []).map(slot => {
+                    const rule = dayRules[String(slot.slotNumber)];
+                    if (!rule) return slot;
+                    const start = rule.startTime || String(slot.startTimeWIB || '').replace(' WIB', '').trim();
+                    const duration = Number(slot.durationDecimal) || 0;
+                    const end = addHoursToTime(start, duration);
+                    const video = (cfg.masterVideos || []).find(item =>
+                        (typeof item === 'string' ? item : item.name) === slot.videoName
+                    );
+                    const isPublic = rule.isPublic === true;
+                    const streamKey = video && typeof video !== 'string'
+                        ? (isPublic ? (video.pubKey || '') : (video.unlKey || ''))
+                        : slot.streamKey;
+                    return {
+                        ...slot,
+                        isPublic,
+                        streamKey,
+                        startTimeWIB: `${start} WIB`,
+                        endTimeWIB: `${end} WIB`,
+                        startTimeEST: wibToEst(start),
+                        endTimeEST: wibToEst(end)
+                    };
+                });
+                return { ...day, slots };
+            });
+        };
+
+        window.ytLiveEditSlot = async (isoDate, slotNumber) => {
+            if (document.querySelector('.yt-live-edit-dialog')) return;
+            const channelId = currentYtLiveChannelId;
+            const day = ytLiveScheduleData?.find(item => item.isoDate === isoDate);
+            const slot = day?.slots?.find(item => item.slotNumber === Number(slotNumber));
+            if (!day || !slot) return;
+
+            const currentStart = String(slot.startTimeWIB || '').replace(' WIB', '').trim();
+            const normalizedStart = /^([01]\d|2[0-3]):[0-5]\d$/.test(currentStart) ? currentStart : '00:00';
+            const currentType = slot.isPublic ? 'public' : 'unlisted';
+            const times = Array.from({ length: 96 }, (_, index) => {
+                const hour = String(Math.floor(index / 4)).padStart(2, '0');
+                const minute = String((index % 4) * 15).padStart(2, '0');
+                return `${hour}:${minute}`;
+            });
+            if (!times.includes(normalizedStart)) times.push(normalizedStart);
+            const timeOptions = times.sort().map(value => `<option value="${value}">${value} WIB</option>`).join('');
+            const dialog = document.createElement('dialog');
+            dialog.className = 'yt-live-edit-dialog';
+            dialog.setAttribute('aria-labelledby', 'yt-live-edit-title');
+            dialog.innerHTML = `
+                <form method="dialog" style="padding:22px;border-radius:14px;background:#1e293b;color:#f1f5f9;box-shadow:0 20px 60px rgba(0,0,0,.45);">
+                    <h3 id="yt-live-edit-title" style="margin:0 0 5px;font-size:1.05rem;font-weight:700;">Edit Jadwal Live</h3>
+                    <p style="margin:0 0 18px;color:#94a3b8;font-size:.78rem;">${escHtml(slot.videoName)} · ${escHtml(day.dayOfWeek || isoDate)}</p>
+                    <label style="display:grid;gap:6px;margin-bottom:14px;color:#cbd5e1;font-size:.78rem;font-weight:600;">
+                        Jam mulai (WIB)
+                        <select name="startTime" required style="width:100%;padding:9px 10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#f8fafc;font:inherit;">
+                            ${timeOptions}
+                        </select>
+                    </label>
+                    <label style="display:grid;gap:6px;margin-bottom:20px;color:#cbd5e1;font-size:.78rem;font-weight:600;">
+                        Tipe slot
+                        <select name="slotType" required style="width:100%;padding:9px 10px;border:1px solid #475569;border-radius:8px;background:#0f172a;color:#f8fafc;font:inherit;">
+                            <option value="public">Public</option>
+                            <option value="unlisted">Unlisted</option>
+                        </select>
+                    </label>
+                    <p style="margin:0 0 16px;color:#94a3b8;font-size:.78rem;">Perubahan berlaku untuk nomor slot yang sama pada hari yang sama setiap minggu. Durasi tetap; jam selesai dan EST dihitung otomatis.</p>
+                    <div style="display:flex;justify-content:flex-end;gap:9px;">
+                        <button type="button" data-cancel style="padding:8px 14px;border:1px solid #475569;border-radius:8px;background:transparent;color:#cbd5e1;cursor:pointer;">Batal</button>
+                        <button type="submit" style="padding:8px 14px;border:1px solid #2563eb;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;">Simpan</button>
+                    </div>
+                </form>`;
+            document.body.appendChild(dialog);
+            const form = dialog.querySelector('form');
+            form.elements.startTime.value = normalizedStart;
+            form.elements.slotType.value = currentType;
+            const confirmed = await new Promise(resolve => {
+                const dismiss = () => { dialog.close(); dialog.remove(); resolve(false); };
+                dialog.onclose = () => { dialog.remove(); resolve(false); };
+                dialog.querySelector('[data-cancel]').onclick = dismiss;
+                dialog.oncancel = event => { event.preventDefault(); dismiss(); };
+                dialog.onclick = event => { if (event.target === dialog) dismiss(); };
+                form.onsubmit = event => { event.preventDefault(); resolve(true); dismiss(); };
+                dialog.showModal();
+                form.elements.startTime.focus();
+            });
+            if (!confirmed || channelId !== currentYtLiveChannelId) return;
+            const selectedStart = form.elements.startTime.value;
+            const isPublic = form.elements.slotType.value === 'public';
+            const dayIndex = getYtLiveDayIndex(day);
+            if (dayIndex < 0) return;
+
+            const nextRules = { ...(ytLiveConfig?.weekdaySlotEdits || {}) };
+            nextRules[String(dayIndex)] = { ...(nextRules[String(dayIndex)] || {}) };
+            nextRules[String(dayIndex)][String(slot.slotNumber)] = { startTime: selectedStart, isPublic };
+
+            const nextConfig = { ...(ytLiveConfig || readYtLiveFormConfig()), weekdaySlotEdits: nextRules };
+            const updatedSchedule = applyYtLiveWeekdayEdits(ytLiveScheduleData, nextConfig);
+            ytLiveScheduleData = updatedSchedule;
+            ytLiveConfig = nextConfig;
+            await setDoc(ytLiveChannelConfigRef(currentYtLiveChannelId), { ...nextConfig, updatedAt: new Date() }, { merge: true });
+            await saveYtLiveScheduleChange();
+            renderYtLiveSchedule(ytLiveScheduleData, null, ytLiveCheckedSlots);
+            showNotification(`Pengaturan slot ${day.dayOfWeek || ''} berhasil diterapkan ke semua jadwal hari tersebut.`);
+        };
+
+        const rebuildYtLiveCheckedSlotsForDay = (isoDate, slots, oldSlots) => {
+            const next = {};
+            (slots || []).forEach((slot, index) => {
+                const oldSlot = (oldSlots || []).find(item => item === slot);
+                const oldNumber = oldSlot ? oldSlot.slotNumber : null;
+                if (oldNumber != null && ytLiveCheckedSlots[`${isoDate}_${oldNumber}`]) {
+                    next[`${isoDate}_${index + 1}`] = true;
+                }
+            });
+            Object.keys(ytLiveCheckedSlots).forEach(key => {
+                if (!key.startsWith(`${isoDate}_`)) next[key] = ytLiveCheckedSlots[key];
+            });
+            ytLiveCheckedSlots = next;
+        };
+
+        const refreshYtLiveScheduleAfterSlotChange = async (isoDate, oldSlots, slots) => {
+            const day = ytLiveScheduleData.find(item => item.isoDate === isoDate);
+            if (!day) return;
+            // Keep the original slot object references so checked-state can be
+            // followed correctly when a row is moved or deleted.
+            day.slots = slots;
+            rebuildYtLiveCheckedSlotsForDay(isoDate, day.slots, oldSlots);
+            day.slots.forEach((slot, index) => { slot.slotNumber = index + 1; });
+            day.totalHoursDecimal = Math.round(day.slots.reduce((sum, slot) => sum + (Number(slot.durationDecimal) || 0), 0) * 100) / 100;
+            await saveYtLiveScheduleChange();
+            renderYtLiveSchedule(ytLiveScheduleData, null, ytLiveCheckedSlots);
+        };
+
+        window.ytLiveDeleteSlot = async (isoDate, slotNumber) => {
+            const day = ytLiveScheduleData?.find(item => item.isoDate === isoDate);
+            const slot = day?.slots?.find(item => item.slotNumber === Number(slotNumber));
+            if (!day || !slot) return;
+            const confirmed = await showConfirmModal(`Hapus jadwal video "${slot.videoName}" pada ${isoDate}?`);
+            if (!confirmed) return;
+            const oldSlots = day.slots.slice();
+            await refreshYtLiveScheduleAfterSlotChange(isoDate, oldSlots, oldSlots.filter(item => item !== slot));
+            showNotification('Jadwal berhasil dihapus.');
+        };
+
+        window.ytLiveDropSlot = async (event, isoDate, targetSlotNumber) => {
+            event.preventDefault();
+            const sourceIso = event.dataTransfer.getData('yt-live-slot-date');
+            const sourceNumber = Number(event.dataTransfer.getData('yt-live-slot-number'));
+            if (!sourceIso || sourceIso !== isoDate || !sourceNumber || sourceNumber === Number(targetSlotNumber)) return;
+            const day = ytLiveScheduleData?.find(item => item.isoDate === isoDate);
+            if (!day) return;
+            const oldSlots = day.slots.slice();
+            const sourceIndex = oldSlots.findIndex(item => item.slotNumber === sourceNumber);
+            const targetIndex = oldSlots.findIndex(item => item.slotNumber === Number(targetSlotNumber));
+            if (sourceIndex < 0 || targetIndex < 0) return;
+            const reordered = oldSlots.slice();
+            const [moved] = reordered.splice(sourceIndex, 1);
+            reordered.splice(targetIndex, 0, moved);
+            await refreshYtLiveScheduleAfterSlotChange(isoDate, oldSlots, reordered);
+            showNotification('Urutan jadwal berhasil disimpan.');
         };
 
         // --- Toggle checklist for a slot ---
@@ -13297,9 +13692,9 @@
                         ? `<span style="font-family:monospace;font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 7px;border-radius:5px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;user-select:all;" title="Klik untuk copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${slot.streamKey.replace(/'/g, "\\'")}').then(()=>{showNotification('Stream key disalin!')});">${slot.streamKey}</span>`
                         : `<span style="color:#475569;font-size:0.7rem;">-</span>`;
                     return `
-                    <tr data-slot-key="${key}" class="${checkedRowStyle}">
-                        <td class="font-semibold">#${slot.slotNumber}</td>
-                        <td>${slot.videoName}</td>
+                    <tr data-slot-key="${key}" data-slot-date="${day.isoDate}" data-slot-number="${slot.slotNumber}" draggable="true" ondragstart="event.dataTransfer.setData('yt-live-slot-date', '${day.isoDate}'); event.dataTransfer.setData('yt-live-slot-number', '${slot.slotNumber}'); event.dataTransfer.effectAllowed='move';" ondragover="event.preventDefault(); event.dataTransfer.dropEffect='move'" ondrop="ytLiveDropSlot(event, '${day.isoDate}', ${slot.slotNumber})" class="${checkedRowStyle}" style="cursor:grab;">
+                        <td class="font-semibold"><i class="fas fa-grip-vertical" style="color:#64748b;margin-right:6px;"></i>#${slot.slotNumber}</td>
+                        <td>${escHtml(slot.videoName)} ${slot.locked ? '<span title="Video terkunci saat generate ulang" style="color:#fbbf24;margin-left:5px;"><i class="fas fa-lock"></i></span>' : ''}</td>
                         <td><span class="${slot.isPublic ? 'yt-slot-badge-public' : 'yt-slot-badge-unlisted'}">${slot.isPublic ? 'Public' : 'Unlisted'}</span></td>
                         <td>${streamKeyDisplay}</td>
                         <td class="font-mono">${slot.startTimeWIB}</td>
@@ -13313,6 +13708,10 @@
                                 <span class="yt-slot-check-custom">${isChecked ? '<i class="fas fa-check"></i>' : ''}</span>
                                 <span class="yt-slot-check-text">${isChecked ? 'Terjadwal' : 'Tandai'}</span>
                             </label>
+                        </td>
+                        <td style="white-space:nowrap;">
+                            <button type="button" title="Edit jam dan tipe" onclick="ytLiveEditSlot('${day.isoDate}', ${slot.slotNumber})" style="border:0;background:transparent;color:#60a5fa;cursor:pointer;padding:5px 7px;"><i class="fas fa-edit"></i></button>
+                            <button type="button" title="Hapus jadwal" onclick="ytLiveDeleteSlot('${day.isoDate}', ${slot.slotNumber})" style="border:0;background:transparent;color:#f87171;cursor:pointer;padding:5px 7px;"><i class="fas fa-trash-alt"></i></button>
                         </td>
                     </tr>`;
                 }).join('');
@@ -13329,7 +13728,7 @@
                                     <tr>
                                         <th>Slot</th><th>Video</th><th>Tipe</th><th>Stream Key</th>
                                         <th>Mulai WIB</th><th>Selesai WIB</th><th>Mulai EST</th><th>Selesai EST</th>
-                                        <th>Durasi</th><th>Status</th>
+                                        <th>Durasi</th><th>Status</th><th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>${slotsHtml}</tbody>
@@ -13447,17 +13846,22 @@
                 const activeChannel = ytLiveChannels.find(c => c.id === currentYtLiveChannelId);
                 const confirmed = await showConfirmModal(`Generate jadwal baru untuk "${activeChannel?.name || 'channel ini'}"?\n\nJadwal aktif channel ini akan ditimpa. Lanjutkan?`);
                 if (!confirmed) return;
-                const cfg = readYtLiveFormConfig();
+                const cfg = { ...readYtLiveFormConfig(), weekdaySlotEdits: ytLiveConfig?.weekdaySlotEdits || {} };
                 if (cfg.masterVideos.length === 0) { showNotification('Tambahkan setidaknya 1 nama video master.', true); return; }
                 const genBtn = document.getElementById('ytlive-generate-btn');
                 if (genBtn) { genBtn.disabled = true; genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
                 try {
-                    const schedule = generateYtLiveScheduleData(cfg);
+                    const schedule = applyYtLiveWeekdayEdits(preserveYtLiveLockedSlots(
+                        generateYtLiveScheduleData(cfg),
+                        ytLiveScheduleData,
+                        cfg
+                    ), cfg);
                     if (!schedule) { if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule'; } return; }
                     ytLiveScheduleData = schedule;
                     const lastGen = await saveYtLiveToFirebase(schedule, cfg);
-                    renderYtLiveSchedule(schedule, lastGen);
-                    showNotification('Jadwal berhasil di-generate!');
+                    renderYtLiveSchedule(schedule, lastGen, ytLiveCheckedSlots);
+                    const lockedCount = schedule.flatMap(day => day.slots || []).filter(slot => slot.locked).length;
+                    showNotification(lockedCount ? `Jadwal berhasil di-generate! ${lockedCount} slot video tetap terkunci.` : 'Jadwal berhasil di-generate!');
                 } catch (err) {
                     console.error('YT Live generate error:', err);
                     showNotification('Terjadi kesalahan saat generate.', true);
@@ -14554,6 +14958,24 @@
             mobileTiktokBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 navigateTo('tiktok');
+                document.getElementById('mobile-menu')?.classList.add('hidden');
+            });
+        }
+
+        // Bili2 Navigation buttons
+        const bili2Btn = document.getElementById('bili2-btn');
+        const mobileBili2Btn = document.getElementById('mobile-bili2-btn');
+        if (bili2Btn) {
+            bili2Btn.addEventListener('click', () => {
+                const cur = parseHash();
+                if (cur === 'bili2') { navigateTo('board'); } else { navigateTo('bili2'); }
+            });
+            makeKeyboardClickable(bili2Btn);
+        }
+        if (mobileBili2Btn) {
+            mobileBili2Btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('bili2');
                 document.getElementById('mobile-menu')?.classList.add('hidden');
             });
         }
@@ -18872,7 +19294,8 @@
             skills: true,
             youtube: true,
             tiktok: true,
-            task: true
+            task: true,
+            bili2: true
         };
 
         const MENU_DISPLAY_NAMES = {
@@ -18883,7 +19306,8 @@
             skills: 'Skill Tracking',
             youtube: 'YouTube Inventory',
             tiktok: 'TikTok Affiliate',
-            task: 'Task'
+            task: 'Task',
+            bili2: 'Bili2'
         };
 
         let menuVisibility = { ...DEFAULT_MENU_VISIBILITY };
