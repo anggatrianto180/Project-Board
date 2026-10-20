@@ -4034,6 +4034,9 @@
                     <div class="yt-live-section-title">
                         <i class="fas fa-calendar-alt text-red-500"></i>
                         Jadwal Aktif
+                        <button type="button" class="yt-live-btn-secondary" onclick="ytLiveAddSlot()" style="margin-left:auto;">
+                            <i class="fas fa-plus"></i> Add Schedule Manual
+                        </button>
                     </div>
                     <div id="ytlive-info-bar" class="yt-live-info-bar hidden">
                         <i class="fas fa-clock text-red-400"></i>
@@ -12936,8 +12939,9 @@
                     ytLiveScheduleData = data.schedule || [];
                     let checkedSlots = data.checkedSlots || {};
                     const rotated = rotatePastDays(ytLiveScheduleData, checkedSlots);
-                    if (rotated.changed) {
-                        ytLiveScheduleData = rotated.schedule;
+                    const recurringSchedule = applyYtLiveManualSchedules(rotated.schedule, ytLiveConfig);
+                    if (rotated.changed || JSON.stringify(recurringSchedule) !== JSON.stringify(ytLiveScheduleData)) {
+                        ytLiveScheduleData = recurringSchedule;
                         checkedSlots = rotated.checkedSlots;
                         await setDoc(ytLiveChannelScheduleRef(channelId), {
                             lastGenerated: data.lastGenerated,
@@ -13126,6 +13130,7 @@
             const masterVideos = ytliveReadVideoRows();
             return {
                 masterVideos,
+                manualWeeklySchedules: ytLiveConfig?.manualWeeklySchedules || [],
                 publicSlotsCount: parseInt(el('ytlive-pub-slots').value) || 3,
                 unlistedSlotsCount: parseInt(el('ytlive-unl-slots').value) || 3,
                 pubMinHours: parseFloat(el('ytlive-pub-min').value) || 2,
@@ -13458,6 +13463,7 @@
                 const dayRules = rules[String(getYtLiveDayIndex(day))];
                 if (!dayRules) return day;
                 const slots = (day.slots || []).map(slot => {
+                    if (slot.manualRuleId) return slot;
                     const rule = dayRules[String(slot.slotNumber)];
                     if (!rule) return slot;
                     const start = rule.startTime || String(slot.startTimeWIB || '').replace(' WIB', '').trim();
@@ -13544,6 +13550,22 @@
             if (!confirmed || channelId !== currentYtLiveChannelId) return;
             const selectedStart = form.elements.startTime.value;
             const isPublic = form.elements.slotType.value === 'public';
+            if (slot.manualRuleId) {
+                const video = (ytLiveConfig?.masterVideos || []).find(v => v.name === slot.videoName);
+                const nextConfig = { ...ytLiveConfig, manualWeeklySchedules: (ytLiveConfig?.manualWeeklySchedules || []).map(rule =>
+                    rule.id === slot.manualRuleId ? { ...rule, startTime: selectedStart, isPublic,
+                        streamKey: video ? (isPublic ? video.pubKey : video.unlKey) || '' : rule.streamKey } : rule) };
+                const next = applyYtLiveManualSchedules(ytLiveScheduleData, nextConfig);
+                const batch = writeBatch(db);
+                batch.set(ytLiveChannelConfigRef(channelId), nextConfig, { merge: true });
+                batch.set(ytLiveChannelScheduleRef(channelId), { schedule: next, checkedSlots: ytLiveCheckedSlots }, { merge: true });
+                await batch.commit();
+                ytLiveConfig = nextConfig;
+                ytLiveScheduleData = next;
+                renderYtLiveSchedule(next, null, ytLiveCheckedSlots);
+                showNotification('Jadwal manual mingguan berhasil diperbarui.');
+                return;
+            }
             const dayIndex = getYtLiveDayIndex(day);
             if (dayIndex < 0) return;
 
@@ -13559,6 +13581,131 @@
             await saveYtLiveScheduleChange();
             renderYtLiveSchedule(ytLiveScheduleData, null, ytLiveCheckedSlots);
             showNotification(`Pengaturan slot ${day.dayOfWeek || ''} berhasil diterapkan ke semua jadwal hari tersebut.`);
+        };
+
+        // Stable rule IDs prevent duplicate occurrences and keep rules on their chosen weekday after rotation.
+        const applyYtLiveManualSchedules = (schedule, cfg) => {
+            const rules = cfg?.manualWeeklySchedules || [];
+            const days = [...(schedule || [])];
+            rules.forEach(rule => {
+                if (days.some(day => getYtLiveDayIndex(day) === rule.weekday)) return;
+                const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+                const date = new Date(today + 'T00:00:00');
+                date.setDate(date.getDate() + (rule.weekday - date.getDay() + 7) % 7);
+                const isoDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                days.push({ isoDate, dayNumber: days.length + 1, dayOfWeek: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][rule.weekday], slots: [] });
+            });
+            return days.map(day => {
+                const matching = rules.filter(rule => rule.weekday === getYtLiveDayIndex(day));
+                const slots = (day.slots || []).filter(slot => !slot.manualRuleId || matching.some(rule => rule.id === slot.manualRuleId));
+                matching.forEach(rule => {
+                    const existingIndex = slots.findIndex(slot => slot.manualRuleId === rule.id);
+                    const end = addHoursToTime(rule.startTime, rule.durationDecimal);
+                    const occurrence = { slotNumber: existingIndex >= 0 ? slots[existingIndex].slotNumber : Math.max(0, ...slots.map(slot => Number(slot.slotNumber) || 0)) + 1,
+                        manualRuleId: rule.id, videoName: rule.videoName, streamKey: rule.streamKey, locked: false,
+                        isPublic: rule.isPublic, startTimeWIB: rule.startTime + ' WIB', endTimeWIB: end + ' WIB',
+                        startTimeEST: wibToEst(rule.startTime), endTimeEST: wibToEst(end),
+                        durationDecimal: rule.durationDecimal, durationText: fmtHours(rule.durationDecimal) };
+                    if (existingIndex >= 0) slots[existingIndex] = occurrence;
+                    else slots.push(occurrence);
+                });
+                return { ...day, slots, totalHoursDecimal: Math.round(slots.reduce((sum, slot) => sum + (Number(slot.durationDecimal) || 0), 0) * 100) / 100 };
+            });
+        };
+
+        window.ytLiveAddSlot = () => {
+            if (!currentYtLiveChannelId) { showNotification('Pilih channel terlebih dahulu.', true); return; }
+            if (document.querySelector('.yt-live-add-dialog')) return;
+            const channelId = currentYtLiveChannelId;
+            const videos = ytLiveConfig?.masterVideos || [];
+            const dialog = document.createElement('dialog');
+            dialog.className = 'yt-live-add-dialog';
+            dialog.setAttribute('aria-labelledby', 'ytlive-add-title');
+            dialog.style.cssText = 'width:min(460px,calc(100vw - 32px));max-height:90vh;overflow:auto;padding:24px;border:1px solid #475569;border-radius:16px;background:#0f172a;color:#f8fafc;';
+            dialog.innerHTML = `
+                <form style="display:grid;gap:14px;">
+                    <h3 id="ytlive-add-title" style="margin:0;font-size:1.15rem;font-weight:700;">Add Schedule Manual</h3>
+                    <label class="yt-live-field">Hari (WIB)<select name="weekday" required>
+                        <option value="1">Senin</option><option value="2">Selasa</option><option value="3">Rabu</option><option value="4">Kamis</option><option value="5">Jumat</option><option value="6">Sabtu</option><option value="0">Minggu</option>
+                    </select></label>
+                    <label class="yt-live-field">Nama video<input name="video" list="ytlive-manual-videos" required maxlength="200"></label>
+                    <datalist id="ytlive-manual-videos">${videos.map(v => `<option value="${escHtml(typeof v === 'string' ? v : v.name)}"></option>`).join('')}</datalist>
+                    <label class="yt-live-field">Tipe<select name="slotType"><option value="public">Public</option><option value="unlisted">Unlisted</option></select></label>
+                    <label class="yt-live-field">Jam mulai WIB<input name="startTime" type="time" value="08:00" required></label>
+                    <label class="yt-live-field">Durasi (jam)<input name="duration" type="number" min="0.25" max="24" step="0.25" value="2" required></label>
+                    <label class="yt-live-field">Stream key (opsional)<input name="streamKey" type="text" autocomplete="off"></label>
+                    <p style="margin:0;color:#94a3b8;font-size:.78rem;">Berlaku setiap minggu pada hari yang dipilih, termasuk setelah rotasi atau generate ulang. Jadwal lain tidak diubah.</p>
+                    <p data-error role="alert" style="margin:0;color:#f87171;"></p>
+                    <div style="display:flex;justify-content:flex-end;gap:9px;">
+                        <button type="button" data-cancel class="yt-live-btn-secondary">Batal</button>
+                        <button type="submit" class="yt-live-btn-generate">Tambah Jadwal</button>
+                    </div>
+                </form>`;
+            document.body.appendChild(dialog);
+            const form = dialog.querySelector('form');
+            const todayWIB = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+            form.elements.weekday.value = String(new Date(todayWIB + 'T00:00:00').getDay());
+            const ruleId = crypto.randomUUID();
+            const fillKey = () => {
+                const video = videos.find(v => typeof v !== 'string' && v.name === form.elements.video.value.trim());
+                form.elements.streamKey.value = video ? (form.elements.slotType.value === 'public' ? video.pubKey : video.unlKey) || '' : '';
+            };
+            form.elements.video.addEventListener('input', fillKey);
+            form.elements.slotType.addEventListener('change', fillKey);
+            let saving = false;
+            const dismiss = () => { if (!saving) { dialog.close(); dialog.remove(); } };
+            dialog.onclose = () => dialog.remove();
+            dialog.oncancel = event => { event.preventDefault(); dismiss(); };
+            dialog.onclick = event => { if (event.target === dialog) dismiss(); };
+            dialog.querySelector('[data-cancel]').onclick = dismiss;
+            form.onsubmit = async event => {
+                event.preventDefault();
+                if (saving || !form.reportValidity()) return;
+                const error = dialog.querySelector('[data-error]');
+                if (channelId !== currentYtLiveChannelId) { error.textContent = 'Channel berubah. Tutup form dan coba lagi.'; return; }
+                const videoName = form.elements.video.value.trim();
+                if (!videoName) { error.textContent = 'Nama video wajib diisi.'; return; }
+                const weekday = Number(form.elements.weekday.value);
+                const start = form.elements.startTime.value;
+                const duration = Number(form.elements.duration.value);
+                const nextConfig = { ...(ytLiveConfig || readYtLiveFormConfig()), manualWeeklySchedules: [
+                    ...(ytLiveConfig?.manualWeeklySchedules || []),
+                    { id: ruleId, weekday, videoName, streamKey: form.elements.streamKey.value.trim(),
+                        isPublic: form.elements.slotType.value === 'public', startTime: start, durationDecimal: duration }
+                ] };
+                const base = [...(ytLiveScheduleData || [])];
+                if (!base.some(day => getYtLiveDayIndex(day) === weekday)) {
+                    const date = new Date(todayWIB + 'T00:00:00');
+                    date.setDate(date.getDate() + (weekday - date.getDay() + 7) % 7);
+                    const isoDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    base.push({ isoDate, dayNumber: base.length + 1, dayOfWeek: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][weekday], slots: [] });
+                }
+                const next = applyYtLiveManualSchedules(base, nextConfig);
+                saving = true;
+                form.querySelector('[type="submit"]').disabled = true;
+                error.textContent = '';
+                try {
+                    const batch = writeBatch(db);
+                    batch.set(ytLiveChannelConfigRef(channelId), nextConfig, { merge: true });
+                    batch.set(ytLiveChannelScheduleRef(channelId), { schedule: next, checkedSlots: ytLiveCheckedSlots }, { merge: true });
+                    await batch.commit();
+                    if (channelId === currentYtLiveChannelId) {
+                        ytLiveConfig = nextConfig;
+                        ytLiveScheduleData = next;
+                        renderYtLiveSchedule(next, null, ytLiveCheckedSlots);
+                    }
+                    saving = false;
+                    dismiss();
+                    showNotification('Jadwal manual mingguan berhasil ditambahkan.');
+                } catch (err) {
+                    console.error('YT Live: failed to add manual schedule', err);
+                    error.textContent = 'Gagal menyimpan jadwal. Silakan coba lagi.';
+                    saving = false;
+                    form.querySelector('[type="submit"]').disabled = false;
+                }
+            };
+            dialog.showModal();
+            form.elements.video.focus();
         };
 
         const rebuildYtLiveCheckedSlotsForDay = (isoDate, slots, oldSlots) => {
@@ -13593,8 +13740,23 @@
             const day = ytLiveScheduleData?.find(item => item.isoDate === isoDate);
             const slot = day?.slots?.find(item => item.slotNumber === Number(slotNumber));
             if (!day || !slot) return;
-            const confirmed = await showConfirmModal(`Hapus jadwal video "${slot.videoName}" pada ${isoDate}?`);
+            const confirmed = await showConfirmModal(slot.manualRuleId ? `Hapus jadwal mingguan "${slot.videoName}" untuk semua minggu?` : `Hapus jadwal video "${slot.videoName}" pada ${isoDate}?`);
             if (!confirmed) return;
+            if (slot.manualRuleId) {
+                const nextConfig = { ...ytLiveConfig, manualWeeklySchedules: (ytLiveConfig?.manualWeeklySchedules || []).filter(rule => rule.id !== slot.manualRuleId) };
+                const next = applyYtLiveManualSchedules(ytLiveScheduleData, nextConfig);
+                const checked = { ...ytLiveCheckedSlots };
+                ytLiveScheduleData.forEach(item => item.slots.filter(s => s.manualRuleId === slot.manualRuleId).forEach(s => delete checked[`${item.isoDate}_${s.slotNumber}`]));
+                const batch = writeBatch(db);
+                batch.set(ytLiveChannelConfigRef(currentYtLiveChannelId), nextConfig, { merge: true });
+                batch.set(ytLiveChannelScheduleRef(currentYtLiveChannelId), { schedule: next, checkedSlots: checked }, { merge: true });
+                await batch.commit();
+                ytLiveConfig = nextConfig;
+                ytLiveScheduleData = next;
+                renderYtLiveSchedule(next, null, checked);
+                showNotification('Jadwal mingguan berhasil dihapus.');
+                return;
+            }
             const oldSlots = day.slots.slice();
             await refreshYtLiveScheduleAfterSlotChange(isoDate, oldSlots, oldSlots.filter(item => item !== slot));
             showNotification('Jadwal berhasil dihapus.');
@@ -13765,7 +13927,8 @@
                 if (!confirmed) return;
                 populateYtLiveForm(data.config);
                 const rotated = rotatePastDays(data.schedule, {});
-                const scheduleToSave = rotated.schedule;
+                const scheduleToSave = applyYtLiveManualSchedules(rotated.schedule, data.config);
+                ytLiveConfig = data.config;
                 ytLiveScheduleData = scheduleToSave;
                 const lastGen = await saveYtLiveToFirebase(scheduleToSave, data.config);
                 renderYtLiveSchedule(scheduleToSave, lastGen || data.exportedAt || '-');
@@ -13851,11 +14014,11 @@
                 const genBtn = document.getElementById('ytlive-generate-btn');
                 if (genBtn) { genBtn.disabled = true; genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
                 try {
-                    const schedule = applyYtLiveWeekdayEdits(preserveYtLiveLockedSlots(
+                    const schedule = applyYtLiveManualSchedules(applyYtLiveWeekdayEdits(preserveYtLiveLockedSlots(
                         generateYtLiveScheduleData(cfg),
                         ytLiveScheduleData,
                         cfg
-                    ), cfg);
+                    ), cfg), cfg);
                     if (!schedule) { if (genBtn) { genBtn.disabled = false; genBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Schedule'; } return; }
                     ytLiveScheduleData = schedule;
                     const lastGen = await saveYtLiveToFirebase(schedule, cfg);
